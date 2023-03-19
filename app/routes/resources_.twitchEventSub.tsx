@@ -1,9 +1,9 @@
-import type { ActionFunction } from "@remix-run/node";
+import type { ActionArgs } from "@remix-run/node";
 import { json, Response } from "@remix-run/node";
 import { withVerifyTwitch } from "~/utils/twitch.server";
 // import { sendAlert, sendReward } from "~/utils/alerts.server";
 
-export const action: ActionFunction = withVerifyTwitch(async ({ request }) => {
+export const action = withVerifyTwitch(async ({ request }: ActionArgs) => {
   if (request.method !== "POST") {
     return json(
       { message: "Method not allowed" },

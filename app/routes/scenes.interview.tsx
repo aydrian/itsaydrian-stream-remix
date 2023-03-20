@@ -1,3 +1,5 @@
+import { TwoUpVideo } from "~/components/two-up-video";
+
 export default function Interview() {
-  return <div>Interview</div>;
+  return <TwoUpVideo />;
 }

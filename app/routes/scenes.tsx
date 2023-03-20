@@ -6,7 +6,7 @@ export default function ScenesLayout() {
       <main className="flex gap-0 items-center justify-center z-10">
         <Outlet />
       </main>
-      <footer className="bg-black">Scene Footer</footer>
+      <footer className="bg-black text-white">Scene Footer</footer>
     </div>
   );
 }

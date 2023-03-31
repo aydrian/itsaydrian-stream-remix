@@ -1,6 +1,6 @@
 const path = require("path");
 const express = require("express");
-const http = require("http");
+const { createServer } = require("http");
 const cors = require("cors");
 const { json } = require("body-parser");
 const compression = require("compression");
@@ -10,18 +10,55 @@ const { expressMiddleware } = require("@apollo/server/express4");
 const {
   ApolloServerPluginDrainHttpServer
 } = require("@apollo/server/plugin/drainHttpServer");
+const { makeExecutableSchema } = require("@graphql-tools/schema");
+const { WebSocketServer } = require("ws");
+const { useServer } = require("graphql-ws/lib/use/ws");
+const { PubSub } = require("graphql-subscriptions");
 const { createRequestHandler } = require("@remix-run/express");
-const { typeDefs, resolvers } = require("./server/schema");
+const { typeDefs, createResolvers } = require("./server/schema");
 
 const BUILD_DIR = path.join(process.cwd(), "build");
+const pubsub = new PubSub();
+
+// In the background, increment a number every second and notify subscribers when it changes.
+let currentNumber = 0;
+function incrementNumber() {
+  currentNumber++;
+  pubsub.publish("NUMBER_INCREMENTED", { numberIncremented: currentNumber });
+  setTimeout(incrementNumber, 1000);
+}
 
 const main = async () => {
   const app = express();
-  const httpServer = http.createServer(app);
+  const resolvers = createResolvers(pubsub);
+  const httpServer = createServer(app);
+  const schema = makeExecutableSchema({ typeDefs, resolvers });
+  // Creating the WebSocket server
+  const wsServer = new WebSocketServer({
+    // This is the `httpServer` we created in a previous step.
+    server: httpServer,
+    // Pass a different path here if app.use
+    // serves expressMiddleware at a different path
+    path: "/graphql"
+  });
+
+  // Hand in the schema we just created and have the
+  // WebSocketServer start listening.
+  const serverCleanup = useServer({ schema }, wsServer);
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-    plugins: [ApolloServerPluginDrainHttpServer({ httpServer })]
+    schema,
+    plugins: [
+      ApolloServerPluginDrainHttpServer({ httpServer }),
+      {
+        async serverWillStart() {
+          return {
+            async drainServer() {
+              await serverCleanup.dispose();
+            }
+          };
+        }
+      }
+    ]
   });
   await server.start();
 
@@ -72,6 +109,9 @@ const main = async () => {
   await new Promise((resolve) => httpServer.listen({ port }, resolve));
   console.log(`Express server listening on port ${port}`);
   console.log(`🚀 server ready at http://localhost:${port}/graphql`);
+
+  // Start incrementing
+  incrementNumber(pubsub);
 };
 
 main();

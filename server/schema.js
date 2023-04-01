@@ -1,35 +1,102 @@
-const { PubSub } = require("graphql-subscriptions");
+const { pubsub, CHANNELS } = require("./pub-sub");
+const { twitchClient } = require("./utils/twitch.helpers");
 // Construct a schema, using GraphQL schema language
 exports.typeDefs = `#graphql
 type Query {
   numberSix: Int! # Should always return the number 6 when queried
-  numberSeven: Int! # Should always return 7,
-  currentNumber: Int
+  numberSeven: Int! # Should always return 7
 }
 
 type Subscription {
-  numberIncremented: Int
+  userFollowed: TwitchChannelEvent
+  userSubscribed: TwitchChannelEvent
+  customRewardRedeemed: TwitchRewardRedeemEvent
+}
+
+type TwitchChannelEvent {
+  user: TwitchUser!
+}
+
+type TwitchRewardRedeemEvent {
+  user_input: String
+  redeemed_at: String
+  reward: TwitchReward!
+  user: TwitchUser!
+}
+
+type TwitchReward {
+  id: String
+  title: String
+  cost: Int,
+  prompt: String
+}
+
+type TwitchUser {
+  id: String
+  name: String
+  displayName: String
+  profilePictureUrl: String
 }
 `;
 
 // Provide resolver functions for your schema fields
-exports.createResolvers = (pubsub) => {
-  return {
-    Query: {
-      numberSix() {
-        return 6;
-      },
-      numberSeven() {
-        return 7;
-      },
-      currentNumber() {
-        return currentNumber;
-      }
+exports.resolvers = {
+  Query: {
+    numberSix() {
+      return 6;
     },
-    Subscription: {
-      numberIncremented: {
-        subscribe: () => pubsub.asyncIterator(["NUMBER_INCREMENTED"])
-      }
+    numberSeven() {
+      return 7;
     }
-  };
+  },
+  Subscription: {
+    customRewardRedeemed: {
+      resolve: async ({ event }, _args, _context, _info) => {
+        console.log({ event });
+        const user = await twitchClient.users.getUserById(event.user_id);
+        console.log({ user });
+        return {
+          user_input: event.user_input,
+          redeemed_at: event.redeemed_at,
+          user: {
+            id: user.id,
+            name: user.name,
+            displayName: user.displayName,
+            profilePictureUrl: user.profilePictureUrl
+          },
+          reward: event.reward
+        };
+      },
+      subscribe: () =>
+        pubsub.asyncIterator(CHANNELS.EVENTSUB.CHANNEL.REDEEM_CUSTOM_REWARD)
+    },
+    userFollowed: {
+      resolve: async ({ event }, _args, _context, _info) => {
+        const user = await twitchClient.users.getUserById(event.user_id);
+        return {
+          user: {
+            id: user.id,
+            name: user.name,
+            displayName: user.displayName,
+            profilePictureUrl: user.profilePictureUrl
+          }
+        };
+      },
+      subscribe: () => pubsub.asyncIterator(CHANNELS.EVENTSUB.CHANNEL.FOLLOW)
+    },
+    userSubscribed: {
+      resolve: async ({ event }, _args, _context, _info) => {
+        const user = await twitchClient.users.getUserById(event.user_id);
+        return {
+          user: {
+            id: user.id,
+            name: user.name,
+            displayName: user.displayName,
+            profilePictureUrl: user.profilePictureUrl
+          }
+        };
+      },
+      subscribe: () => pubsub.asyncIterator(CHANNELS.EVENTSUB.CHANNEL.SUBSCRIBE)
+    }
+  }
 };

@@ -13,32 +13,19 @@ const {
 const { makeExecutableSchema } = require("@graphql-tools/schema");
 const { WebSocketServer } = require("ws");
 const { useServer } = require("graphql-ws/lib/use/ws");
-const { PubSub } = require("graphql-subscriptions");
 const { createRequestHandler } = require("@remix-run/express");
-const { typeDefs, createResolvers } = require("./server/schema");
+const { typeDefs, resolvers } = require("./server/schema");
+const routes = require("./server/routes");
 
 const BUILD_DIR = path.join(process.cwd(), "build");
-const pubsub = new PubSub();
-
-// In the background, increment a number every second and notify subscribers when it changes.
-let currentNumber = 0;
-function incrementNumber() {
-  currentNumber++;
-  pubsub.publish("NUMBER_INCREMENTED", { numberIncremented: currentNumber });
-  setTimeout(incrementNumber, 1000);
-}
 
 const main = async () => {
   const app = express();
-  const resolvers = createResolvers(pubsub);
   const httpServer = createServer(app);
   const schema = makeExecutableSchema({ typeDefs, resolvers });
   // Creating the WebSocket server
   const wsServer = new WebSocketServer({
-    // This is the `httpServer` we created in a previous step.
     server: httpServer,
-    // Pass a different path here if app.use
-    // serves expressMiddleware at a different path
     path: "/graphql"
   });
 
@@ -63,6 +50,8 @@ const main = async () => {
   await server.start();
 
   app.use(compression());
+
+  app.use(routes);
 
   app.use(
     "/graphql",
@@ -109,9 +98,6 @@ const main = async () => {
   await new Promise((resolve) => httpServer.listen({ port }, resolve));
   console.log(`Express server listening on port ${port}`);
   console.log(`🚀 server ready at http://localhost:${port}/graphql`);
-
-  // Start incrementing
-  incrementNumber(pubsub);
 };
 
 main();

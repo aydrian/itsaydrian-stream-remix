@@ -1,8 +1,8 @@
-const { PubSub } = require("graphql-subscriptions");
+import { PubSub } from "graphql-subscriptions";
 
-exports.pubsub = new PubSub();
+export const pubsub = new PubSub();
 
-exports.CHANNELS = {
+export const CHANNELS = {
   EVENTSUB: {
     CHANNEL: {
       FOLLOW: "eventsub_channel_follow",

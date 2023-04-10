@@ -1,7 +1,7 @@
-const { pubsub, CHANNELS } = require("./pub-sub");
-const { twitchClient } = require("./utils/twitch.helpers");
+import { pubsub, CHANNELS } from "./pub-sub";
+import { twitchClient } from "./utils/twitch.helpers";
 // Construct a schema, using GraphQL schema language
-exports.typeDefs = `#graphql
+export const typeDefs = `#graphql
 type Query {
   numberSix: Int! # Should always return the number 6 when queried
   numberSeven: Int! # Should always return 7
@@ -40,7 +40,7 @@ type TwitchUser {
 `;
 
 // Provide resolver functions for your schema fields
-exports.resolvers = {
+export const resolvers = {
   Query: {
     numberSix() {
       return 6;

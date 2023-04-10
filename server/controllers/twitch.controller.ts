@@ -1,17 +1,19 @@
-const { pubsub, CHANNELS } = require("../pub-sub");
-const logger = require("../utils/logger");
-const { MessageTypes, NotificationTypes } = require("../utils/twitch.helpers");
+import type { Request, Response, NextFunction } from "express";
+import { pubsub, CHANNELS } from "../pub-sub";
+import pino from "../utils/logger";
+const { info, error } = pino;
+import { MessageTypes, NotificationTypes } from "../utils/twitch.helpers";
 
-async function receiveWebhook(req, res, next) {
+async function receiveWebhook(req: Request, res: Response, next: NextFunction) {
   const messageType = req.header("Twitch-Eventsub-Message-Type");
-  logger.info({ messageType });
+  info({ messageType });
   try {
     if (messageType === MessageTypes.CALLBACK_VERIFICATION) {
-      logger.info("Verifying Webhook");
+      info("Verifying Webhook");
       return res.status(200).send(req.body.challenge);
     } else if (messageType === MessageTypes.REVOCATION) {
       const { subscription } = req.body;
-      logger.info("Revocation Request", subscription);
+      info("Revocation Request", subscription);
       pubsub.publish(CHANNELS.EVENTSUB.REVOCATION, { subscription });
     } else if (messageType === MessageTypes.NOTIFICATION) {
       const {
@@ -19,7 +21,7 @@ async function receiveWebhook(req, res, next) {
         subscription: { type }
       } = req.body;
 
-      logger.info(
+      info(
         `Receiving ${type} request for ${event.broadcaster_user_name}: `,
         event
       );
@@ -36,15 +38,18 @@ async function receiveWebhook(req, res, next) {
       } else if (type === NotificationTypes.STREAM.ONLINE) {
         pubsub.publish(CHANNELS.EVENTSUB.STREAM.ONLINE, { event });
       } else {
-        logger.info(`Type ${type} not supported.`);
+        info(`Type ${type} not supported.`);
       }
     }
 
     res.status(200).end();
   } catch (err) {
-    logger.error(`Error while processing EventSub Webhook.`, err.message);
+    let message;
+    if (err instanceof Error) message = err.message;
+    else message = String(error);
+    error(`Error while processing EventSub Webhook.`, message);
     next(err);
   }
 }
 
-module.exports = { receiveWebhook };
+export default { receiveWebhook };

@@ -1,25 +1,23 @@
-const path = require("path");
-const express = require("express");
-const { createServer } = require("http");
-const cors = require("cors");
-const { json } = require("body-parser");
-const compression = require("compression");
-const morgan = require("morgan");
-const { ApolloServer } = require("@apollo/server");
-const { expressMiddleware } = require("@apollo/server/express4");
-const {
-  ApolloServerPluginDrainHttpServer
-} = require("@apollo/server/plugin/drainHttpServer");
-const { makeExecutableSchema } = require("@graphql-tools/schema");
-const { WebSocketServer } = require("ws");
-const { useServer } = require("graphql-ws/lib/use/ws");
-const { createRequestHandler } = require("@remix-run/express");
-const { typeDefs, resolvers } = require("./server/schema");
-const routes = require("./server/routes");
+import path from "path";
+import express from "express";
+import { createServer } from "http";
+import cors from "cors";
+import { json } from "body-parser";
+import compression from "compression";
+import morgan from "morgan";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import { WebSocketServer } from "ws";
+import { useServer } from "graphql-ws/lib/use/ws";
+import { createRequestHandler } from "@remix-run/express";
+import { typeDefs, resolvers } from "./server/schema";
+import routes from "./server/routes";
 
 const BUILD_DIR = path.join(process.cwd(), "build");
 
-const main = async () => {
+async function main() {
   const app = express();
   const httpServer = createServer(app);
   const schema = makeExecutableSchema({ typeDefs, resolvers });
@@ -95,11 +93,10 @@ const main = async () => {
   );
   const port = process.env.PORT || 3000;
 
-  await new Promise((resolve) => httpServer.listen({ port }, resolve));
+  await new Promise<void>((resolve) => httpServer.listen({ port }, resolve));
   console.log(`Express server listening on port ${port}`);
   console.log(`🚀 server ready at http://localhost:${port}/graphql`);
-};
-
+}
 main();
 
 function purgeRequireCache() {

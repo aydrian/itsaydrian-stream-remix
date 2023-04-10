@@ -1,15 +1,24 @@
-const crypto = require("crypto");
-const logger = require("../utils/logger");
+import type { Request, Response } from "express";
+import crypto from "crypto";
+import invariant from "tiny-invariant";
+import logger from "../utils/logger";
 
 const twitchSigningSecret = process.env.TWITCH_SIGNING_SECRET;
 
-const verifyTwitchSignature = (req, _res, buf, _encoding) => {
+const verifyTwitchSignature = (
+  req: Request,
+  _res: Response,
+  buf: Buffer,
+  _encoding: string
+) => {
   const messageId = req.header("Twitch-Eventsub-Message-Id");
+  invariant(typeof messageId === "string", "messageId expected to be a string");
   const timestamp = req.header("Twitch-Eventsub-Message-Timestamp");
+  invariant(typeof timestamp === "string", "timestamp expected to be a string");
   const messageSignature = req.header("Twitch-Eventsub-Message-Signature");
   const time = Math.floor(new Date().getTime() / 1000);
 
-  if (Math.abs(time - timestamp) > 600) {
+  if (Math.abs(time - parseInt(timestamp)) > 600) {
     // needs to be < 10 minutes
     logger.error(
       `Verification Failed: timestamp > 10 minutes. Message Id: ${messageId}.`
@@ -37,4 +46,4 @@ const verifyTwitchSignature = (req, _res, buf, _encoding) => {
   }
 };
 
-module.exports = verifyTwitchSignature;
+export default verifyTwitchSignature;

@@ -13,17 +13,17 @@ export function VideoContainer({
 }: props) {
   return (
     <figure
-      className={`flex flex-col items-center justify-center m-0 relative z-10 ${
+      className={`relative z-10 m-0 flex flex-col items-center justify-center ${
         size === "sidebar" ? "w-[438px]" : ""
       }`}
     >
       <div className={`object-cover ${getVideoSize(size)}`}>
-        <div className="w-full h-full" />
+        <div className="h-full w-full" />
       </div>
 
       <figcaption className="absolute bottom-4 left-4">
-        <div className="text-center rounded px-4 pt-2 pb-[.625rem] bg-slate-800 opacity-10">
-          <span className="text-white block text-3xl font-normal relative z-10">
+        <div className="rounded bg-slate-800 px-4 pb-[.625rem] pt-2 text-center opacity-10">
+          <span className="relative z-10 block text-3xl font-normal text-white">
             {name}
           </span>
         </div>

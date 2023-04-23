@@ -6,7 +6,7 @@ export default function PairProgramming() {
       <div className="flex flex-col justify-end">
         <TwoUpVideo size="sidebar" />
       </div>
-      <div className="bg-transparent w-full aspect-[16/10]"></div>
+      <div className="aspect-[16/10] w-full bg-transparent"></div>
     </div>
   );
 }

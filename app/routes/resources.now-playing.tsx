@@ -6,15 +6,18 @@ import invariant from "tiny-invariant";
 import { getUsersNowPlaying } from "~/services/spotify.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const url = new URL(request.url);
-  const refreshToken = url.searchParams.get("refreshToken");
+  // const url = new URL(request.url);
+  // const refreshToken = url.searchParams.get("refreshToken");
+  // TODO: Use function to pull from database or session
+  const refreshToken =
+    "AQCToFbIL0uzDrFo6_H8UnmuwZkwuO1G9LPGtuM7DjSwfXUxzu2ZiH6c07jWi-EPoJOrrEo_1TFUq8s2Pzots84zCM6DY1XAxA0ybmmunbLvylGdWR0JUCcsTSciV26rJ9M";
   invariant(typeof refreshToken === "string", "refreshToken is required");
   const song = await getUsersNowPlaying(refreshToken);
 
   return json(song);
 };
 
-export function NowPlaying({ refreshToken }: { refreshToken: string }) {
+export function NowPlaying() {
   const [song, setSong] = useState<Song>({
     title: "",
     artist: "",
@@ -33,15 +36,16 @@ export function NowPlaying({ refreshToken }: { refreshToken: string }) {
     const delay = song.duration - song.progress;
 
     const timer = setTimeout(() => {
-      fetch(`/resources/now-playing?refreshToken=${refreshToken}`)
+      fetch(`/resources/now-playing`)
         .then((res) => res.json())
         .then((song) => setSong(song));
     }, delay);
     return () => clearTimeout(timer);
-  }, [song, refreshToken]);
+  }, [song]);
 
   if (!song.isPlaying) {
-    return <div>Nothing is playing</div>;
+    //return <div>Nothing is playing</div>;
+    return null;
   }
 
   const albumArt = song.images.find(({ height }) => height === 64);

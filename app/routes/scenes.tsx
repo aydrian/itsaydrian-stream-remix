@@ -8,7 +8,7 @@ export default function ScenesLayout() {
         <h1 className="bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-2xl font-bold leading-tight text-transparent">
           ItsAydrian Stream
         </h1>
-        <NowPlaying refreshToken="AQCToFbIL0uzDrFo6_H8UnmuwZkwuO1G9LPGtuM7DjSwfXUxzu2ZiH6c07jWi-EPoJOrrEo_1TFUq8s2Pzots84zCM6DY1XAxA0ybmmunbLvylGdWR0JUCcsTSciV26rJ9M" />
+        <NowPlaying />
       </header>
       <main className="z-10 flex items-center justify-center gap-0">
         <Outlet />

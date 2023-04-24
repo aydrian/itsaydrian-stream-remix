@@ -1,9 +1,9 @@
-type videoSize = "interview" | "monologue" | "sidebar" | "sidebar-solo";
+export type videoSize = "interview" | "monologue" | "sidebar" | "sidebar-solo";
 
 type props = {
-  name: string;
-  twitter: string;
-  size: videoSize;
+  name?: string;
+  twitter?: string;
+  size?: videoSize;
 };
 
 export function VideoContainer({

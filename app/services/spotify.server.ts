@@ -43,16 +43,32 @@ export const getUsersNowPlaying = async (refresh_token: string) => {
     headers: {
       Authorization: `Bearer ${access_token}`
     }
-  }).then((res) => res.json());
+  });
+
+  // Handle device being off
+  if (response.status === 204) {
+    const noSong = {
+      title: "",
+      artist: "",
+      album: "",
+      duration: 0,
+      isPlaying: false,
+      progress: 0,
+      images: []
+    } as Song;
+    return noSong;
+  }
+
+  const data = await response.json();
 
   const song = {
-    title: response.item.name,
-    artist: response.item.artists[0].name,
-    album: response.item.album.name,
-    duration: response.item.duration_ms,
-    progress: response.progress_ms,
-    images: response.item.album.images,
-    isPlaying: response.is_playing
+    title: data.item.name,
+    artist: data.item.artists[0].name,
+    album: data.item.album.name,
+    duration: data.item.duration_ms,
+    progress: data.progress_ms,
+    images: data.item.album.images,
+    isPlaying: data.is_playing
   } as Song;
   return song;
 };

@@ -1,31 +1,30 @@
-type videoSize = "interview" | "monologue" | "sidebar" | "sidebar-solo";
+export type videoSize = "interview" | "monologue" | "sidebar" | "sidebar-solo";
 
 type props = {
-  name: string;
-  twitter: string;
-  size: videoSize;
+  name?: string;
+  twitter?: string;
+  size?: videoSize;
 };
 
 export function VideoContainer({
   name = "Aydrian Howard",
-  twitter = "itsaydrian",
+  twitter,
   size = "interview"
 }: props) {
   return (
     <figure
-      className={`flex flex-col items-center justify-center m-0 relative z-10 ${
-        size === "sidebar" ? "w-[438px]" : ""
-      }`}
+      className={`relative z-10 m-0 flex flex-col items-center justify-center`}
     >
-      <div className={`object-cover ${getVideoSize(size)}`}>
-        <div className="w-full h-full" />
+      <div className={` object-cover ${getVideoSize(size)}`}>
+        <div className="h-full w-full" />
       </div>
 
       <figcaption className="absolute bottom-4 left-4">
-        <div className="text-center rounded px-4 pt-2 pb-[.625rem] bg-slate-800 opacity-10">
-          <span className="text-white block text-3xl font-normal relative z-10">
+        <div className="rounded bg-black px-4 pb-[.625rem] pt-2 opacity-90">
+          <h1 className="relative z-10 block text-3xl font-normal text-white">
             {name}
-          </span>
+          </h1>
+          {twitter && <h2 className="text-2xl text-gray-300">@{twitter}</h2>}
         </div>
       </figcaption>
     </figure>
@@ -39,9 +38,9 @@ function getVideoSize(size: videoSize) {
     case "interview":
       return "aspect-[8/7.3] w-[960px]";
     case "sidebar":
-      return "aspect-[6/4.14] w-full";
+      return "h-[440px] w-[509px]";
     case "sidebar-solo":
-      return "aspect-[6/8.31] w-full";
+      return "h-[880px] w-[509px]";
     default:
       return "";
   }

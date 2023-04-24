@@ -9,8 +9,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   // const url = new URL(request.url);
   // const refreshToken = url.searchParams.get("refreshToken");
   // TODO: Use function to pull from database or session
-  const refreshToken =
-    "AQCToFbIL0uzDrFo6_H8UnmuwZkwuO1G9LPGtuM7DjSwfXUxzu2ZiH6c07jWi-EPoJOrrEo_1TFUq8s2Pzots84zCM6DY1XAxA0ybmmunbLvylGdWR0JUCcsTSciV26rJ9M";
+  const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
   invariant(typeof refreshToken === "string", "refreshToken is required");
   const song = await getUsersNowPlaying(refreshToken);
 

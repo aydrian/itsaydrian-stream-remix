@@ -1,7 +1,7 @@
 import type { LoaderArgs } from "@remix-run/node";
-import type { Song } from "~/services/spotify.server";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { json } from "@remix-run/node";
+import { useFetcher } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { getUsersNowPlaying } from "~/services/spotify.server";
 
@@ -17,50 +17,44 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export function NowPlaying() {
-  const [song, setSong] = useState<Song>({
-    title: "",
-    artist: "",
-    album: "",
-    duration: 0,
-    isPlaying: true,
-    progress: 0,
-    images: []
-  });
+  const songFetcher = useFetcher<typeof loader>();
 
   useEffect(() => {
-    if (!song.isPlaying) {
+    songFetcher.load(`/resources/now-playing`);
+  }, []);
+
+  useEffect(() => {
+    if (!songFetcher.data?.isPlaying) {
       return;
     }
-
-    const delay = song.duration - song.progress;
-
+    const delay = songFetcher.data.duration - songFetcher.data.progress;
     const timer = setTimeout(() => {
-      fetch(`/resources/now-playing`)
-        .then((res) => res.json())
-        .then((song) => setSong(song));
+      songFetcher.load(`/resources/now-playing`);
     }, delay);
     return () => clearTimeout(timer);
-  }, [song]);
+  }, [songFetcher.data]);
 
-  if (!song.isPlaying) {
+  if (!songFetcher.data?.isPlaying) {
     //return <div>Nothing is playing</div>;
     return null;
   }
 
-  const albumArt = song.images.find(({ height }) => height === 64);
+  const albumArt = songFetcher.data.images.find(({ height }) => height === 64);
 
   return (
     <div className="flex items-center gap-1">
       {albumArt ? (
         <img
           src={albumArt.url}
-          alt={`${song.title} - ${song.artist}`}
+          alt={`${songFetcher.data.title} - ${songFetcher.data.artist}`}
           className="aspect-square h-[42px] rounded"
         />
       ) : null}
       <div className="flex flex-col">
-        <div className="font-bold leading-tight">{song.title}</div>
-        <div className="font-xs leading-tight text-gray-300">{song.artist}</div>
+        <div className="font-bold leading-tight">{songFetcher.data.title}</div>
+        <div className="font-xs leading-tight text-gray-300">
+          {songFetcher.data.artist}
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import type { ActionFunction } from "@remix-run/node";
+import type { HelixSchedule, HelixStream, HelixVideo } from "@twurple/api";
 import { Response } from "@remix-run/node";
 import crypto from "crypto";
 import invariant from "tiny-invariant";
@@ -11,6 +12,61 @@ invariant(
   typeof twitchSigningSecret === "string",
   "Be sure to set TWITCH_SIGNING_SECRET"
 );
+
+const twitchUserId = process.env.TWITCH_USER_ID;
+invariant(
+  typeof twitchUserId === "string",
+  "Set TWITCH_USER_ID to the broadcaster user id."
+);
+export const TWITCH_USER_ID = twitchUserId;
+
+export const scheduleToJSON = (schedule: HelixSchedule | null) => {
+  if (!schedule) return null;
+  const segments = schedule.segments.map((segment) => {
+    return {
+      id: segment.id,
+      title: segment.title,
+      categoryName: segment.categoryName,
+      isRecurring: segment.isRecurring,
+      startDate: segment.startDate,
+      endDate: segment.endDate
+    };
+  });
+  return {
+    broadcasterName: schedule.broadcasterName,
+    broadcasterDisplayName: schedule.broadcasterDisplayName,
+    vacationStartDate: schedule.vacationStartDate,
+    vacationEndDate: schedule.vacationEndDate,
+    segments
+  };
+};
+
+export const streamToJSON = async (stream: HelixStream | null) => {
+  if (!stream) return null;
+  const game = await stream.getGame();
+  return {
+    title: stream.title,
+    thumbnailUrl: stream.thumbnailUrl,
+    userName: stream.userName,
+    userDislayName: stream.userDisplayName,
+    gameName: game?.name,
+    gameBoxArtUrl: game?.boxArtUrl
+  };
+};
+
+export const videoToJSON = (video: HelixVideo | null) => {
+  if (!video) return null;
+  return {
+    title: video.title,
+    url: video.url,
+    thumbnailUrl: video.thumbnailUrl,
+    duration: video.duration,
+    userName: video.userName,
+    userDislayName: video.userDisplayName,
+    creationDate: video.creationDate,
+    description: video.description
+  };
+};
 
 export const withVerifyTwitch = (actionFunction: ActionFunction) => {
   const action: ActionFunction = async (args) => {

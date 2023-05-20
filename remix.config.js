@@ -1,13 +1,15 @@
 /** @type {import('@remix-run/dev').AppConfig} */
-module.exports = {
+export default {
   ignoredRouteFiles: ["**/.*"],
+  postcss: true,
+  tailwind: true,
+  serverModuleFormat: "esm",
   future: {
+    unstable_dev: true,
     v2_errorBoundary: true,
     v2_meta: true,
     v2_normalizeFormMethod: true,
-    v2_routeConvention: true,
-    unstable_postcss: true,
-    unstable_tailwind: true
+    v2_routeConvention: true
   }
   // appDirectory: "app",
   // assetsBuildDirectory: "public/build",

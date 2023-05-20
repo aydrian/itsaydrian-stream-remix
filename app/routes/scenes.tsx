@@ -17,7 +17,7 @@ export default function ScenesLayout() {
         <h1 className="mb-1 bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-6xl font-bold leading-tight text-transparent">
           Casual Coding
         </h1>
-        <h2 className=" text-4xl font-semibold">[ Title of Stream ]</h2>
+        {/* <h2 className=" text-4xl font-semibold">[ Title of Stream ]</h2> */}
       </footer>
     </div>
   );

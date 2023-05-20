@@ -1,5 +1,5 @@
 import { Outlet } from "@remix-run/react";
-import { NowPlaying } from "./resources.now-playing";
+import { NowPlaying } from "~/routes/resources+/now-playing";
 
 export default function ScenesLayout() {
   return (

@@ -1,5 +1,4 @@
 import * as fs from "node:fs";
-import chokidar from "chokidar";
 import express from "express";
 import compression from "compression";
 import morgan from "morgan";
@@ -34,7 +33,7 @@ app.use(morgan("tiny"));
 app.all(
   "*",
   process.env.NODE_ENV === "development"
-    ? createDevRequestHandler()
+    ? await createDevRequestHandler()
     : createRequestHandler({
         build,
         mode: process.env.NODE_ENV
@@ -50,12 +49,13 @@ app.listen(port, async () => {
   }
 });
 
-function createDevRequestHandler() {
+async function createDevRequestHandler() {
   // initial build
   /**
    * @type { import('@remix-run/node').ServerBuild | Promise<import('@remix-run/node').ServerBuild> }
    */
   let devBuild = build;
+  const chokidar = await import("chokidar");
 
   const watcher = chokidar.watch(BUILD_PATH, { ignoreInitial: true });
 

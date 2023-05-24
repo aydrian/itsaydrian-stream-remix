@@ -1,25 +1,26 @@
-export type videoSize = "interview" | "monologue" | "sidebar" | "sidebar-solo";
+import clsx from "clsx";
 
 type props = {
   name?: string;
   twitter?: string;
   title?: string;
-  size?: videoSize;
+  className?: string;
 };
 
 export function VideoContainer({
   name = "Aydrian Howard",
   twitter,
   title,
-  size = "interview"
+  className
 }: props) {
   return (
     <figure
-      className={`relative z-10 m-0 flex flex-col items-center justify-center`}
+      className={clsx(
+        className,
+        `relative m-0 flex grow flex-col items-center justify-end border border-gray-200 `
+      )}
     >
-      <div className={` object-cover ${getVideoSize(size)}`}>
-        <div className="h-full w-full" />
-      </div>
+      <div className="h-full w-full" />
 
       <figcaption className="absolute bottom-4 left-4">
         <div className="rounded bg-black px-4 pb-[.625rem] pt-2 opacity-90">
@@ -32,19 +33,4 @@ export function VideoContainer({
       </figcaption>
     </figure>
   );
-}
-
-function getVideoSize(size: videoSize) {
-  switch (size) {
-    case "monologue":
-      return "aspect-[16/7.3] w-[1920px]";
-    case "interview":
-      return "aspect-[8/7.3] w-[960px]";
-    case "sidebar":
-      return "h-[440px] w-[509px]";
-    case "sidebar-solo":
-      return "h-[880px] w-[509px]";
-    default:
-      return "";
-  }
 }

@@ -17,7 +17,7 @@ export function VideoContainer({
     <figure
       className={clsx(
         className,
-        `relative m-0 flex grow flex-col items-center justify-end border border-gray-200 `
+        `relative m-0 flex grow flex-col items-center justify-end`
       )}
     >
       <div className="h-full w-full" />

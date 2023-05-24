@@ -1,7 +1,7 @@
 import type { LoaderArgs } from "@remix-run/node";
 
-import { emitter } from "~/services/emitter.server";
-import { twitch } from "~/services/twitch.server";
+import { emitter } from "~/utils/emitter.server";
+import { twitch } from "~/utils/twitch.server";
 
 import { eventStream } from "remix-utils";
 

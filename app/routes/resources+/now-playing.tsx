@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { getUsersNowPlaying } from "~/services/spotify.server";
+import { getUsersNowPlaying } from "~/utils/spotify.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   // const url = new URL(request.url);

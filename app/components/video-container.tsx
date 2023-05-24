@@ -3,12 +3,14 @@ export type videoSize = "interview" | "monologue" | "sidebar" | "sidebar-solo";
 type props = {
   name?: string;
   twitter?: string;
+  title?: string;
   size?: videoSize;
 };
 
 export function VideoContainer({
   name = "Aydrian Howard",
   twitter,
+  title,
   size = "interview"
 }: props) {
   return (
@@ -25,6 +27,7 @@ export function VideoContainer({
             {name}
           </h1>
           {twitter && <h2 className="text-2xl text-gray-300">@{twitter}</h2>}
+          {title && <h3 className="text-xl text-gray-300">{title}</h3>}
         </div>
       </figcaption>
     </figure>

@@ -7,7 +7,7 @@ import {
   twitch,
   TWITCH_USER_ID,
   videoToJSON
-} from "~/services/twitch.server";
+} from "~/utils/twitch.server";
 
 export const loader = async (_args: LoaderArgs) => {
   const [hStream, { data: hSchedule }, { data: videoData }] = await Promise.all(

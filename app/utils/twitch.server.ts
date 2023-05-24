@@ -5,7 +5,7 @@ import crypto from "crypto";
 import invariant from "tiny-invariant";
 import { ApiClient } from "@twurple/api";
 import { AppTokenAuthProvider } from "@twurple/auth";
-import { emitter } from "~/services/emitter.server";
+import { emitter } from "~/utils/emitter.server";
 
 const twitchSigningSecret = process.env.TWITCH_SIGNING_SECRET;
 invariant(

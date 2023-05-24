@@ -5,9 +5,16 @@
   "scripts": {
     "build": "remix build",
     "dev": "remix dev --no-restart -c \"node server.js\"",
+    "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "cross-env NODE_ENV=production node ./server.js",
     "typecheck": "tsc"
   },
+  "eslintIgnore": [
+    "/node_modules",
+    "/build",
+    "/public/build",
+    "/api"
+  ],
   "dependencies": {
     "@remix-run/express": "^1.14.3",
     "@remix-run/node": "^1.14.3",

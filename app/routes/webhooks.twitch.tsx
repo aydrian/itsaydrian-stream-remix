@@ -1,7 +1,7 @@
 import type { ActionArgs } from "@remix-run/node";
 import { json, Response } from "@remix-run/node";
-import { emitter } from "~/services/emitter.server";
-import { withVerifyTwitch } from "~/services/twitch.server";
+import { emitter } from "~/utils/emitter.server";
+import { withVerifyTwitch } from "~/utils/twitch.server";
 
 export const action = withVerifyTwitch(async ({ request }: ActionArgs) => {
   if (request.method !== "POST") {

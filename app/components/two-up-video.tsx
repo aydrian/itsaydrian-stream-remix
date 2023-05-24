@@ -5,7 +5,7 @@ export function TwoUpVideo({ size = "interview" }: { size?: videoSize }) {
   return (
     <>
       <VideoContainer size={size} twitter="itsaydrian" />
-      <VideoContainer name="Guest" size={size} />
+      <VideoContainer name="Atticus" size={size} />
     </>
   );
 }

@@ -22,6 +22,7 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
       },
       Guests: {
         select: {
+          order: true,
           Guest: {
             select: {
               id: true,
@@ -46,6 +47,7 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
       Show: { title: "Test Show" },
       Guests: [
         {
+          order: 0,
           id: "2a300449-cefd-435c-99ad-5165e7df56fb",
           firstName: "Aydrian",
           lastName: "Howard",
@@ -56,6 +58,7 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
             "https://pbs.twimg.com/profile_images/1637838912243617793/XmhcZyZy_400x400.jpg"
         },
         {
+          order: 1,
           id: "5c78fa61-df73-41e4-a4c4-f5f26507b9a2",
           firstName: "Atticus",
           lastName: "Howard",
@@ -68,7 +71,7 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
     };
   }
   const { Guests, ...rest } = result;
-  const flatGuests = Guests.map(({ Guest }) => Guest);
+  const flatGuests = Guests.map(({ Guest, order }) => ({ ...Guest, order }));
   return { ...rest, Guests: flatGuests };
 }
 

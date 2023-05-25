@@ -1,9 +1,8 @@
+import { ScreenContainer } from "~/components/screen-container";
 import { useEpisode } from "./_layout";
 import { GuestsGrid } from "~/components/guests-grid";
-import { useShowGuides } from "~/hooks/use-show-guides";
 
 export default function Programming() {
-  const { elementRef, Dimensions } = useShowGuides<HTMLDivElement>();
   const { guests, showGuides } = useEpisode();
 
   return (
@@ -13,9 +12,7 @@ export default function Programming() {
         direction="vertical"
         showGuides={showGuides}
       />
-      <div ref={elementRef} className="aspect-[16/10] h-full bg-transparent">
-        {showGuides ? <Dimensions /> : null}
-      </div>
+      <ScreenContainer showGuides={showGuides} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export function useShowGuides<T extends HTMLElement>() {
+export function useShowGuides<T extends HTMLElement>(label?: string) {
   const elementRef = useRef<T>(null);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
@@ -15,7 +15,10 @@ export function useShowGuides<T extends HTMLElement>() {
   function Dimensions() {
     return (
       <div className="flex h-full w-full items-center justify-center border border-red-500">
-        <div className="max-h-fit max-w-fit rounded bg-red-500 p-2 text-2xl font-semibold text-white">{`${width} x ${height}`}</div>
+        <div className="flex max-h-fit max-w-fit flex-col items-center rounded bg-red-500 p-2 text-white">
+          {label ? <div className="text-2xl font-bold">{label}</div> : null}
+          <div className="text-xl font-semibold">{`${width} x ${height}`}</div>
+        </div>
       </div>
     );
   }

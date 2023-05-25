@@ -9,7 +9,11 @@ type props = {
 };
 
 export function VideoContainer({ guest, className, showGuides }: props) {
-  const { elementRef, Dimensions } = useShowGuides<HTMLElement>();
+  const { elementRef, Dimensions } = useShowGuides<HTMLElement>(
+    `${guest.order === 0 ? "Host" : "Guest"} ${
+      guest.order > 0 ? guest.order : ""
+    }`
+  );
   return (
     <figure
       ref={elementRef}

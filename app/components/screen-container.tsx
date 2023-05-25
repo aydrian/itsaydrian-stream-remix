@@ -8,7 +8,7 @@ export function ScreenContainer({ showGuides }: props) {
   const { elementRef, Dimensions } =
     useShowGuides<HTMLDivElement>("Screen 16:10");
   return (
-    <div ref={elementRef} className="aspect-[16/10] h-full bg-transparent">
+    <div ref={elementRef} className="aspect-laptop h-full bg-transparent">
       {showGuides ? <Dimensions /> : null}
     </div>
   );

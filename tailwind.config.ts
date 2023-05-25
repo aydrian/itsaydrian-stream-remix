@@ -4,6 +4,9 @@ export default {
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      aspectRatio: {
+        laptop: "16/10"
+      },
       colors: {
         crl: {
           "deep-purple": "#190f33",
@@ -14,7 +17,7 @@ export default {
           "light-blue": "#c2d5ff",
           "action-purple": "#b921f1",
           "light-purple": "#f7d6ff",
-          "neutral": {
+          neutral: {
             "100": "#f5f7fa",
             "200": "#e7ecf3",
             "300": "#d6dbe7",
@@ -23,7 +26,7 @@ export default {
             "600": "#475872",
             "700": "#394455",
             "800": "#242a35",
-            "900": "#060c12",
+            "900": "#060c12"
           }
         }
       }

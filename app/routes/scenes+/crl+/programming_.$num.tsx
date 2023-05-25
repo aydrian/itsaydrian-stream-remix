@@ -2,6 +2,7 @@ import { type LoaderArgs, Response, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useEpisode } from "./_layout";
 import { GuestsGrid } from "~/components/guests-grid";
+import { useShowGuides } from "~/hooks/use-show-guides";
 
 export const loader = async ({ params }: LoaderArgs) => {
   const num = parseInt(params.num ?? "");
@@ -15,12 +16,15 @@ export const loader = async ({ params }: LoaderArgs) => {
 
 export default function Programming() {
   const { num } = useLoaderData<typeof loader>();
-  const { guests } = useEpisode();
+  const { guests, showGuides } = useEpisode();
+  const { elementRef, Dimensions } = useShowGuides<HTMLDivElement>();
   const slice = guests.slice(0, num);
   return (
     <div className="grid h-full grid-cols-[auto_1408px]">
-      <GuestsGrid guests={slice} direction="vertical" />
-      <div className="aspect-[16/10] h-full bg-transparent"></div>
+      <GuestsGrid guests={slice} direction="vertical" showGuides={showGuides} />
+      <div ref={elementRef} className="aspect-[16/10] h-full bg-transparent">
+        {showGuides ? <Dimensions /> : null}
+      </div>
     </div>
   );
 }

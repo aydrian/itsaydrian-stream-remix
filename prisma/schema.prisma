@@ -30,7 +30,8 @@ model Show {
 model Episode {
   id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   showId      String             @db.Uuid
-  date        DateTime           @db.Date()
+  startDate   DateTime           @map("start_date") @db.Timestamptz
+  endDate     DateTime           @map("end_date") @db.Timestamptz
   title       String
   description String
   Show        Show               @relation(fields: [showId], references: [id])
@@ -46,6 +47,7 @@ model Guest {
   title     String?
   company   String?
   twitter   String?
+  avatarUrl String?            @map("avatarUrl")
   Episodes  GuestsForEpisode[]
 
   @@map("guests")

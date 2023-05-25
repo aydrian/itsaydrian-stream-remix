@@ -15,7 +15,7 @@ export const loader = async ({ params }: LoaderArgs) => {
 
 export default function Chatting() {
   const { num } = useLoaderData<typeof loader>();
-  const { guests } = useEpisode();
+  const { guests, showGuides } = useEpisode();
   const slice = guests.slice(0, num);
-  return <GuestsGrid guests={slice} />;
+  return <GuestsGrid guests={slice} showGuides={showGuides} />;
 }

@@ -1,41 +1,40 @@
+import type { ResolvedRemixLoader } from "~/utils/types";
+import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react";
 import { NowPlaying } from "~/routes/resources+/now-playing";
+import { getNextEpisode } from "~/utils/db.server";
 
-export const loader = async () => {
-  return json({
-    guests: [
-      { name: "Aydrian", twitter: "itsaydrian", title: "Developer Advocate" },
-      { name: "Atticus", title: "Chief Woof Officer" }
-      // { name: "Otto", title: "Chief Woof Officer" }
-      // { name: "Barry", title: "Chief Woof Officer" }
-      // { name: "Barry", title: "Chief Woof Officer" }
-    ]
-  });
+export const loader = async ({ request }: LoaderArgs) => {
+  const url = new URL(request.url);
+  const showGuides = Boolean(url.searchParams.get("showGuides"));
+  const nextEpisode = await getNextEpisode("ME");
+  return json({ ...nextEpisode, showGuides });
 };
 
 export type OutLetContext = {
-  guests: { name: string; twitter?: string; title?: string }[];
+  guests: ResolvedRemixLoader<typeof loader>["Guests"];
+  showGuides: boolean;
 };
 
 export default function ScenesLayout() {
-  const { guests } = useLoaderData<typeof loader>();
+  const { Guests, showGuides, title } = useLoaderData<typeof loader>();
   return (
     <div className="grid aspect-video h-[1080px] grid-rows-[50px_auto_150px]">
       <header className="flex items-center justify-between bg-blue-950 px-3 text-white">
-        <h1 className="bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-2xl font-bold leading-tight text-transparent">
+        <h1 className="max-w-fit bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-2xl font-bold leading-tight text-transparent">
           ItsAydrian Stream
         </h1>
         <NowPlaying />
       </header>
       <main className="h-[880px]">
-        <Outlet context={{ guests }} />
+        <Outlet context={{ guests: Guests, showGuides }} />
       </main>
       <footer className="flex flex-col bg-blue-950 p-3 text-white">
-        <h1 className="mb-1 bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-6xl font-bold leading-tight text-transparent">
+        <h1 className="mb-1 max-w-fit bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-6xl font-bold leading-tight text-transparent">
           Casual Coding
         </h1>
-        {/* <h2 className=" text-4xl font-semibold">[ Title of Stream ]</h2> */}
+        <h2 className=" text-4xl font-semibold">{title}</h2>
       </footer>
     </div>
   );

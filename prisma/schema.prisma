@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum SceneCollection {
+  ME  @map("me")
+  CRL @map("crl")
+
+  @@map("scene_collections")
+}
+
+model Show {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title           String
+  description     String?
+  sceneCollection SceneCollection @map("scene_collection")
+  Episodes        Episode[]
+
+  @@map("shows")
+}
+
+model Episode {
+  id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  showId      String             @db.Uuid
+  date        DateTime           @db.Date()
+  title       String
+  description String
+  Show        Show               @relation(fields: [showId], references: [id])
+  Guests      GuestsForEpisode[]
+
+  @@map("episodes")
+}
+
+model Guest {
+  id        String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  firstName String             @map("first_name")
+  lastName  String             @map("last_name")
+  title     String?
+  company   String?
+  twitter   String?
+  Episodes  GuestsForEpisode[]
+
+  @@map("guests")
+}
+
+model GuestsForEpisode {
+  episodeId String  @db.Uuid
+  guestId   String  @db.Uuid
+  order     Int     @db.Int4
+  Episode   Episode @relation(fields: [episodeId], references: [id])
+  Guest     Guest   @relation(fields: [guestId], references: [id])
+
+  @@id([episodeId, guestId])
+  @@map("guests_episodes")
+}

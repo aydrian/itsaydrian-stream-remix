@@ -10,6 +10,16 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model User {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String  @unique
+  passwordHash String? @map("password_hash")
+  firstName    String  @map("first_name")
+  lastName     String  @map("last_name")
+
+  @@map("users")
+}
+
 enum SceneCollection {
   ME  @map("me")
   CRL @map("crl")

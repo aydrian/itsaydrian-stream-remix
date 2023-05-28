@@ -4,8 +4,14 @@ export default {
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {
+      animation: {
+        "gradient-x": "gradient-x 5s ease infinite"
+      },
       aspectRatio: {
         laptop: "16/10"
+      },
+      backgroundImage: {
+        "crl-texture-7": "url('/img/crl-texture-7.svg)"
       },
       colors: {
         crl: {
@@ -27,6 +33,18 @@ export default {
             "700": "#394455",
             "800": "#242a35",
             "900": "#060c12"
+          }
+        }
+      },
+      keyframes: {
+        "gradient-x": {
+          "0%, 100%": {
+            "background-size": "200% 200%",
+            "background-position": "left center"
+          },
+          "50%": {
+            "background-size": "200% 200%",
+            "background-position": "right center"
           }
         }
       }

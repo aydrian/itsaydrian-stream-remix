@@ -1,3 +1,4 @@
+import type { DefaultCaption } from "~/components/video-container";
 import type { EpisodeGuests } from "~/utils/db.server";
 import clsx from "clsx";
 import { VideoContainer } from "./video-container";
@@ -6,12 +7,14 @@ type props = {
   guests: EpisodeGuests;
   direction?: "horizontal" | "vertical";
   showGuides?: boolean;
+  Caption?: typeof DefaultCaption;
 };
 
 export function GuestsGrid({
   guests,
   direction = "horizontal",
-  showGuides
+  showGuides,
+  Caption
 }: props) {
   let width = "min-w-[512px]";
   if (guests.length > 2) {
@@ -33,6 +36,7 @@ export function GuestsGrid({
           guest={guest}
           className={width}
           showGuides={showGuides}
+          Caption={Caption}
         />
       ))}
     </div>

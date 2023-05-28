@@ -6,9 +6,15 @@ type props = {
   guest: EpisodeGuests[number];
   className?: string;
   showGuides?: boolean;
+  Caption?: typeof DefaultCaption;
 };
 
-export function VideoContainer({ guest, className, showGuides }: props) {
+export function VideoContainer({
+  guest,
+  className,
+  showGuides,
+  Caption = DefaultCaption
+}: props) {
   const { elementRef, Dimensions } = useShowGuides<HTMLElement>(
     `${guest.order === 0 ? "Host" : "Guest"} ${
       guest.order > 0 ? guest.order : ""
@@ -24,19 +30,25 @@ export function VideoContainer({ guest, className, showGuides }: props) {
     >
       {showGuides ? <Dimensions /> : null}
 
-      <figcaption className="absolute bottom-4 left-4">
-        <div className="rounded bg-black px-4 pb-[.625rem] pt-2 opacity-90">
-          <h1 className="relative z-10 block text-3xl font-normal text-white">
-            {`${guest.firstName} ${guest.lastName}`}
-          </h1>
-          {guest.twitter && (
-            <h2 className="text-2xl text-gray-300">@{guest.twitter}</h2>
-          )}
-          {guest.title && (
-            <h3 className="text-xl text-gray-300">{guest.title}</h3>
-          )}
-        </div>
-      </figcaption>
+      <Caption guest={guest} />
     </figure>
+  );
+}
+
+export function DefaultCaption({ guest }: { guest: EpisodeGuests[number] }) {
+  return (
+    <figcaption className="absolute bottom-4 left-4 z-10">
+      <div className="rounded bg-black px-4 pb-[.625rem] pt-2 opacity-90">
+        <h1 className="relative z-10 block text-3xl font-normal text-white">
+          {`${guest.firstName} ${guest.lastName}`}
+        </h1>
+        {guest.twitter && (
+          <h2 className="text-2xl text-gray-300">@{guest.twitter}</h2>
+        )}
+        {guest.title && (
+          <h3 className="text-xl text-gray-300">{guest.title}</h3>
+        )}
+      </div>
+    </figcaption>
   );
 }

@@ -12,7 +12,7 @@ export const loader = async () => {
 export default function StartingSoon() {
   const { title, Show, Guests } = useLoaderData<typeof loader>();
   return (
-    <div className="flex h-screen w-screen flex-col justify-between bg-crl-deep-purple bg-[url('/img/crl-texture-7.svg')] bg-cover px-24 py-16 text-white">
+    <div className="flex h-screen w-screen flex-col justify-between bg-crl-deep-purple bg-[url('/img/crl-texture-7.svg')] bg-cover px-24 py-16 font-poppins text-white">
       <header>
         <CrlLogo.FullHorizontal className="aspect-auto h-16 w-auto text-white" />
       </header>

@@ -21,7 +21,7 @@ export type OutLetContext = {
 export default function ScenesLayout() {
   const { Guests, Show, showGuides, title } = useLoaderData<typeof loader>();
   return (
-    <div className="grid aspect-video h-[1080px] grid-rows-[auto_200px]">
+    <div className="grid aspect-video h-[1080px] grid-rows-[auto_200px] font-poppins">
       <main className="h-[880px]">
         <Outlet context={{ guests: Guests, showGuides }} />
       </main>

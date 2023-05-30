@@ -36,6 +36,9 @@ export default {
           }
         }
       },
+      fontFamily: {
+        poppins: ["'Poppins'", "sans-serif"]
+      },
       keyframes: {
         "gradient-x": {
           "0%, 100%": {

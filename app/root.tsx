@@ -10,6 +10,7 @@ import {
 import stylesheet from "~/tailwind.css";
 
 export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: "/fonts/poppins/font.css" },
   { rel: "stylesheet", href: stylesheet }
 ];
 

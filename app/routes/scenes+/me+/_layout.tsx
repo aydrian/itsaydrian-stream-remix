@@ -30,11 +30,13 @@ export default function ScenesLayout() {
       <main className="h-[880px]">
         <Outlet context={{ guests: Guests, showGuides }} />
       </main>
-      <footer className="flex flex-col bg-blue-950 p-3 text-white">
-        <h1 className="mb-1 max-w-fit bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-6xl font-bold leading-tight text-transparent">
-          Casual Coding
-        </h1>
-        <h2 className=" text-4xl font-semibold">{title}</h2>
+      <footer className="animate-gradient-x bg-gradient-to-r from-blue-950 via-cyan-500 to-green-500 pt-2">
+        <div className="flex h-full flex-col bg-blue-950 px-8 py-1.5 text-white">
+          <h1 className="mb-1 max-w-fit bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-6xl font-bold leading-tight text-transparent">
+            Casual Coding
+          </h1>
+          <h2 className=" text-4xl font-semibold">{title}</h2>
+        </div>
       </footer>
     </div>
   );

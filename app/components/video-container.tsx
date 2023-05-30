@@ -38,7 +38,7 @@ export function VideoContainer({
 export function DefaultCaption({ guest }: { guest: EpisodeGuests[number] }) {
   return (
     <figcaption className="absolute bottom-4 left-4 z-10">
-      <div className="rounded bg-black px-4 pb-[.625rem] pt-2 opacity-90">
+      <div className="rounded bg-blue-950 px-4 pb-[.625rem] pt-2 opacity-90">
         <h1 className="relative z-10 block text-3xl font-normal text-white">
           {`${guest.firstName} ${guest.lastName}`}
         </h1>

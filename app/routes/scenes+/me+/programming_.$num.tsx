@@ -1,8 +1,10 @@
+import type { EpisodeGuests } from "~/utils/db.server";
 import { type LoaderArgs, Response, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { useEpisode } from "./_layout";
 import { GuestsGrid } from "~/components/guests-grid";
 import { ScreenContainer } from "~/components/screen-container";
+import { Twitter } from "~/components/brand-logos";
 
 export const loader = async ({ params }: LoaderArgs) => {
   const num = parseInt(params.num ?? "");
@@ -20,8 +22,31 @@ export default function Programming() {
   const slice = guests.slice(0, num);
   return (
     <div className="grid h-full grid-cols-[auto_1408px]">
-      <GuestsGrid guests={slice} direction="vertical" showGuides={showGuides} />
+      <GuestsGrid
+        guests={slice}
+        direction="vertical"
+        showGuides={showGuides}
+        Caption={CompactCaption}
+      />
       <ScreenContainer showGuides={showGuides} />
     </div>
+  );
+}
+
+function CompactCaption({ guest }: { guest: EpisodeGuests[number] }) {
+  return (
+    <figcaption className="absolute bottom-0 left-0 z-10 w-full bg-blue-950 px-4 pb-[.625rem] pt-2">
+      <div className="flex w-full flex-row items-baseline justify-between">
+        <h1 className="relative z-10 block text-3xl font-semibold text-white">
+          <span>{guest.firstName}</span>
+        </h1>
+        {guest.twitter && (
+          <h2 className="text-2xl text-crl-neutral-200">
+            <Twitter className="mr-2 inline-block h-6 w-auto" />
+            <span>@{guest.twitter}</span>
+          </h2>
+        )}
+      </div>
+    </figcaption>
   );
 }

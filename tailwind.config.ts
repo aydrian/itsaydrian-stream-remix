@@ -37,6 +37,7 @@ export default {
         }
       },
       fontFamily: {
+        "atkinson-hyperlegible": ["'Atkinson Hyperlegible'", "sans-serif"],
         poppins: ["'Poppins'", "sans-serif"]
       },
       keyframes: {

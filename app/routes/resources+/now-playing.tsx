@@ -44,7 +44,7 @@ export function NowPlaying() {
   const albumArt = song.images?.find(({ height }) => height === 64);
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 font-atkinson-hyperlegible">
       {albumArt ? (
         <img
           src={albumArt.url}

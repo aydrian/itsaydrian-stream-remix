@@ -1,9 +1,8 @@
 import type { LoaderArgs } from "@remix-run/node";
 import type { Song } from "~/utils/spotify.server";
-import { eventStream } from "remix-utils";
+import { eventStream, useEventSource } from "remix-utils";
 import invariant from "tiny-invariant";
 import { getUsersNowPlaying } from "~/utils/spotify.server";
-import { useEventSource } from "remix-utils";
 
 const sleep = (ms: number) => new Promise((_) => setTimeout(_, ms));
 

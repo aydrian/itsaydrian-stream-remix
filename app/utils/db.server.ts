@@ -11,19 +11,19 @@ export { prisma };
 export async function getNextEpisode(sceneCollection: SceneCollection) {
   const result = await prisma.episode.findFirst({
     where: {
-      AND: [{ endDate: { gte: startOfToday() } }, { Show: { sceneCollection } }]
+      AND: [{ endDate: { gte: startOfToday() } }, { show: { sceneCollection } }]
     },
     select: {
       id: true,
       startDate: true,
       title: true,
-      Show: {
+      show: {
         select: { title: true }
       },
-      Guests: {
+      guests: {
         select: {
           order: true,
-          Guest: {
+          guest: {
             select: {
               id: true,
               firstName: true,
@@ -44,8 +44,8 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
       id: "a1961b04-a5f5-4494-b49b-a15407648f62",
       date: startOfToday(),
       title: "Test Episode",
-      Show: { title: "Test Show" },
-      Guests: [
+      show: { title: "Test Show" },
+      guests: [
         {
           order: 0,
           id: "2a300449-cefd-435c-99ad-5165e7df56fb",
@@ -70,11 +70,11 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
       ]
     };
   }
-  const { Guests, ...rest } = result;
-  const flatGuests = Guests.map(({ Guest, order }) => ({ ...Guest, order }));
-  return { ...rest, Guests: flatGuests };
+  const { guests, ...rest } = result;
+  const flatGuests = guests.map(({ guest, order }) => ({ ...guest, order }));
+  return { ...rest, guests: flatGuests };
 }
 
 export type EpisodeGuests = Awaited<
   ReturnType<typeof getNextEpisode>
->["Guests"];
+>["guests"];

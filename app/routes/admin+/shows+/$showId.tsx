@@ -13,7 +13,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
       id: true,
       title: true,
       description: true,
-      Episodes: {
+      episodes: {
         select: { id: true, startDate: true, endDate: true, title: true },
         orderBy: { startDate: "desc" }
       }
@@ -29,7 +29,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 };
 
 export default function ShowPage() {
-  const { title, description, Episodes } = useLoaderData<typeof loader>();
+  const { title, description, episodes } = useLoaderData<typeof loader>();
   return (
     <>
       <section>
@@ -39,7 +39,7 @@ export default function ShowPage() {
       <section>
         <h3>Episodes</h3>
         <div>
-          {Episodes.map((episode) => (
+          {episodes.map((episode) => (
             <div key={episode.id}>
               <div>
                 <Link to={`./episodes/${episode.id}`}>{episode.title}</Link>

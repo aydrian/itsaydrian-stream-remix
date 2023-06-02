@@ -16,6 +16,7 @@ model User {
   passwordHash String? @map("password_hash")
   firstName    String  @map("first_name")
   lastName     String  @map("last_name")
+  guestProfile Guest?
 
   @@map("users")
 }
@@ -32,7 +33,7 @@ model Show {
   title           String
   description     String?
   sceneCollection SceneCollection @map("scene_collection")
-  Episodes        Episode[]
+  episodes        Episode[]
 
   @@map("shows")
 }
@@ -44,8 +45,9 @@ model Episode {
   endDate     DateTime           @map("end_date") @db.Timestamptz
   title       String
   description String
-  Show        Show               @relation(fields: [showId], references: [id])
-  Guests      GuestsForEpisode[]
+  vdoPassword String             @default("cockroachIsC00l!") @map("vdo_password")
+  show        Show               @relation(fields: [showId], references: [id])
+  guests      GuestsForEpisode[]
 
   @@map("episodes")
 }
@@ -58,7 +60,9 @@ model Guest {
   company   String?
   twitter   String?
   avatarUrl String?            @map("avatarUrl")
-  Episodes  GuestsForEpisode[]
+  episodes  GuestsForEpisode[]
+  userId    String?            @unique @map("user_id") @db.Uuid
+  user      User?              @relation(fields: [userId], references: [id])
 
   @@map("guests")
 }
@@ -67,8 +71,8 @@ model GuestsForEpisode {
   episodeId String  @db.Uuid
   guestId   String  @db.Uuid
   order     Int     @db.Int4
-  Episode   Episode @relation(fields: [episodeId], references: [id])
-  Guest     Guest   @relation(fields: [guestId], references: [id])
+  episode   Episode @relation(fields: [episodeId], references: [id])
+  guest     Guest   @relation(fields: [guestId], references: [id])
 
   @@id([episodeId, guestId])
   @@map("guests_episodes")

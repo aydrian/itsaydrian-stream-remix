@@ -14,22 +14,22 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export type OutLetContext = {
-  guests: ResolvedRemixLoader<typeof loader>["Guests"];
+  guests: ResolvedRemixLoader<typeof loader>["guests"];
   showGuides: boolean;
 };
 
 export default function ScenesLayout() {
-  const { Guests, Show, showGuides, title } = useLoaderData<typeof loader>();
+  const { guests, show, showGuides, title } = useLoaderData<typeof loader>();
   return (
     <div className="grid aspect-video h-[1080px] grid-rows-[auto_200px] font-poppins">
       <main className="h-[880px]">
-        <Outlet context={{ guests: Guests, showGuides }} />
+        <Outlet context={{ guests, showGuides }} />
       </main>
       <footer className="animate-gradient-x bg-gradient-to-r from-crl-dark-blue via-crl-electric-purple to-crl-iridescent-blue pt-2">
         <div className="flex h-full justify-between bg-crl-deep-purple px-8 py-4 text-white">
           <div className="flex flex-col text-white">
             <h1 className="mb-1 flex min-w-fit bg-gradient-to-r from-crl-iridescent-blue to-crl-electric-purple bg-clip-text text-6xl font-bold leading-tight text-transparent">
-              {Show.title}
+              {show.title}
             </h1>
             <h2 className=" text-4xl font-semibold">{title}</h2>
           </div>

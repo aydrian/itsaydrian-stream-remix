@@ -13,12 +13,12 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export type OutLetContext = {
-  guests: ResolvedRemixLoader<typeof loader>["Guests"];
+  guests: ResolvedRemixLoader<typeof loader>["guests"];
   showGuides: boolean;
 };
 
 export default function ScenesLayout() {
-  const { Guests, showGuides, title } = useLoaderData<typeof loader>();
+  const { guests, showGuides, title } = useLoaderData<typeof loader>();
   return (
     <div className="grid aspect-video h-[1080px] grid-rows-[50px_auto_150px]">
       <header className="flex items-center justify-between bg-blue-950 px-3 text-white">
@@ -28,7 +28,7 @@ export default function ScenesLayout() {
         <NowPlaying />
       </header>
       <main className="h-[880px]">
-        <Outlet context={{ guests: Guests, showGuides }} />
+        <Outlet context={{ guests, showGuides }} />
       </main>
       <footer className="animate-gradient-x bg-gradient-to-r from-blue-950 via-cyan-500 to-green-500 pt-2">
         <div className="flex h-full flex-col bg-blue-950 px-8 py-1.5 text-white">

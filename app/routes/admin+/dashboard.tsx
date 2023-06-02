@@ -12,17 +12,17 @@ export const loader = async ({ request }: LoaderArgs) => {
     select: {
       id: true,
       title: true,
-      Episodes: {
+      episodes: {
         where: { startDate: { gte: new Date() } },
         select: {
           id: true,
           title: true,
           startDate: true,
           endDate: true,
-          Guests: {
+          guests: {
             select: {
               order: true,
-              Guest: {
+              guest: {
                 select: {
                   id: true,
                   firstName: true,
@@ -38,7 +38,7 @@ export const loader = async ({ request }: LoaderArgs) => {
         take: 1
       }
     }
-    // orderBy: { Episodes: { startDate: "asc" } }
+    // orderBy: { episodes: { startDate: "asc" } }
   });
   return json({ shows });
 };
@@ -62,27 +62,27 @@ export default function AdminDashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {show.Episodes.length ? (
+                  {show.episodes.length ? (
                     <div>
                       <div>
                         <Link
-                          to={`../shows/${show.id}/episodes/${show.Episodes[0].id}`}
+                          to={`../shows/${show.id}/episodes/${show.episodes[0].id}`}
                         >
-                          {show.Episodes[0].title}
+                          {show.episodes[0].title}
                         </Link>
                       </div>
                       <div>
                         {formatDateRange(
-                          show.Episodes[0].startDate,
-                          show.Episodes[0].endDate
+                          show.episodes[0].startDate,
+                          show.episodes[0].endDate
                         )}
                       </div>
                       <div>
                         <span className="font-semibold">Guests: </span>
-                        {show.Episodes[0].Guests.map(({ Guest }, index) => (
-                          <span key={Guest.id}>
-                            {`${Guest.firstName} ${Guest.lastName}${
-                              index !== show.Episodes[0].Guests.length - 1
+                        {show.episodes[0].guests.map(({ guest }, index) => (
+                          <span key={guest.id}>
+                            {`${guest.firstName} ${guest.lastName}${
+                              index !== show.episodes[0].guests.length - 1
                                 ? ", "
                                 : ""
                             }`}

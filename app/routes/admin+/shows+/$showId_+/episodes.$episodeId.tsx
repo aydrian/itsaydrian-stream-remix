@@ -16,16 +16,16 @@ export const loader = async ({ params, request }: LoaderArgs) => {
       endDate: true,
       title: true,
       description: true,
-      Guests: {
+      guests: {
         select: {
           order: true,
-          Guest: {
+          guest: {
             select: { id: true, firstName: true, lastName: true }
           }
         },
         orderBy: { order: "asc" }
       },
-      Show: { select: { title: true } }
+      show: { select: { title: true } }
     }
   });
   if (!findEpisode) {
@@ -33,16 +33,16 @@ export const loader = async ({ params, request }: LoaderArgs) => {
       status: 404
     });
   }
-  const { Guests, Show, ...rest } = findEpisode;
-  const guests = Guests.map(({ Guest, order }) => ({ order, ...Guest }));
+  const { guests: findGuests, show, ...rest } = findEpisode;
+  const guests = findGuests.map(({ guest, order }) => ({ order, ...guest }));
 
   const vdoConfig = {
-    room: Show.title.toLowerCase().replace(/ /g, "_"),
+    room: show.title.toLowerCase().replace(/ /g, "_"),
     password: "hello",
     hash: await generateVDOPassword("hello")
   };
 
-  return json({ ...rest, guests, show: Show, vdoConfig });
+  return json({ ...rest, guests, show, vdoConfig });
 };
 
 export default function ShowPage() {

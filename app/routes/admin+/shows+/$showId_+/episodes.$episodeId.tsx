@@ -16,6 +16,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
       endDate: true,
       title: true,
       description: true,
+      vdoPassword: true,
       guests: {
         select: {
           order: true,
@@ -33,13 +34,13 @@ export const loader = async ({ params, request }: LoaderArgs) => {
       status: 404
     });
   }
-  const { guests: findGuests, show, ...rest } = findEpisode;
+  const { guests: findGuests, show, vdoPassword, ...rest } = findEpisode;
   const guests = findGuests.map(({ guest, order }) => ({ order, ...guest }));
 
   const vdoConfig = {
     room: show.title.toLowerCase().replace(/ /g, "_"),
-    password: "hello",
-    hash: await generateVDOPassword("hello")
+    password: vdoPassword,
+    hash: await generateVDOPassword(vdoPassword)
   };
 
   return json({ ...rest, guests, show, vdoConfig });

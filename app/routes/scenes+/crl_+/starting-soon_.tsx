@@ -12,20 +12,20 @@ export const loader = async () => {
 export default function StartingSoon() {
   const { title, show, guests } = useLoaderData<typeof loader>();
   return (
-    <div className="flex h-screen w-screen flex-col justify-between bg-crl-deep-purple bg-[url('/img/crl-texture-7.svg')] bg-cover px-24 py-16 font-poppins text-white">
+    <div className="flex h-screen w-screen flex-col justify-between bg-crl-deep-purple bg-[url('/img/crl-texture-7.svg')] bg-cover px-20 py-16 font-poppins text-white">
       <header>
         <CrlLogo.FullHorizontal className="aspect-auto h-16 w-auto text-white" />
       </header>
-      <div className="flex flex-auto justify-between">
-        <div className="flex h-full shrink-0 flex-col justify-center">
-          <h1 className="mb-1 flex max-w-fit bg-gradient-to-r from-crl-iridescent-blue to-crl-electric-purple bg-clip-text text-center text-8xl font-bold leading-tight text-transparent">
+      <div className="flex justify-between">
+        <div className="flex h-full w-[58%] flex-col justify-center">
+          <h1 className="mb-1 flex max-w-fit bg-gradient-to-r from-crl-iridescent-blue to-crl-electric-purple bg-clip-text text-7xl font-bold leading-tight text-transparent">
             {show.title}
           </h1>
-          <h2 className="mb-16 text-7xl font-semibold leading-tight">
+          <h2 className="mb-16 text-5xl font-semibold leading-tight">
             {title}
           </h2>
         </div>
-        <div className="flex min-h-fit grow-0 flex-row flex-wrap items-center justify-between gap-16">
+        <div className="flex min-h-fit flex-row flex-wrap items-center justify-between gap-16">
           {guests.map((guest) => (
             <div
               key={guest.id}

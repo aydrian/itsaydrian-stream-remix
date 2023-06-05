@@ -78,11 +78,18 @@ export default function ShowPage() {
         </div>
         <div>
           <span>Invite Guest:</span>
-          <pre>
-            <a
-              href={`https://vdo.ninja/?room=${vdoConfig.room}&hash=${vdoConfig.hash}`}
-            >{`https://vdo.ninja/?room=${vdoConfig.room}&hash=${vdoConfig.hash}`}</a>
-          </pre>
+          <ol>
+            {guests.slice(1).map((guest) => (
+              <li key={guest.id}>
+                {guest.firstName}:
+                <pre>
+                  <a
+                    href={`https://vdo.ninja/?room=${vdoConfig.room}&id=Guest${guest.order}&hash=${vdoConfig.hash}`}
+                  >{`https://vdo.ninja/?room=${vdoConfig.room}&id=Guest${guest.order}&hash=${vdoConfig.hash}`}</a>
+                </pre>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
     </>

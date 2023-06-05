@@ -22,3 +22,11 @@ export const nowPlayingCookie = createCookie("now-playing", {
   sameSite: "lax",
   secure: process.env.NODE_ENV === "production"
 });
+
+export const twitchStateCookie = createCookie("twitch-auth-state", {
+  path: "/",
+  httpOnly: true,
+  sameSite: "lax",
+  maxAge: 60, // 1 minute because it makes no sense to keep it for a long time
+  secure: process.env.NODE_ENV === "production"
+});

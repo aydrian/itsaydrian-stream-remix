@@ -11,17 +11,6 @@ const NOW_PLAYING_ENDPOINT =
 
 export const STATE_KEY = "spotify_auth_state";
 
-export function generateRandomString(length: number) {
-  let text = "";
-  const possible =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (let i = 0; i < length; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
-}
-
 export const requestAccessToken = async (
   code: string
 ): Promise<{

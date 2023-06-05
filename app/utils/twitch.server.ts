@@ -5,7 +5,7 @@ import crypto from "crypto";
 import invariant from "tiny-invariant";
 import { ApiClient } from "@twurple/api";
 import { AppTokenAuthProvider } from "@twurple/auth";
-import { emitter } from "~/utils/emitter.server";
+// import { emitter } from "~/utils/emitter.server";
 
 const twitchSigningSecret = process.env.TWITCH_SIGNING_SECRET;
 invariant(
@@ -13,12 +13,24 @@ invariant(
   "Be sure to set TWITCH_SIGNING_SECRET"
 );
 
+const redirect_uri = process.env.TWITCH_REDIRECT_URI;
+invariant(typeof redirect_uri === "string", "TWITCH_REDIRECT_URI must be set");
+
 const twitchUserId = process.env.TWITCH_USER_ID;
 invariant(
   typeof twitchUserId === "string",
   "Set TWITCH_USER_ID to the broadcaster user id."
 );
 export const TWITCH_USER_ID = twitchUserId;
+
+const twitchClientId = process.env.TWITCH_CLIENT_ID;
+invariant(typeof twitchClientId === "string", "TWITCH_CLIENT_ID must be set");
+
+const twitchClientSecret = process.env.TWITCH_CLIENT_SECRET;
+invariant(
+  typeof twitchClientSecret === "string",
+  "TWITCH_CLIENT_SECRET must be set"
+);
 
 export const scheduleToJSON = (schedule: HelixSchedule | null) => {
   if (!schedule) return null;
@@ -126,3 +138,81 @@ export const twitch = new ApiClient({ authProvider });
 export interface EventSubEvent {
   user_id: string;
 }
+
+export const requestAccessToken = async (
+  code: string
+): Promise<{
+  access_token: string;
+  token_type: string;
+  scope: string[];
+  expires_in: number;
+  refresh_token: string;
+}> => {
+  return fetch("https://id.twitch.tv/oauth2/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      client_id: twitchClientId,
+      client_secret: twitchClientSecret,
+      code: code,
+      grant_type: "authorization_code",
+      redirect_uri: redirect_uri
+    })
+  }).then((res) => res.json());
+};
+
+export const refreshAccessToken = async (refresh_token: string) => {
+  return fetch(`https://id.twitch.tv/oauth2/token`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: new URLSearchParams({
+      client_id: twitchClientId,
+      client_secret: twitchClientSecret,
+      grant_type: "refresh_token",
+      refresh_token
+    })
+  }).then((res) => res.json());
+};
+
+export const getUserProfile = async (access_token: string) => {
+  const { data } = await fetch(`https://api.twitch.tv/helix/users`, {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+      "Client-Id": twitchClientId
+    }
+  }).then((res) => res.json());
+  return data[0];
+};
+
+export const getUserEventSubSubscriptions = async (
+  userId: string
+): Promise<
+  {
+    id: string;
+    status: string;
+    type: string;
+    version: string;
+    condition: { broadcaster_user_id: string };
+    created_at: string;
+    transport: { method: string; callback: string };
+    cost: number;
+  }[]
+> => {
+  const auth = await authProvider.getAppAccessToken();
+  const { data } = await fetch(
+    `https://api.twitch.tv/helix/eventsub/subscriptions?${new URLSearchParams({
+      user_id: userId
+    })}`,
+    {
+      headers: {
+        Authorization: `Bearer ${auth.accessToken}`,
+        "Client-Id": twitchClientId
+      }
+    }
+  ).then((res) => res.json());
+  return data;
+};

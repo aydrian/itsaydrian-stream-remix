@@ -1,5 +1,5 @@
 import { json, Response, type LoaderArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { Avatar } from "~/components/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { requireUser } from "~/utils/auth.server";
@@ -9,6 +9,10 @@ import {
   SpotifyConnect,
   SpotifyDisconnect
 } from "~/routes/resources+/spotify+/_index";
+import {
+  TwitchConnect,
+  TwitchDisconnect
+} from "~/routes/resources+/twitch+/_index";
 
 type User = ResolvedRemixLoader<typeof loader>["user"];
 
@@ -45,6 +49,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 export default function Profile() {
   const { user } = useLoaderData<typeof loader>();
   const spotify = user.connections.find((item) => item.provider === "spotify");
+  const twitch = user.connections.find((item) => item.provider === "twitch");
   return (
     <>
       <h2 className="text-3xl font-bold tracking-tight">Profile</h2>
@@ -70,20 +75,48 @@ export default function Profile() {
         <CardHeader>
           <CardTitle>Services</CardTitle>
           <CardContent>
-            <dl>
-              <dt>Spotify</dt>
-              <dd>
-                {spotify ? (
-                  <span>
-                    Connected as{" "}
-                    {spotify.providerDisplayName ?? spotify.providerAccountId}
-                    <SpotifyDisconnect connectionId={spotify.id} />
-                  </span>
-                ) : (
-                  <SpotifyConnect />
-                )}
-              </dd>
-            </dl>
+            <div className="flex justify-start gap-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Spotify</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {spotify ? (
+                    <>
+                      <span>
+                        Connected as{" "}
+                        {spotify.providerDisplayName ??
+                          spotify.providerAccountId}
+                      </span>
+                      <SpotifyDisconnect connectionId={spotify.id} />
+                    </>
+                  ) : (
+                    <SpotifyConnect />
+                  )}
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Twitch</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {twitch ? (
+                    <>
+                      <span>
+                        Connected as{" "}
+                        {twitch.providerDisplayName ?? twitch.providerAccountId}
+                      </span>
+                      <TwitchDisconnect connectionId={twitch.id} />
+                      <Link to="../twitch" relative="path">
+                        Twitch Settings
+                      </Link>
+                    </>
+                  ) : (
+                    <TwitchConnect />
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </CardContent>
         </CardHeader>
       </Card>

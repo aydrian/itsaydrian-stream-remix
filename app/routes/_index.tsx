@@ -5,9 +5,11 @@ import {
   scheduleToJSON,
   streamToJSON,
   twitch,
-  TWITCH_USER_ID,
   videoToJSON
 } from "~/utils/twitch.server";
+import env from "~/utils/env.server";
+
+const { TWITCH_USER_ID } = env;
 
 export const loader = async (_args: LoaderArgs) => {
   const [hStream, { data: hSchedule }, { data: videoData }] = await Promise.all(

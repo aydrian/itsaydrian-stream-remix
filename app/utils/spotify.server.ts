@@ -1,15 +1,10 @@
-import invariant from "tiny-invariant";
+import env from "~/utils/env.server";
 
-const client_id = process.env.SPOTIFY_CLIENT_ID;
-const client_secret = process.env.SPOTIFY_CLIENT_SECRET;
-const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
-invariant(typeof redirect_uri === "string", "SPOTIFY_REDIRECT_URI must be set");
-const basic = Buffer.from(`${client_id}:${client_secret}`).toString("base64");
-const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
-const NOW_PLAYING_ENDPOINT =
-  "https://api.spotify.com/v1/me/player/currently-playing";
+const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI } = env;
 
-export const STATE_KEY = "spotify_auth_state";
+const basic = Buffer.from(
+  `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
+).toString("base64");
 
 export const requestAccessToken = async (
   code: string
@@ -28,14 +23,14 @@ export const requestAccessToken = async (
     },
     body: new URLSearchParams({
       code: code,
-      redirect_uri: redirect_uri,
+      redirect_uri: SPOTIFY_REDIRECT_URI,
       grant_type: "authorization_code"
     })
   }).then((res) => res.json());
 };
 
 const refreshAccessToken = async (refresh_token: string) => {
-  return fetch(TOKEN_ENDPOINT, {
+  return fetch(`https://accounts.spotify.com/api/token`, {
     method: "POST",
     headers: {
       Authorization: `Basic ${basic}`,
@@ -74,11 +69,14 @@ export const getUserProfile = async (access_token: string) => {
 
 export const getUsersNowPlaying = async (refresh_token: string) => {
   const { access_token } = await refreshAccessToken(refresh_token);
-  const response = await fetch(NOW_PLAYING_ENDPOINT, {
-    headers: {
-      Authorization: `Bearer ${access_token}`
+  const response = await fetch(
+    `https://api.spotify.com/v1/me/player/currently-playing`,
+    {
+      headers: {
+        Authorization: `Bearer ${access_token}`
+      }
     }
-  });
+  );
 
   // Handle device being off
   if (response.status === 204) {

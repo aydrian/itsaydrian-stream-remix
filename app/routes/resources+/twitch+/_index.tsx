@@ -9,12 +9,14 @@ import { useFetcher } from "@remix-run/react";
 import { type ButtonHTMLAttributes } from "react";
 import { requireUser } from "~/utils/auth.server";
 import { cn, generateRandomString } from "~/utils/misc";
-import invariant from "tiny-invariant";
 import { twitchStateCookie } from "~/utils/cookies.server";
 import { prisma } from "~/utils/db.server";
 import { z } from "zod";
 import { parse } from "@conform-to/zod";
 import { Twitch } from "~/components/brand-logos";
+import env from "~/utils/env.server";
+
+const { TWITCH_CLIENT_ID, TWITCH_REDIRECT_URI } = env;
 
 const DisconnectSchema = z.object({
   connectionId: z.string()
@@ -22,24 +24,17 @@ const DisconnectSchema = z.object({
 
 export const loader = async ({ request }: LoaderArgs) => {
   const user = await requireUser(request);
-  const client_id = process.env.TWITCH_CLIENT_ID;
-  const redirect_uri = process.env.TWITCH_REDIRECT_URI;
-  invariant(typeof client_id === "string", "TWITCH_CLIENT_ID must be set");
-  invariant(
-    typeof redirect_uri === "string",
-    "TWITCH_REDIRECT_URI must be set"
-  );
 
   const state = generateRandomString(16);
 
   const searchParams = new URLSearchParams([
     ["response_type", "code"],
-    ["client_id", client_id],
+    ["client_id", TWITCH_CLIENT_ID],
     [
       "scope",
       "channel:manage:redemptions moderator:read:followers channel:read:subscriptions channel:manage:broadcast"
     ],
-    ["redirect_uri", redirect_uri],
+    ["redirect_uri", TWITCH_REDIRECT_URI],
     ["state", state]
   ]);
 

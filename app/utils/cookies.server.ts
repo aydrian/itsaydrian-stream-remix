@@ -7,3 +7,18 @@ export const redirectToCookie = createCookie("redirect-to", {
   maxAge: 60, // 1 minute because it makes no sense to keep it for a long time
   secure: process.env.NODE_ENV === "production"
 });
+
+export const spotifyStateCookie = createCookie("spotify-auth-state", {
+  path: "/",
+  httpOnly: true,
+  sameSite: "lax",
+  maxAge: 60, // 1 minute because it makes no sense to keep it for a long time
+  secure: process.env.NODE_ENV === "production"
+});
+
+export const nowPlayingCookie = createCookie("now-playing", {
+  path: "/",
+  httpOnly: true,
+  sameSite: "lax",
+  secure: process.env.NODE_ENV === "production"
+});

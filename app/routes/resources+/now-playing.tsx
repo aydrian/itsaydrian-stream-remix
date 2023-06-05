@@ -3,12 +3,15 @@ import type { Song } from "~/utils/spotify.server";
 import { eventStream, useEventSource } from "remix-utils";
 import invariant from "tiny-invariant";
 import { getUsersNowPlaying } from "~/utils/spotify.server";
+import { nowPlayingCookie } from "~/utils/cookies.server";
 
 const sleep = (ms: number) => new Promise((_) => setTimeout(_, ms));
 
 export const loader = async ({ request }: LoaderArgs) => {
+  const cookie = await nowPlayingCookie.parse(request.headers.get("Cookie"));
+
   return eventStream(request.signal, function setup(send) {
-    const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
+    const refreshToken = cookie?.refreshToken;
     invariant(typeof refreshToken === "string", "refreshToken is required");
     let polling = true;
 

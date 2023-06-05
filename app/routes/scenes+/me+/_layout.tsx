@@ -3,13 +3,33 @@ import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react";
 import { NowPlaying } from "~/routes/resources+/now-playing";
-import { getNextEpisode } from "~/utils/db.server";
+import { getNextEpisode, prisma } from "~/utils/db.server";
+import { nowPlayingCookie } from "~/utils/cookies.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
   const showGuides = Boolean(url.searchParams.get("showGuides"));
-  const nextEpisode = await getNextEpisode("ME");
-  return json({ ...nextEpisode, showGuides });
+  const [nextEpisode, spotifyConnection] = await Promise.all([
+    getNextEpisode("ME"),
+    prisma.connection.findUnique({
+      where: { id: "6a003ecf-8f0b-44d4-a943-ba97649587d2" },
+      select: {
+        id: true,
+        refreshToken: true,
+        accessToken: true,
+        expiresAt: true
+      }
+    })
+  ]);
+
+  return json(
+    { ...nextEpisode, showGuides },
+    {
+      headers: {
+        "Set-Cookie": await nowPlayingCookie.serialize(spotifyConnection)
+      }
+    }
+  );
 };
 
 export type OutLetContext = {

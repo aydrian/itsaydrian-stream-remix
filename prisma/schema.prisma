@@ -11,12 +11,13 @@ generator client {
 }
 
 model User {
-  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email        String  @unique
-  passwordHash String? @map("password_hash")
-  firstName    String  @map("first_name")
-  lastName     String  @map("last_name")
+  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String       @unique
+  passwordHash String?      @map("password_hash")
+  firstName    String       @map("first_name")
+  lastName     String       @map("last_name")
   guestProfile Guest?
+  connections  Connection[]
 
   @@map("users")
 }
@@ -76,4 +77,23 @@ model GuestsForEpisode {
 
   @@id([episodeId, guestId])
   @@map("guests_episodes")
+}
+
+model Connection {
+  id                  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId              String  @db.Uuid
+  type                String
+  provider            String
+  providerAccountId   String  @map("provider_account_id")
+  providerDisplayName String? @map("provider_display_name")
+  refreshToken        String? @map("refresh_token")
+  accessToken         String? @map("access_token")
+  expiresAt           Int?    @map("expires_at")
+  tokenType           String? @map("token_type")
+  scope               String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("connections")
 }

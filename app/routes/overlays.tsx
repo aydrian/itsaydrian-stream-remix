@@ -1,7 +1,7 @@
 import { useEventSource } from "remix-utils";
 
 export default function Overlays() {
-  const redeemData = useEventSource("/subscribe/eventsub", {
+  const redeemData = useEventSource("/resources/twitch/eventsub", {
     event: "redeem-channelpoints"
   });
 

@@ -2,7 +2,7 @@ import type { ResolvedRemixLoader } from "~/utils/types";
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react";
-import { NowPlaying } from "~/routes/resources+/now-playing";
+import { NowPlaying } from "~/routes/resources+/spotify+/now-playing";
 import { getNextEpisode, prisma } from "~/utils/db.server";
 import { nowPlayingCookie } from "~/utils/cookies.server";
 

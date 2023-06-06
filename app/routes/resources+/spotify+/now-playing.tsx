@@ -34,7 +34,7 @@ export const loader = async ({ request }: LoaderArgs) => {
 };
 
 export function NowPlaying() {
-  const songEvent = useEventSource("/resources/now-playing", {
+  const songEvent = useEventSource("/resources/spotify/now-playing", {
     event: "now-playing"
   });
   const song = songEvent ? (JSON.parse(songEvent) as Song) : undefined;

@@ -4,7 +4,7 @@ import { chromium } from "playwright";
 export const loader = async ({ params }: LoaderArgs) => {
   const { episodeId } = params;
 
-  const url = `https://stream.itsaydrian.com/promos/crl/${episodeId}.png`;
+  const url = `https://stream.itsaydrian.com/promos/crl/${episodeId}`;
   const browser = await chromium.launch();
   const page = await browser.newPage();
 

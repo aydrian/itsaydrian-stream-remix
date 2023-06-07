@@ -23,7 +23,8 @@ export function formatDateRange(start: Date | string, end: Date | string) {
     day: "numeric",
     hour: "numeric",
     minute: "numeric",
-    year: "numeric"
+    year: "numeric",
+    timeZoneName: "short"
   });
   return dateTimeFormat.formatRange(startDate, endDate);
 }

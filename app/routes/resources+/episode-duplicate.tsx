@@ -61,7 +61,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
   const { guests, ...originalEpisode } = findResult;
 
-  await prisma.episode.create({
+  const newEpisode = await prisma.episode.create({
     data: {
       ...originalEpisode,
       guests: {
@@ -73,7 +73,9 @@ export const action = async ({ request }: DataFunctionArgs) => {
     select: { id: true }
   });
 
-  return redirect(`/admin/show/${originalEpisode.showId}`);
+  return redirect(
+    `/admin/shows/${originalEpisode.showId}/${newEpisode.id}/edit`
+  );
 };
 
 export function DuplicateEpisodeForm({ episodeId }: { episodeId: string }) {

@@ -48,7 +48,7 @@ export const loader = async ({ params }: LoaderArgs) => {
   return typedjson(episode);
 };
 
-export default function Promo() {
+export default function CrlPromo() {
   const { title, show, guests, startDate } =
     useTypedLoaderData<typeof loader>();
   return (

@@ -17,7 +17,7 @@ export default function NewEpisode() {
 
   return (
     <>
-      <h2 className="text-3xl font-bold tracking-tight">Edit Episode</h2>
+      <h2 className="text-3xl font-bold tracking-tight">New Episode</h2>
       <EpisodeEditor showId={showId} />
     </>
   );

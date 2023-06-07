@@ -1,5 +1,5 @@
-import { type LoaderArgs, Response, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { type LoaderArgs, Response } from "@remix-run/node";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { EpisodeEditor } from "~/routes/resources+/episode-editor";
 import { requireUser } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
@@ -16,8 +16,8 @@ export const loader = async ({ params, request }: LoaderArgs) => {
       endDate: true,
       title: true,
       description: true,
-      vdoPassword: true,
-      guests: { select: { order: true, guestId: true } }
+      vdoPassword: true
+      // guests: { select: { order: true, guestId: true } }
     }
   });
   if (!episode) {
@@ -25,11 +25,12 @@ export const loader = async ({ params, request }: LoaderArgs) => {
       status: 404
     });
   }
-  return json({ episode });
+
+  return typedjson({ episode });
 };
 
 export default function EditEpisode() {
-  const { episode } = useLoaderData<typeof loader>();
+  const { episode } = useTypedLoaderData<typeof loader>();
 
   return (
     <>

@@ -8,13 +8,13 @@ import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { prisma } from "~/utils/db.server";
 import { ErrorList, Field } from "~/components/form";
 
-const EpisodeEditorSchema = z.object({
+export const EpisodeEditorSchema = z.object({
   id: z.string().optional(),
   showId: z.string(),
-  startDate: z.coerce.date({ required_error: "Start Date is required" }),
-  endDate: z.coerce.date({ required_error: "End Date is required" }),
   title: z.string().min(1, { message: "Title is required" }),
   description: z.string().min(1, { message: "Description is required" }),
+  startDate: z.coerce.date({ required_error: "Start Date is required" }),
+  endDate: z.coerce.date({ required_error: "End Date is required" }),
   vdoPassword: z.string().default("cockroachIsC00l!")
   // guests: z.array(z.object({ order: z.coerce.number(), guestId: z.string() }))
 });
@@ -36,7 +36,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
     );
   }
   if (submission.intent !== "submit") {
-    return json({ status: "success", submission } as const);
+    return json({ status: "idle", submission } as const);
   }
 
   const { id, ...data } = submission.value;
@@ -46,7 +46,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
       where: { id },
       data
     });
-    return redirect(`/admin/shows/${data.showId}/episode/${id}`);
+    return redirect(`/admin/shows/${data.showId}/episodes/${id}`);
   }
 
   const episode = await prisma.episode.create({
@@ -64,15 +64,15 @@ export function EpisodeEditor({
   episode?: {
     id: string;
     showId: string;
-    startDate: string;
-    endDate: string;
+    startDate: Date;
+    endDate: Date;
     title: string;
     description: string;
     vdoPassword: string;
-    guests: {
-      order: number;
-      guestId: string;
-    }[];
+    // guests: {
+    //   order: number;
+    //   guestId: string;
+    // }[];
   };
   showId: string;
 }) {
@@ -85,6 +85,13 @@ export function EpisodeEditor({
     onValidate({ formData }) {
       return parse(formData, { schema: EpisodeEditorSchema });
     },
+    defaultValue: {
+      title: episode?.title,
+      description: episode?.description,
+      startDate: episode?.startDate?.toISOString().split("Z")[0],
+      endDate: episode?.endDate?.toISOString().split("Z")[0],
+      vdoPassword: episode?.vdoPassword
+    },
     shouldRevalidate: "onBlur"
   });
 
@@ -92,44 +99,34 @@ export function EpisodeEditor({
     <episodeEditorFetcher.Form
       method="post"
       action="/resources/episode-editor"
-      {...form}
+      {...form.props}
       className="flex flex-col"
     >
       <input name="id" type="hidden" value={episode?.id} />
       <input name="showId" type="hidden" value={episode?.showId || showId} />
       <Field
         labelProps={{ htmlFor: fields.title.id, children: "Title" }}
-        inputProps={{
-          ...conform.input(fields.title),
-          defaultValue: episode?.title
-        }}
+        inputProps={conform.input(fields.title)}
+        errors={fields.title.errors}
       />
       <Field
         labelProps={{ htmlFor: fields.description.id, children: "Description" }}
-        inputProps={{
-          ...conform.input(fields.description),
-          defaultValue: episode?.description
-        }}
+        inputProps={conform.input(fields.description)}
+        errors={fields.description.errors}
       />
       <div className="flex w-full flex-row justify-between gap-1">
         <Field
           className="grow"
           labelProps={{ htmlFor: fields.startDate.id, children: "Start Date" }}
-          inputProps={{
-            ...conform.input(fields.startDate),
-            type: "datetime-local",
-            defaultValue: episode?.startDate
-          }}
+          inputProps={conform.input(fields.startDate, {
+            type: "datetime-local"
+          })}
           errors={fields.startDate.errors}
         />
         <Field
           className="grow"
           labelProps={{ htmlFor: fields.endDate.id, children: "End Date" }}
-          inputProps={{
-            ...conform.input(fields.endDate),
-            type: "datetime-local",
-            defaultValue: episode?.endDate
-          }}
+          inputProps={conform.input(fields.endDate, { type: "datetime-local" })}
           errors={fields.endDate.errors}
         />
       </div>
@@ -138,13 +135,11 @@ export function EpisodeEditor({
           htmlFor: fields.vdoPassword.id,
           children: "VDO Password"
         }}
-        inputProps={{
-          ...conform.input(fields.vdoPassword),
-          defaultValue: episode?.vdoPassword
-        }}
+        inputProps={conform.input(fields.vdoPassword)}
+        errors={fields.vdoPassword.errors}
       />
       <ErrorList errors={form.errors} id={form.errorId} />
-      <Button variant="secondary">Submit</Button>
+      <Button>Submit</Button>
     </episodeEditorFetcher.Form>
   );
 }

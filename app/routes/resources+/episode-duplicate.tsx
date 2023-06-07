@@ -33,7 +33,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
     );
   }
   if (submission.intent !== "submit") {
-    return json({ status: "success", submission } as const);
+    return json({ status: "idle", submission } as const);
   }
 
   const { episodeId } = submission.value;
@@ -87,7 +87,7 @@ export function DuplicateEpisodeForm({ episodeId }: { episodeId: string }) {
     <duplicateEpisodeFetcher.Form
       method="post"
       action="/resources/episode-duplicate"
-      {...form}
+      {...form.props}
     >
       <input name="episodeId" type="hidden" value={episodeId} />
       <Button variant="secondary">Duplicate</Button>

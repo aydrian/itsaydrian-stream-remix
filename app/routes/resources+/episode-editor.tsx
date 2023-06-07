@@ -1,7 +1,7 @@
 import { type DataFunctionArgs, redirect, json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { Button } from "~/components/ui/button";
-import { requireUser } from "~/utils/auth.server";
+import { requireUserId } from "~/utils/auth.server";
 import { z } from "zod";
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
@@ -21,7 +21,7 @@ export const EpisodeEditorSchema = z.object({
 });
 
 export const action = async ({ request }: DataFunctionArgs) => {
-  await requireUser(request);
+  await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, {
     schema: EpisodeEditorSchema,

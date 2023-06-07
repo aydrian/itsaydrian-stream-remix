@@ -2,7 +2,7 @@ import { json, Response, type LoaderArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Avatar } from "~/components/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { requireUser } from "~/utils/auth.server";
+import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { type ResolvedRemixLoader } from "~/utils/types";
 import {
@@ -17,11 +17,11 @@ import {
 type User = ResolvedRemixLoader<typeof loader>["user"];
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const authUser = await requireUser(request);
+  const userId = await requireUserId(request);
   try {
     const user = await prisma.user.findUniqueOrThrow({
       where: {
-        id: authUser.id
+        id: userId
       },
       select: {
         id: true,

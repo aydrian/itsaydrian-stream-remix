@@ -1,13 +1,13 @@
 import type { LoaderArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { requireUser } from "~/utils/auth.server";
+import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateRange } from "~/utils/misc";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  await requireUser(request);
+  await requireUserId(request);
   const shows = await prisma.show.findMany({
     select: {
       id: true,

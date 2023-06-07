@@ -7,7 +7,7 @@ import {
 } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { type ButtonHTMLAttributes } from "react";
-import { requireUser } from "~/utils/auth.server";
+import { requireUserId } from "~/utils/auth.server";
 import { cn, generateRandomString } from "~/utils/misc";
 import { spotifyStateCookie } from "~/utils/cookies.server";
 import { prisma } from "~/utils/db.server";
@@ -23,7 +23,7 @@ const DisconnectSchema = z.object({
 });
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const user = await requireUser(request);
+  const userId = await requireUserId(request);
 
   const state = generateRandomString(16);
 
@@ -39,14 +39,14 @@ export const loader = async ({ request }: LoaderArgs) => {
     headers: {
       "Set-Cookie": await spotifyStateCookie.serialize({
         state,
-        userId: user.id
+        userId: userId
       })
     }
   });
 };
 
 export const action = async ({ request }: ActionArgs) => {
-  await requireUser(request);
+  await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, {
     schema: DisconnectSchema,

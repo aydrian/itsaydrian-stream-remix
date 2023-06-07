@@ -1,13 +1,12 @@
-import type { UserWithoutPassword } from "~/models/user.server";
 import { Authenticator, AuthorizationError } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
 import { sessionStorage } from "~/utils/session.server";
 import invariant from "tiny-invariant";
-import { verifyLogin } from "~/models/user.server";
+import bcrypt from "bcryptjs";
+import { prisma } from "~/utils/db.server";
+import { type User } from "@prisma/client";
 
-export const authenticator = new Authenticator<UserWithoutPassword>(
-  sessionStorage
-);
+export const authenticator = new Authenticator<string>(sessionStorage);
 
 authenticator.use(
   new FormStrategy(async ({ form }) => {
@@ -23,12 +22,12 @@ authenticator.use(
         "Username/Password combination is incorrect"
       );
     }
-    return user;
+    return user.id;
   }),
   FormStrategy.name
 );
 
-export const requireUser = async (
+export const requireUserId = async (
   request: Request,
   redirectTo: string = new URL(request.url).pathname
 ) => {
@@ -36,8 +35,27 @@ export const requireUser = async (
     ["redirectTo", redirectTo],
     ["loginMessage", "Please login to continue"]
   ]);
-  const user = await authenticator.isAuthenticated(request, {
+  const userId = await authenticator.isAuthenticated(request, {
     failureRedirect: `/admin?${searchParams}`
   });
-  return user;
+  return userId;
 };
+
+export async function verifyLogin(email: User["email"], password: string) {
+  const userWithPassword = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true, passwordHash: true }
+  });
+
+  if (!userWithPassword || !userWithPassword.passwordHash) {
+    return null;
+  }
+
+  const isValid = await bcrypt.compare(password, userWithPassword.passwordHash);
+
+  if (!isValid) {
+    return null;
+  }
+
+  return { id: userWithPassword.id };
+}

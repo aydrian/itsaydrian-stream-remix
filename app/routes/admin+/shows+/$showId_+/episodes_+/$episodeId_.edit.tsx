@@ -1,11 +1,11 @@
 import { type LoaderArgs, Response } from "@remix-run/node";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { EpisodeEditor } from "~/routes/resources+/episode-editor";
-import { requireUser } from "~/utils/auth.server";
+import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
-  await requireUser(request);
+  await requireUserId(request);
   const { episodeId } = params;
   const episode = await prisma.episode.findUnique({
     where: { id: episodeId },

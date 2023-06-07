@@ -8,13 +8,13 @@ import {
   CardTitle
 } from "~/components/ui/card";
 import { DuplicateEpisodeForm } from "~/routes/resources+/episode-duplicate";
-import { requireUser } from "~/utils/auth.server";
+import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateRange } from "~/utils/misc";
 import { Button } from "~/components/ui/button";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
-  await requireUser(request);
+  await requireUserId(request);
   const { showId } = params;
   const show = await prisma.show.findUnique({
     where: { id: showId },

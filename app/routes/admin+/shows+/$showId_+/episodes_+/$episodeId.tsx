@@ -1,12 +1,12 @@
 import { type LoaderArgs, json, Response } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { requireUser } from "~/utils/auth.server";
+import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateRange } from "~/utils/misc";
 import { generateVDOPassword } from "~/utils/vdo-ninja.server";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
-  await requireUser(request);
+  await requireUserId(request);
   const { episodeId } = params;
   const findEpisode = await prisma.episode.findUnique({
     where: { id: episodeId },

@@ -6,7 +6,6 @@ import { GuestsGrid } from "~/components/guests-grid";
 import { Twitter } from "~/components/brand-logos";
 
 export const loader = async ({ params }: LoaderArgs) => {
-  console.log({ blah: params.num });
   const num = parseInt(params.num ?? "");
 
   if (isNaN(num)) {

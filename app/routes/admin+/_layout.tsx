@@ -1,15 +1,31 @@
 import type { LoaderArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
-import { requireUser } from "~/utils/auth.server";
+import { Outlet } from "@remix-run/react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { requireUserId } from "~/utils/auth.server";
+import { prisma } from "~/utils/db.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  const user = await requireUser(request);
-  return json({ user });
+  const userId = await requireUserId(request);
+  const dbUser = await prisma.user
+    .findUniqueOrThrow({
+      where: { id: userId },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        guestProfile: { select: { avatarUrl: true } }
+      }
+    })
+    .catch(() => {
+      throw new Response("User not found. Odd.", { status: 404 });
+    });
+  return typedjson({ user: dbUser });
 };
 
 export default function AdminLayout() {
-  const { user } = useLoaderData<typeof loader>();
+  const { user } = useTypedLoaderData<typeof loader>();
   return (
     <>
       <header className="w-full p-4 shadow-lg">
@@ -27,6 +43,12 @@ export default function AdminLayout() {
                   Log out
                 </button>
               </form>
+              <Avatar>
+                <AvatarImage src={user.guestProfile?.avatarUrl ?? undefined} />
+                <AvatarFallback>{`${user.firstName.charAt(
+                  0
+                )}${user.lastName.charAt(0)}`}</AvatarFallback>
+              </Avatar>
             </div>
           </nav>
         </div>

@@ -1,9 +1,20 @@
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger
+} from "~/components/ui/dropdown-menu";
 import type { LoaderArgs } from "@remix-run/node";
-import { Outlet } from "@remix-run/react";
+import { Link, Outlet } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
+import { LogOut, User } from "lucide-react";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await requireUserId(request);
@@ -37,18 +48,47 @@ export default function AdminLayout() {
           </div>
           <nav className="ml-5 inline-flex h-full items-center md:ml-0 md:w-2/6 md:justify-end">
             <div className="flex items-center gap-1">
-              <span className="text-sm">Welcome, {user.firstName}</span>
-              <form method="get" action="/admin/logout">
-                <button className="rounded bg-cyan-600 px-2 py-1 text-sm font-medium text-white duration-300 hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:bg-cyan-600/50">
-                  Log out
-                </button>
-              </form>
-              <Avatar>
-                <AvatarImage src={user.guestProfile?.avatarUrl ?? undefined} />
-                <AvatarFallback>{`${user.firstName.charAt(
-                  0
-                )}${user.lastName.charAt(0)}`}</AvatarFallback>
-              </Avatar>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    className="relative h-8 w-8 rounded-full"
+                  >
+                    <Avatar>
+                      <AvatarImage
+                        src={user.guestProfile?.avatarUrl ?? undefined}
+                      />
+                      <AvatarFallback>{`${user.firstName.charAt(
+                        0
+                      )}${user.lastName.charAt(0)}`}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">
+                        {user.firstName} {user.lastName}
+                      </p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <Link to="/admin/settings/profile">Profile</Link>
+                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <Link to="/admin/logout">Log out</Link>
+                    <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </nav>
         </div>

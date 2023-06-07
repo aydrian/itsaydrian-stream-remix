@@ -1,8 +1,16 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { format } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function formatDateForInput(date: Date | undefined) {
+  if (!date) {
+    return;
+  }
+  return format(date, "yyyy-MM-dd'T'HH:mm:ss");
 }
 
 export function formatDateRange(start: Date | string, end: Date | string) {

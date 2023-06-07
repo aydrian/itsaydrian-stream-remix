@@ -49,7 +49,6 @@ export function Field({
         id={id}
         aria-invalid={errorId ? true : undefined}
         aria-describedby={errorId}
-        placeholder=" "
         {...inputProps}
         className="border-b-brand-deep-purple !text-brand-gray rounded-none border-b p-2 font-normal"
       />

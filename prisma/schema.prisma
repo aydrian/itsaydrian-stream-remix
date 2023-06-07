@@ -42,11 +42,12 @@ model Show {
 model Episode {
   id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   showId      String             @db.Uuid
-  startDate   DateTime           @map("start_date") @db.Timestamptz
-  endDate     DateTime           @map("end_date") @db.Timestamptz
+  startDate   DateTime           @map("start_date") @db.Timestamptz(0)
+  endDate     DateTime           @map("end_date") @db.Timestamptz(0)
   title       String
   description String
   vdoPassword String             @default("cockroachIsC00l!") @map("vdo_password")
+  createdAt   DateTime           @default(now()) @map("created_at") @db.Timestamptz(0)
   show        Show               @relation(fields: [showId], references: [id])
   guests      GuestsForEpisode[]
 

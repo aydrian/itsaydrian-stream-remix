@@ -7,6 +7,7 @@ import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { prisma } from "~/utils/db.server";
 import { ErrorList, Field } from "~/components/form";
+import { formatDateForInput } from "~/utils/misc";
 
 export const EpisodeEditorSchema = z.object({
   id: z.string().optional(),
@@ -88,8 +89,8 @@ export function EpisodeEditor({
     defaultValue: {
       title: episode?.title,
       description: episode?.description,
-      startDate: episode?.startDate?.toISOString().split("Z")[0],
-      endDate: episode?.endDate?.toISOString().split("Z")[0],
+      startDate: formatDateForInput(episode?.startDate),
+      endDate: formatDateForInput(episode?.endDate),
       vdoPassword: episode?.vdoPassword
     },
     shouldRevalidate: "onBlur"

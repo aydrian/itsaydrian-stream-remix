@@ -37,7 +37,8 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
         },
         orderBy: { order: "asc" }
       }
-    }
+    },
+    orderBy: { startDate: "asc" }
   });
   if (!result) {
     return {
@@ -70,6 +71,7 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
       ]
     };
   }
+  console.log({ result });
   const { guests, ...rest } = result;
   const flatGuests = guests.map(({ guest, order }) => ({ ...guest, order }));
   return { ...rest, guests: flatGuests };

@@ -1,7 +1,13 @@
 import { json, Response, type LoaderArgs } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { Avatar } from "~/components/avatar";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "~/components/ui/card";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { type ResolvedRemixLoader } from "~/utils/types";
@@ -53,29 +59,31 @@ export default function Profile() {
   return (
     <>
       <h2 className="text-3xl font-bold tracking-tight">Profile</h2>
-      <Card>
-        <CardHeader>
-          <CardTitle>User Info</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl>
-            <dt>Name</dt>
-            <dd>
-              {user?.firstName} {user?.lastName}
-            </dd>
-            <dt>Email</dt>
-            <dd>{user?.email}</dd>
-          </dl>
-        </CardContent>
-      </Card>
-      {user?.guestProfile ? (
-        <GuestDetails guestProfile={user.guestProfile} />
-      ) : null}
-      <Card>
-        <CardHeader>
-          <CardTitle>Services</CardTitle>
+      <div className="flex justify-start gap-4">
+        <Card className="max-w-fit">
+          <CardHeader>
+            <CardTitle>User Info</CardTitle>
+          </CardHeader>
           <CardContent>
-            <div className="flex justify-start gap-2">
+            <dl>
+              <dt className="font-semibold">Name</dt>
+              <dd className="text-sm">
+                {user?.firstName} {user?.lastName}
+              </dd>
+              <dt className="font-semibold">Email</dt>
+              <dd className="text-sm">{user?.email}</dd>
+            </dl>
+          </CardContent>
+        </Card>
+        {user?.guestProfile ? (
+          <GuestDetails guestProfile={user.guestProfile} />
+        ) : null}
+        <Card className="max-w-fit">
+          <CardHeader>
+            <CardTitle>Services</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col justify-start gap-2">
               <Card>
                 <CardHeader>
                   <CardTitle>Spotify</CardTitle>
@@ -88,12 +96,16 @@ export default function Profile() {
                         {spotify.providerDisplayName ??
                           spotify.providerAccountId}
                       </span>
-                      <SpotifyDisconnect connectionId={spotify.id} />
                     </>
+                  ) : null}
+                </CardContent>
+                <CardFooter className="flex justify-center">
+                  {spotify ? (
+                    <SpotifyDisconnect connectionId={spotify.id} />
                   ) : (
                     <SpotifyConnect />
                   )}
-                </CardContent>
+                </CardFooter>
               </Card>
               <Card>
                 <CardHeader>
@@ -101,25 +113,29 @@ export default function Profile() {
                 </CardHeader>
                 <CardContent>
                   {twitch ? (
-                    <>
+                    <div className="flex flex-col justify-center">
                       <span>
                         Connected as{" "}
                         {twitch.providerDisplayName ?? twitch.providerAccountId}
                       </span>
-                      <TwitchDisconnect connectionId={twitch.id} />
                       <Link to="../twitch" relative="path">
                         Twitch Settings
                       </Link>
-                    </>
+                    </div>
+                  ) : null}
+                </CardContent>
+                <CardFooter className="flex justify-center">
+                  {twitch ? (
+                    <TwitchDisconnect connectionId={twitch.id} />
                   ) : (
                     <TwitchConnect />
                   )}
-                </CardContent>
+                </CardFooter>
               </Card>
             </div>
           </CardContent>
-        </CardHeader>
-      </Card>
+        </Card>
+      </div>
     </>
   );
 }
@@ -130,27 +146,29 @@ function GuestDetails({
   guestProfile: NonNullable<User["guestProfile"]>;
 }) {
   return (
-    <Card>
+    <Card className="max-w-fit">
       <CardHeader>
         <CardTitle>Guest Profile</CardTitle>
       </CardHeader>
       <CardContent>
-        <Avatar
-          src={guestProfile.avatarUrl}
-          alt={`${guestProfile.firstName} ${guestProfile.lastName}`}
-          className="aspect-square h-16 bg-gradient-to-r from-crl-electric-purple to-crl-iridescent-blue p-0.5"
-        />
+        <div className="flex justify-center">
+          <Avatar
+            src={guestProfile.avatarUrl}
+            alt={`${guestProfile.firstName} ${guestProfile.lastName}`}
+            className="aspect-square h-16 bg-gradient-to-r from-crl-electric-purple to-crl-iridescent-blue p-0.5"
+          />
+        </div>
         <dl>
-          <dt>Name</dt>
-          <dd>
+          <dt className="font-semibold">Name</dt>
+          <dd className="text-sm">
             {guestProfile.firstName} {guestProfile.lastName}
           </dd>
-          <dt>Company</dt>
-          <dd>{guestProfile.company}</dd>
-          <dt>Title</dt>
-          <dd>{guestProfile.title}</dd>
-          <dt>Twitter</dt>
-          <dd>@{guestProfile.twitter}</dd>
+          <dt className="font-semibold">Company</dt>
+          <dd className="text-sm">{guestProfile.company}</dd>
+          <dt className="font-semibold">Title</dt>
+          <dd className="text-sm">{guestProfile.title}</dd>
+          <dt className="font-semibold">Twitter</dt>
+          <dd className="text-sm">@{guestProfile.twitter}</dd>
         </dl>
       </CardContent>
     </Card>

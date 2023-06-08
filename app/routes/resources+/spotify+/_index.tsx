@@ -6,7 +6,6 @@ import {
   json
 } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
-import { type ButtonHTMLAttributes } from "react";
 import { requireUserId } from "~/utils/auth.server";
 import { cn, generateRandomString } from "~/utils/misc";
 import { spotifyStateCookie } from "~/utils/cookies.server";
@@ -15,6 +14,7 @@ import { z } from "zod";
 import { parse } from "@conform-to/zod";
 import { Spotify } from "~/components/brand-logos";
 import env from "~/utils/env.server";
+import { Button, type ButtonProps } from "~/components/ui/button";
 
 const { SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URI } = env;
 
@@ -110,7 +110,7 @@ export function SpotifyDisconnect({ connectionId }: { connectionId: string }) {
   );
 }
 
-interface SpotifyButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+interface SpotifyButtonProps extends ButtonProps {
   title?: string;
   state?: "idle" | "submitting" | "loading";
 }
@@ -122,16 +122,13 @@ export function SpotifyButton({
   ...props
 }: SpotifyButtonProps) {
   return (
-    <button
+    <Button
       {...props}
-      className={cn(
-        props.className,
-        "inline-flex items-center rounded bg-[#1db954] px-4 py-2 font-semibold text-white duration-300 hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-75"
-      )}
+      className={cn(props.className, "bg-[#1db954] py-6 text-white")}
       disabled={disabled || state !== "idle"}
     >
-      <Spotify className="mr-2 h-8 w-auto" />
+      <Spotify className="mr-2 h-6 w-auto" />
       <span>{title}</span>
-    </button>
+    </Button>
   );
 }

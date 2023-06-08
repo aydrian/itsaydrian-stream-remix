@@ -42,7 +42,7 @@ export default function ShowPage() {
   return (
     <>
       <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
-      <Card>
+      <Card className="max-w-fit">
         <CardHeader>
           <CardTitle>Episodes</CardTitle>
         </CardHeader>

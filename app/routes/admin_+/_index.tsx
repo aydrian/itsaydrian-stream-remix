@@ -6,6 +6,7 @@ import { authenticator } from "~/utils/auth.server";
 
 import { redirectToCookie } from "~/utils/cookies.server";
 import { FormLoginForm } from "~/routes/auth.form";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 export const loader = async ({ request }: LoaderArgs) => {
   await authenticator.isAuthenticated(request, {
@@ -25,7 +26,6 @@ export const loader = async ({ request }: LoaderArgs) => {
   if (typeof error?.message === "string") {
     errorMessage = error.message;
   }
-  // TODO: Is this necessary?
   headers.append("Set-Cookie", await commitSession(session));
 
   return json({ loginMessage, formError: errorMessage }, { headers });
@@ -34,12 +34,18 @@ export const loader = async ({ request }: LoaderArgs) => {
 export default function AdminIndex() {
   const data = useLoaderData<typeof loader>();
   return (
-    <main>
-      <h3>Login</h3>
-      {data.loginMessage ? (
-        <div className="text-sm text-red-500">{data.loginMessage}</div>
-      ) : null}
-      <FormLoginForm formError={data.formError} />
+    <main className="container flex min-h-screen items-center justify-center">
+      <Card>
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {data.loginMessage ? (
+            <div className="text-sm text-red-500">{data.loginMessage}</div>
+          ) : null}
+          <FormLoginForm formError={data.formError} />
+        </CardContent>
+      </Card>
     </main>
   );
 }

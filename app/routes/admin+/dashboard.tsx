@@ -48,7 +48,7 @@ export default function AdminDashboard() {
   return (
     <>
       <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-      <Card>
+      <Card className="max-w-fit">
         <CardHeader>
           <CardTitle>Upcoming Episodes</CardTitle>
         </CardHeader>

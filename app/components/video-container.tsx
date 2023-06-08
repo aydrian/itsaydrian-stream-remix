@@ -15,7 +15,7 @@ export function VideoContainer({
   showGuides,
   Caption = DefaultCaption
 }: props) {
-  const { elementRef, Dimensions } = useShowGuides<HTMLElement>(
+  const { elementRef, Guide } = useShowGuides<HTMLElement>(
     `${guest.order === 0 ? "Host" : "Guest"} ${
       guest.order > 0 ? guest.order : ""
     }`
@@ -28,7 +28,7 @@ export function VideoContainer({
         `relative m-0 flex grow flex-col items-center justify-end`
       )}
     >
-      {showGuides ? <Dimensions /> : null}
+      {showGuides ? <Guide /> : null}
 
       <Caption guest={guest} />
     </figure>

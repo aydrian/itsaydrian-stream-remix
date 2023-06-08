@@ -96,7 +96,7 @@ export function FormLoginForm({ formError }: { formError?: string | null }) {
       <ErrorList errors={form.errors} id={form.errorId} />
       <SubmitButton
         type="submit"
-        className="mt-4 px-6 py-2 md:min-w-[150px] md:self-start"
+        className="mt-4 px-6 py-2"
         state={loginFetcher.state}
       >
         Login

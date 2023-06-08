@@ -12,7 +12,7 @@ export function useShowGuides<T extends HTMLElement>(label?: string) {
     }
   }, []);
 
-  function Dimensions() {
+  function Guide() {
     return (
       <div className="flex h-full w-full items-center justify-center border border-red-500">
         <div className="flex max-h-fit max-w-fit flex-col items-center rounded bg-red-500 p-2 text-white">
@@ -23,5 +23,5 @@ export function useShowGuides<T extends HTMLElement>(label?: string) {
     );
   }
 
-  return { elementRef, width, height, Dimensions };
+  return { elementRef, width, height, Guide };
 }

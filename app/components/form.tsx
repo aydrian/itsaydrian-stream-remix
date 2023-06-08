@@ -1,5 +1,8 @@
 import React, { useId } from "react";
-import { clsx } from "clsx";
+import { cn } from "~/utils/misc";
+import { Input, type InputProps } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { Button } from "./ui/button";
 
 export type ListOfErrors = Array<string | null | undefined> | null | undefined;
 
@@ -29,8 +32,8 @@ export function Field({
   errors,
   className
 }: {
-  labelProps: Omit<JSX.IntrinsicElements["label"], "className">;
-  inputProps: Omit<JSX.IntrinsicElements["input"], "className">;
+  labelProps: Omit<(typeof Label)["propTypes"], "className">;
+  inputProps: Omit<InputProps, "className">;
   errors?: ListOfErrors;
   className?: string;
 }) {
@@ -39,18 +42,13 @@ export function Field({
   const errorId = errors?.length ? `${id}-error` : undefined;
 
   return (
-    <div className={clsx("flex flex-col", className)}>
-      <label
-        htmlFor={id}
-        {...labelProps}
-        className="text-brand-deep-purple font-bold"
-      />
-      <input
+    <div className={cn("flex flex-col gap-1.5", className)}>
+      <Label htmlFor={id} {...labelProps} />
+      <Input
         id={id}
         aria-invalid={errorId ? true : undefined}
         aria-describedby={errorId}
         {...inputProps}
-        className="border-b-brand-deep-purple !text-brand-gray rounded-none border-b p-2 font-normal"
       />
       <div className="px-4 pb-3 pt-1">
         {errorId ? <ErrorList id={errorId} errors={errors} /> : null}
@@ -68,15 +66,12 @@ export function SubmitButton({
   submittingText?: string;
 }) {
   return (
-    <button
+    <Button
       {...props}
-      className={clsx(
-        props.className,
-        "rounded bg-cyan-600 text-xl font-medium text-white duration-300 hover:shadow-lg hover:brightness-110 disabled:cursor-not-allowed disabled:bg-cyan-600/50"
-      )}
+      className={props.className}
       disabled={props.disabled || state !== "idle"}
     >
       <span>{state === "submitting" ? submittingText : props.children}</span>
-    </button>
+    </Button>
   );
 }

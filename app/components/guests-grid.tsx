@@ -16,9 +16,9 @@ export function GuestsGrid({
   showGuides,
   Caption
 }: props) {
-  let width = "min-w-[512px]";
+  let width = "min-w-[350px]";
   if (guests.length > 2) {
-    width = "min-w-[512px] max-w-[640px]";
+    width = "min-w-[350px] max-w-[640px]";
   }
   if (direction === "horizontal" && [2, 4].includes(guests.length)) {
     width = "min-w-[960px]";

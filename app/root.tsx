@@ -1,4 +1,5 @@
 import type { LinksFunction, V2_MetaFunction } from "@remix-run/node";
+
 import {
   Links,
   LiveReload,
@@ -7,12 +8,13 @@ import {
   Scripts,
   ScrollRestoration
 } from "@remix-run/react";
+
 import stylesheet from "~/tailwind.css";
 
 export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: "/fonts/atkinson-hyperlegible/font.css" },
-  { rel: "stylesheet", href: "/fonts/poppins/font.css" },
-  { rel: "stylesheet", href: stylesheet }
+  { href: "/fonts/atkinson-hyperlegible/font.css", rel: "stylesheet" },
+  { href: "/fonts/poppins/font.css", rel: "stylesheet" },
+  { href: stylesheet, rel: "stylesheet" }
 ];
 
 export const meta: V2_MetaFunction = () => {

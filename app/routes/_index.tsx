@@ -1,13 +1,15 @@
 import type { LoaderArgs } from "@remix-run/node";
+
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+
+import env from "~/utils/env.server";
 import {
   scheduleToJSON,
   streamToJSON,
   twitch,
   videoToJSON
 } from "~/utils/twitch.server";
-import env from "~/utils/env.server";
 
 const { TWITCH_USER_ID } = env;
 
@@ -16,8 +18,8 @@ export const loader = async (_args: LoaderArgs) => {
     [
       twitch.streams.getStreamByUserId(TWITCH_USER_ID),
       twitch.schedule.getSchedule(TWITCH_USER_ID, {
-        startDate: new Date().toJSON(),
-        limit: 1 // Get next show
+        limit: 1, // Get next show
+        startDate: new Date().toJSON()
       }),
       twitch.videos.getVideosByUser(TWITCH_USER_ID, {
         limit: 1,
@@ -29,7 +31,7 @@ export const loader = async (_args: LoaderArgs) => {
   const schedule = scheduleToJSON(hSchedule);
   const stream = await streamToJSON(hStream);
   const video = videoToJSON(hVideo);
-  return json({ stream, schedule, video });
+  return json({ schedule, stream, video });
 };
 
 export default function Index() {

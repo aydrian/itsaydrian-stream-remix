@@ -1,8 +1,9 @@
-import { redirect, type LoaderArgs } from "@remix-run/node";
+import { type LoaderArgs, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
-import { getUserProfile, requestAccessToken } from "~/utils/twitch.server";
+
 import { twitchStateCookie } from "~/utils/cookies.server";
 import { prisma } from "~/utils/db.server";
+import { getUserProfile, requestAccessToken } from "~/utils/twitch.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
@@ -16,24 +17,24 @@ export const loader = async ({ request }: LoaderArgs) => {
     console.log("Twitch state doesn't match.", state, cookie.state);
   }
 
-  const { access_token, token_type, refresh_token, scope, expires_in } =
+  const { access_token, expires_in, refresh_token, scope, token_type } =
     await requestAccessToken(code);
 
-  const { id, display_name } = await getUserProfile(access_token);
-  console.log({ id, display_name });
+  const { display_name, id } = await getUserProfile(access_token);
+  console.log({ display_name, id });
 
   await prisma.connection.create({
     data: {
-      userId: cookie.userId,
+      accessToken: access_token,
+      expiresAt: expires_in,
       provider: "twitch",
       providerAccountId: id,
       providerDisplayName: display_name,
-      type: "oauth",
-      accessToken: access_token,
       refreshToken: refresh_token,
-      tokenType: token_type,
       scope: scope.join(" "),
-      expiresAt: expires_in
+      tokenType: token_type,
+      type: "oauth",
+      userId: cookie.userId
     }
   });
   return redirect(`/admin/settings/profile`, {

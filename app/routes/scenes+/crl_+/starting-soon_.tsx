@@ -1,8 +1,9 @@
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { getNextEpisode } from "~/utils/db.server";
-import * as CrlLogo from "~/components/cockroach-labs-logos";
+
 import { Avatar } from "~/components/avatar";
+import * as CrlLogo from "~/components/cockroach-labs-logos";
+import { getNextEpisode } from "~/utils/db.server";
 
 export const loader = async () => {
   const nextEpisode = await getNextEpisode("CRL");
@@ -10,7 +11,7 @@ export const loader = async () => {
 };
 
 export default function StartingSoon() {
-  const { title, show, guests } = useLoaderData<typeof loader>();
+  const { guests, show, title } = useLoaderData<typeof loader>();
   return (
     <div className="flex aspect-video h-[1080px] flex-col justify-between bg-crl-deep-purple bg-[url('/img/crl-texture-7.svg')] bg-cover px-20 py-16 font-poppins text-white">
       <header>
@@ -28,14 +29,14 @@ export default function StartingSoon() {
         <div className="flex min-h-fit flex-row flex-wrap items-center justify-between gap-16">
           {guests.map((guest) => (
             <div
-              key={guest.id}
               className="flex min-h-fit max-w-min flex-col items-center gap-8 odd:-mt-40 even:mt-40"
+              key={guest.id}
             >
               <div className="min-h-fit min-w-fit">
                 <Avatar
-                  src={guest.avatarUrl}
                   alt={`${guest.firstName} ${guest.lastName}`}
                   className="aspect-square h-80 bg-gradient-to-r from-crl-electric-purple to-crl-iridescent-blue p-1.5"
+                  src={guest.avatarUrl}
                 />
               </div>
               <div className="flex flex-col items-center text-center">

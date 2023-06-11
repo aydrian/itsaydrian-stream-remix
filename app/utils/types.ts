@@ -3,22 +3,22 @@ export type ResolvedRemixLoader<T extends (...args: any) => any> = Awaited<
 >;
 
 export type EventTypes =
-  | "stream.offline"
-  | "stream.online"
+  | "channel.channel_points_custom_reward_redemption.add"
   | "channel.follow"
   | "channel.raid"
   | "channel.subscribe"
-  | "channel.channel_points_custom_reward_redemption.add";
+  | "stream.offline"
+  | "stream.online";
 
 export interface EventSubEvent {}
 
 export interface ChannelEvent extends EventSubEvent {
-  user_id: string;
-  user_login: string;
-  user_name: string;
   broadcaster_user_id: string;
   broadcaster_user_login: string;
   broadcaster_user_name: string;
+  user_id: string;
+  user_login: string;
+  user_name: string;
 }
 
 export interface FollowEvent extends ChannelEvent {
@@ -26,8 +26,8 @@ export interface FollowEvent extends ChannelEvent {
 }
 
 export interface SubscribeEvent extends ChannelEvent {
-  tier: string;
   is_gift: boolean;
+  tier: string;
 }
 
 export interface RaidEvent extends EventSubEvent {
@@ -42,24 +42,24 @@ export interface RaidEvent extends EventSubEvent {
 
 export interface CPRedeemEvent extends ChannelEvent {
   id: string;
-  user_input: string;
-  status: "unknown" | "unfulfilled" | "fulfilled" | "canceled";
-  reward: {
-    id: string;
-    title: string;
-    cost: number;
-    prompt: string;
-  };
   redeemed_at: string;
+  reward: {
+    cost: number;
+    id: string;
+    prompt: string;
+    title: string;
+  };
+  status: "canceled" | "fulfilled" | "unfulfilled" | "unknown";
+  user_input: string;
 }
 
 export interface StreamOnlineEvent extends EventSubEvent {
-  id: string;
   broadcaster_user_id: string;
   broadcaster_user_login: string;
   broadcaster_user_name: string;
-  type: "live" | "playlist" | "watch_party" | "premiere" | "rerun";
+  id: string;
   started_at: string;
+  type: "live" | "playlist" | "premiere" | "rerun" | "watch_party";
 }
 
 export interface StreamOfflineEvent extends EventSubEvent {

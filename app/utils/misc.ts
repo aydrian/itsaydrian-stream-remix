@@ -1,6 +1,6 @@
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { type ClassValue, clsx } from "clsx";
 import { format } from "date-fns";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,13 +18,13 @@ export function formatDateRange(start: Date | string, end: Date | string) {
   const endDate = typeof end === "string" ? new Date(end) : end;
 
   const dateTimeFormat = new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    month: "short",
     day: "numeric",
     hour: "numeric",
     minute: "numeric",
-    year: "numeric",
-    timeZoneName: "short"
+    month: "short",
+    timeZoneName: "short",
+    weekday: "short",
+    year: "numeric"
   });
   return dateTimeFormat.formatRange(startDate, endDate);
 }

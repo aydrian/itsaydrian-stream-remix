@@ -1,9 +1,9 @@
-import * as fs from "node:fs";
-import express from "express";
-import compression from "compression";
-import morgan from "morgan";
 import { createRequestHandler } from "@remix-run/express";
 import { broadcastDevReady, installGlobals } from "@remix-run/node";
+import compression from "compression";
+import express from "express";
+import morgan from "morgan";
+import * as fs from "node:fs";
 
 import * as build from "./build/index.js";
 

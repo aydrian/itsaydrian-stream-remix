@@ -1,10 +1,11 @@
+import { type User } from "@prisma/client";
+import bcrypt from "bcryptjs";
 import { Authenticator, AuthorizationError } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
-import { sessionStorage } from "~/utils/session.server";
 import invariant from "tiny-invariant";
-import bcrypt from "bcryptjs";
+
 import { prisma } from "~/utils/db.server";
-import { type User } from "@prisma/client";
+import { sessionStorage } from "~/utils/session.server";
 
 export const authenticator = new Authenticator<string>(sessionStorage);
 
@@ -43,8 +44,8 @@ export const requireUserId = async (
 
 export async function verifyLogin(email: User["email"], password: string) {
   const userWithPassword = await prisma.user.findUnique({
-    where: { email },
-    select: { id: true, passwordHash: true }
+    select: { id: true, passwordHash: true },
+    where: { email }
   });
 
   if (!userWithPassword || !userWithPassword.passwordHash) {

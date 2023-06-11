@@ -1,5 +1,6 @@
-import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "@remix-run/react";
+import { useEffect } from "react";
+
 import { useEpisode } from "./_layout";
 
 export default function Chatting() {

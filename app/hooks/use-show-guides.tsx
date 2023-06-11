@@ -23,5 +23,5 @@ export function useShowGuides<T extends HTMLElement>(label?: string) {
     );
   }
 
-  return { elementRef, width, height, Guide };
+  return { Guide, elementRef, height, width };
 }

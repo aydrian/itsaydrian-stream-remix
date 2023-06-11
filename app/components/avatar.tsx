@@ -1,22 +1,23 @@
 import clsx from "clsx";
+
 import { Shorthand } from "./cockroach-labs-logos";
 
 export function Avatar({
-  src,
   alt,
-  className
+  className,
+  src
 }: {
-  src: string | null;
   alt: string;
   className?: string;
+  src: null | string;
 }) {
   return (
     <div className={clsx("overflow-hidden rounded-full", className)}>
       {src ? (
         <img
-          src={src}
           alt={alt}
           className="aspect-square h-full rounded-full"
+          src={src}
         />
       ) : (
         <Shorthand className="aspect-square h-full text-white" />

@@ -1,3 +1,12 @@
+import type { LoaderArgs } from "@remix-run/node";
+
+import { Link, NavLink, Outlet } from "@remix-run/react";
+import { LogOut, User } from "lucide-react";
+import { typedjson, useTypedLoaderData } from "remix-typedjson";
+import { twMerge } from "tailwind-merge";
+
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,28 +16,21 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger
 } from "~/components/ui/dropdown-menu";
-import type { LoaderArgs } from "@remix-run/node";
-import { Link, NavLink, Outlet } from "@remix-run/react";
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { Button } from "~/components/ui/button";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
-import { LogOut, User } from "lucide-react";
-import { twMerge } from "tailwind-merge";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await requireUserId(request);
   const dbUser = await prisma.user
     .findUniqueOrThrow({
-      where: { id: userId },
       select: {
-        id: true,
-        firstName: true,
-        lastName: true,
         email: true,
-        guestProfile: { select: { avatarUrl: true } }
-      }
+        firstName: true,
+        guestProfile: { select: { avatarUrl: true } },
+        id: true,
+        lastName: true
+      },
+      where: { id: userId }
     })
     .catch(() => {
       throw new Response("User not found. Odd.", { status: 404 });
@@ -51,26 +53,26 @@ export default function AdminLayout() {
           </div>
           <div className="flex items-center space-x-4 md:w-2/6 lg:space-x-6">
             <NavLink
-              to="/admin/dashboard"
               className={({ isActive }) =>
                 twMerge(navLinkDefaultClassName, isActive && "text-blue-700")
               }
+              to="/admin/dashboard"
             >
               Dashboard
             </NavLink>
             <NavLink
-              to="/admin/shows"
               className={({ isActive }) =>
                 twMerge(navLinkDefaultClassName, isActive && "text-blue-700")
               }
+              to="/admin/shows"
             >
               Shows
             </NavLink>
             <NavLink
-              to="/admin/guests"
               className={({ isActive }) =>
                 twMerge(navLinkDefaultClassName, isActive && "text-blue-700")
               }
+              to="/admin/guests"
             >
               Guests
             </NavLink>
@@ -80,8 +82,8 @@ export default function AdminLayout() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
-                    variant="ghost"
                     className="relative h-8 w-8 rounded-full"
+                    variant="ghost"
                   >
                     <Avatar>
                       <AvatarImage
@@ -93,7 +95,7 @@ export default function AdminLayout() {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuContent align="end" className="w-56" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">

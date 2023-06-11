@@ -12,9 +12,9 @@ async function seed() {
   await prisma.user.create({
     data: {
       email,
-      passwordHash,
       firstName,
-      lastName
+      lastName,
+      passwordHash
     }
   });
 

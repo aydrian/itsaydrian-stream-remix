@@ -1,13 +1,16 @@
-import type { EpisodeGuests } from "~/utils/db.server";
 import { type LoaderArgs, Response, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { useEpisode } from "./_layout";
+
+import type { EpisodeGuests } from "~/utils/db.server";
+
+import { Twitter } from "~/components/brand-logos";
 import { GuestsGrid } from "~/components/guests-grid";
 import {
   ScreenContainer,
   type ScreenSize
 } from "~/components/screen-container";
-import { Twitter } from "~/components/brand-logos";
+
+import { useEpisode } from "./_layout";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   const num = parseInt(params.num ?? "");
@@ -30,12 +33,12 @@ export default function Programming() {
     // <div className="grid h-full grid-cols-[auto_1408px]">
     <div className="flex h-full w-full">
       <GuestsGrid
-        guests={slice}
-        direction="vertical"
-        showGuides={showGuides}
         Caption={CrlCompactCaption}
+        direction="vertical"
+        guests={slice}
+        showGuides={showGuides}
       />
-      <ScreenContainer showGuides={showGuides} screenSize={screenSize} />
+      <ScreenContainer screenSize={screenSize} showGuides={showGuides} />
     </div>
   );
 }

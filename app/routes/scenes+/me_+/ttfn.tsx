@@ -1,5 +1,5 @@
-import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
+import { useEffect, useRef } from "react";
 import SplitType from "split-type";
 
 export default function TTFN() {
@@ -8,17 +8,17 @@ export default function TTFN() {
   useEffect(() => {
     if (target.current) {
       const text = new SplitType(target.current, {
-        types: "words, chars",
-        charClass: "char translate-y-full"
+        charClass: "char translate-y-full",
+        types: "words, chars"
       });
       gsap.set(target.current, { visibility: "visible" });
       gsap.to(text.chars, {
-        y: 0,
-        stagger: 0.1,
         delay: 0.03,
         duration: 1,
         repeat: -1,
-        repeatDelay: 0.7
+        repeatDelay: 0.7,
+        stagger: 0.1,
+        y: 0
       });
     }
   }, [target]);
@@ -29,12 +29,12 @@ export default function TTFN() {
         TTFN
       </h1>
       <h2
-        ref={target}
-        className="text-7xl font-bold leading-tight text-cyan-500"
         style={{
-          visibility: "hidden",
-          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0% 100%)"
+          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0% 100%)",
+          visibility: "hidden"
         }}
+        className="text-7xl font-bold leading-tight text-cyan-500"
+        ref={target}
       >
         Ta-Ta For Now 👋
       </h2>

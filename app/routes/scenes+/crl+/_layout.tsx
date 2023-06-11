@@ -1,10 +1,13 @@
-import type { ResolvedRemixLoader } from "~/utils/types";
 import type { LoaderArgs } from "@remix-run/node";
+
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react";
-import { getNextEpisode } from "~/utils/db.server";
-import * as CrlLogo from "~/components/cockroach-labs-logos";
+
+import type { ResolvedRemixLoader } from "~/utils/types";
+
 import { GitHub, Instagram, Twitter, YouTube } from "~/components/brand-logos";
+import * as CrlLogo from "~/components/cockroach-labs-logos";
+import { getNextEpisode } from "~/utils/db.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);

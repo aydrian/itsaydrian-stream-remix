@@ -1,14 +1,16 @@
 import React, { useId } from "react";
-import { cn } from "~/utils/misc";
+
 import { Input, type InputProps } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { cn } from "~/utils/misc";
+
 import { Button } from "./ui/button";
 
-export type ListOfErrors = Array<string | null | undefined> | null | undefined;
+export type ListOfErrors = Array<null | string | undefined> | null | undefined;
 
 export function ErrorList({
-  id,
-  errors
+  errors,
+  id
 }: {
   errors?: ListOfErrors;
   id?: string;
@@ -16,9 +18,9 @@ export function ErrorList({
   const errorsToRender = errors?.filter(Boolean);
   if (!errorsToRender?.length) return null;
   return (
-    <ul id={id} className="space-y-1">
+    <ul className="space-y-1" id={id}>
       {errorsToRender.map((e) => (
-        <li key={e} className="text-brand-danger text-xs">
+        <li className="text-brand-danger text-xs" key={e}>
           {e}
         </li>
       ))}
@@ -27,15 +29,15 @@ export function ErrorList({
 }
 
 export function Field({
-  labelProps,
-  inputProps,
+  className,
   errors,
-  className
+  inputProps,
+  labelProps
 }: {
-  labelProps: Omit<(typeof Label)["propTypes"], "className">;
-  inputProps: Omit<InputProps, "className">;
-  errors?: ListOfErrors;
   className?: string;
+  errors?: ListOfErrors;
+  inputProps: Omit<InputProps, "className">;
+  labelProps: Omit<(typeof Label)["propTypes"], "className">;
 }) {
   const fallbackId = useId();
   const id = inputProps.id ?? fallbackId;
@@ -45,13 +47,13 @@ export function Field({
     <div className={cn("flex flex-col gap-1.5", className)}>
       <Label htmlFor={id} {...labelProps} />
       <Input
-        id={id}
-        aria-invalid={errorId ? true : undefined}
         aria-describedby={errorId}
+        aria-invalid={errorId ? true : undefined}
+        id={id}
         {...inputProps}
       />
       <div className="px-4 pb-3 pt-1">
-        {errorId ? <ErrorList id={errorId} errors={errors} /> : null}
+        {errorId ? <ErrorList errors={errors} id={errorId} /> : null}
       </div>
     </div>
   );
@@ -62,7 +64,7 @@ export function SubmitButton({
   submittingText = "Submitting...",
   ...props
 }: React.ComponentPropsWithRef<"button"> & {
-  state?: "idle" | "submitting" | "loading";
+  state?: "idle" | "loading" | "submitting";
   submittingText?: string;
 }) {
   return (

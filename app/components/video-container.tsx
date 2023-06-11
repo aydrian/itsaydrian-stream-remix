@@ -1,32 +1,34 @@
-import type { EpisodeGuests } from "~/utils/db.server";
 import clsx from "clsx";
+
+import type { EpisodeGuests } from "~/utils/db.server";
+
 import { useShowGuides } from "~/hooks/use-show-guides";
 
 type props = {
-  guest: EpisodeGuests[number];
-  className?: string;
-  showGuides?: boolean;
   Caption?: typeof DefaultCaption;
+  className?: string;
+  guest: EpisodeGuests[number];
+  showGuides?: boolean;
 };
 
 export function VideoContainer({
-  guest,
+  Caption = DefaultCaption,
   className,
-  showGuides,
-  Caption = DefaultCaption
+  guest,
+  showGuides
 }: props) {
-  const { elementRef, Guide } = useShowGuides<HTMLElement>(
+  const { Guide, elementRef } = useShowGuides<HTMLElement>(
     `${guest.order === 0 ? "Host" : "Guest"} ${
       guest.order > 0 ? guest.order : ""
     }`
   );
   return (
     <figure
-      ref={elementRef}
       className={clsx(
         className,
         `relative m-0 flex grow flex-col items-center justify-end`
       )}
+      ref={elementRef}
     >
       {showGuides ? <Guide /> : null}
 

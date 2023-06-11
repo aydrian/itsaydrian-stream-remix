@@ -1,7 +1,9 @@
 import { type LoaderArgs, Response, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { useEpisode } from "./_layout";
+
 import { GuestsGrid } from "~/components/guests-grid";
+
+import { useEpisode } from "./_layout";
 
 export const loader = async ({ params }: LoaderArgs) => {
   const num = parseInt(params.num ?? "");

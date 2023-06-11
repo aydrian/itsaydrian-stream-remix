@@ -1,5 +1,6 @@
-import { json, redirect, type LoaderArgs } from "@remix-run/node";
+import { type LoaderArgs, json, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
@@ -8,14 +9,14 @@ import { getUserEventSubSubscriptions } from "~/utils/twitch.server";
 export const loader = async ({ request }: LoaderArgs) => {
   const userId = await requireUserId(request);
   const connection = await prisma.connection.findFirst({
-    where: { provider: "twitch", userId: userId },
     select: {
+      accessToken: true,
       id: true,
       providerAccountId: true,
       providerDisplayName: true,
-      accessToken: true,
       refreshToken: true
-    }
+    },
+    where: { provider: "twitch", userId: userId }
   });
   if (!connection) {
     return redirect("/admin/settings/profile");

@@ -1,5 +1,7 @@
-import { type LoaderArgs, json, Response } from "@remix-run/node";
+import { type LoaderArgs, Response, json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,22 +13,21 @@ import { DuplicateEpisodeForm } from "~/routes/resources+/episode-duplicate";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateRange } from "~/utils/misc";
-import { Button } from "~/components/ui/button";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
   await requireUserId(request);
   const { showId } = params;
   const show = await prisma.show.findUnique({
-    where: { id: showId },
     select: {
-      id: true,
-      title: true,
       description: true,
       episodes: {
-        select: { id: true, startDate: true, endDate: true, title: true },
-        orderBy: { startDate: "desc" }
-      }
-    }
+        orderBy: { startDate: "desc" },
+        select: { endDate: true, id: true, startDate: true, title: true }
+      },
+      id: true,
+      title: true
+    },
+    where: { id: showId }
   });
   if (!show) {
     throw new Response("Not Found", {
@@ -38,7 +39,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 };
 
 export default function ShowPage() {
-  const { title, episodes } = useLoaderData<typeof loader>();
+  const { episodes, title } = useLoaderData<typeof loader>();
   return (
     <>
       <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
@@ -49,7 +50,7 @@ export default function ShowPage() {
         <CardContent>
           <div className="flex justify-start gap-4">
             {episodes.map((episode) => (
-              <Card key={episode.id} className="max-w-xs">
+              <Card className="max-w-xs" key={episode.id}>
                 <CardHeader>
                   <CardTitle>{episode.title}</CardTitle>
                 </CardHeader>

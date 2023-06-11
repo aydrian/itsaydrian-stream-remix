@@ -1,7 +1,7 @@
 type LogoProps = {
   className?: string;
   title?: string;
-  variant?: "light" | "dark" | "1color";
+  variant?: "1color" | "dark" | "light";
 };
 
 export function Stacked({
@@ -14,9 +14,9 @@ export function Stacked({
   }
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 129 101"
       className={className}
+      viewBox="0 0 129 101"
+      xmlns="http://www.w3.org/2000/svg"
     >
       <title>{title}</title>
       <path
@@ -37,9 +37,9 @@ export function FullHorizontal({
   }
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 301 43"
       className={className}
+      viewBox="0 0 301 43"
+      xmlns="http://www.w3.org/2000/svg"
     >
       <title>{title}</title>
       <path
@@ -60,20 +60,20 @@ export function Shorthand({
   }
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
+      className={className}
       fill="none"
       viewBox="0 0 80 80"
-      className={className}
+      xmlns="http://www.w3.org/2000/svg"
     >
       <title>{title}</title>
-      <g fill="currentColor" clip-path="url(#a)">
+      <g clip-path="url(#a)" fill="currentColor">
         <path d="M36.1 43c-2.2-2-4.1-4.3-5.7-6.9l-.2-.3-.1.3c-.8 2.6-1.2 5.4-1.2 8.2 0 7.9 3.5 15.5 9.5 20.7l.3.2V48.6c-.1-2.1-1-4.2-2.6-5.6ZM43.9 43c-1.6 1.4-2.5 3.5-2.5 5.7v16.6l.3-.2c6-5.2 9.5-12.7 9.5-20.7 0-2.8-.4-5.5-1.2-8.2l-.1-.3-.2.3C48 38.7 46.1 41 43.9 43Z" />
         <path d="M40 0C17.9 0 0 17.9 0 40s17.9 40 40 40 40-17.9 40-40S62.1 0 40 0Zm21.5 17.5c-1.7-.3-3.5-.5-5.2-.5-4.8 0-9.5 1.3-13.6 3.6l-.2.1.2.1C49.9 26.5 54 35.1 54 44.3c0 2.5-.3 4.9-.9 7.3C51.3 58.7 47 65 40.9 69.2l-.9.5-.8-.5c-8.2-5.7-13.1-15-13.1-24.9 0-9.2 4.1-17.7 11.3-23.5l.2-.1-.2-.1c-4.1-2.4-8.8-3.6-13.6-3.6-1.8 0-3.5.2-5.2.5l-.7-2.7c1.9-.4 3.9-.6 5.9-.6 5.7 0 11.3 1.6 16.2 4.7l.1.1.1-.1c4.8-3.1 10.4-4.7 16.2-4.7 2 0 4 .2 5.9.6l-.8 2.7Z" />
         <path d="M40 22.3c-2.2 1.6-4 3.5-5.6 5.5-2.1 2.7-2.1 6.5 0 9.3 1.6 2.1 3.4 3.9 5.5 5.4l.1.1.1-.1c2.1-1.6 4-3.4 5.5-5.5 2-2.7 2-6.4 0-9.1-1.5-2.1-3.4-4-5.6-5.6Z" />
       </g>
       <defs>
         <clipPath id="a">
-          <path fill="#fff" d="M0 0h80v80H0z" />
+          <path d="M0 0h80v80H0z" fill="#fff" />
         </clipPath>
       </defs>
     </svg>

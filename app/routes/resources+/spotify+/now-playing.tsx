@@ -1,9 +1,12 @@
 import type { LoaderArgs } from "@remix-run/node";
-import type { Song } from "~/utils/spotify.server";
+
 import { eventStream, useEventSource } from "remix-utils";
 import invariant from "tiny-invariant";
-import { getUsersNowPlaying } from "~/utils/spotify.server";
+
+import type { Song } from "~/utils/spotify.server";
+
 import { nowPlayingCookie } from "~/utils/cookies.server";
+import { getUsersNowPlaying } from "~/utils/spotify.server";
 
 const sleep = (ms: number) => new Promise((_) => setTimeout(_, ms));
 
@@ -22,7 +25,7 @@ export const loader = async ({ request }: LoaderArgs) => {
           polling = false;
           break;
         }
-        send({ event: "now-playing", data: JSON.stringify(song) });
+        send({ data: JSON.stringify(song), event: "now-playing" });
         await sleep(song.duration - song.progress);
       }
     })();
@@ -49,9 +52,9 @@ export function NowPlaying() {
     <div className="flex items-center gap-1 font-atkinson-hyperlegible">
       {albumArt ? (
         <img
-          src={albumArt.url}
           alt={`${song.title} - ${song.artist}`}
           className="aspect-square h-[42px] rounded"
+          src={albumArt.url}
         />
       ) : null}
       <div className="flex flex-col">

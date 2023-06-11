@@ -1,12 +1,13 @@
 import type { LoaderArgs } from "@remix-run/node";
+
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { commitSession, getSession } from "~/utils/session.server";
-import { authenticator } from "~/utils/auth.server";
 
-import { redirectToCookie } from "~/utils/cookies.server";
-import { FormLoginForm } from "~/routes/auth.form";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { FormLoginForm } from "~/routes/auth.form";
+import { authenticator } from "~/utils/auth.server";
+import { redirectToCookie } from "~/utils/cookies.server";
+import { commitSession, getSession } from "~/utils/session.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   await authenticator.isAuthenticated(request, {
@@ -22,13 +23,13 @@ export const loader = async ({ request }: LoaderArgs) => {
   }
   const session = await getSession(request.headers.get("cookie"));
   const error = session.get(authenticator.sessionErrorKey);
-  let errorMessage: string | null = null;
+  let errorMessage: null | string = null;
   if (typeof error?.message === "string") {
     errorMessage = error.message;
   }
   headers.append("Set-Cookie", await commitSession(session));
 
-  return json({ loginMessage, formError: errorMessage }, { headers });
+  return json({ formError: errorMessage, loginMessage }, { headers });
 };
 
 export default function AdminIndex() {

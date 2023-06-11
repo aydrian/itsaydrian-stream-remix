@@ -1,18 +1,19 @@
 import { Link } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+
 import { prisma } from "~/utils/db.server";
 import { formatDateRange } from "~/utils/misc";
 
 export const loader = async () => {
   const episodes = await prisma.episode.findMany({
-    where: { show: { sceneCollection: "CRL" } },
+    orderBy: { startDate: "desc" },
     select: {
+      endDate: true,
       id: true,
-      title: true,
       startDate: true,
-      endDate: true
+      title: true
     },
-    orderBy: { startDate: "desc" }
+    where: { show: { sceneCollection: "CRL" } }
   });
 
   return typedjson({ episodes });
@@ -32,8 +33,8 @@ export default function CrlPromos() {
         <tbody>
           {episodes.map((episode) => (
             <tr
-              key={episode.id}
               className="border-b bg-white dark:border-gray-700 dark:bg-gray-800"
+              key={episode.id}
             >
               <td className="px-6 py-4">
                 {formatDateRange(episode.startDate, episode.endDate)}
@@ -47,8 +48,8 @@ export default function CrlPromos() {
                 </a> */}
                 <Link
                   className="font-medium text-crl-dark-blue hover:underline"
-                  to={`./${episode.id}`}
                   relative="path"
+                  to={`./${episode.id}`}
                 >
                   {episode.title}
                 </Link>

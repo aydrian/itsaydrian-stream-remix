@@ -1,6 +1,7 @@
-import { json, type LoaderArgs } from "@remix-run/node";
+import { type LoaderArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
+
 import { EpisodeEditor } from "~/routes/resources+/episode-editor";
 import { requireUserId } from "~/utils/auth.server";
 

@@ -9,8 +9,8 @@ export const loader = async ({ params }: LoaderArgs) => {
   const page = await browser.newPage();
 
   page.setViewportSize({
-    width: 1920,
-    height: 1080
+    height: 1080,
+    width: 1920
   });
   await page.goto(url);
 
@@ -19,9 +19,9 @@ export const loader = async ({ params }: LoaderArgs) => {
   await browser.close();
 
   return new Response(screenshotBuffer, {
-    status: 200,
     headers: {
       "Content-Type": "image/png"
-    }
+    },
+    status: 200
   });
 };

@@ -1,15 +1,16 @@
-import {
-  type DataFunctionArgs,
-  redirect,
-  json,
-  Response
-} from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
-import { Button } from "~/components/ui/button";
-import { requireUserId } from "~/utils/auth.server";
-import { z } from "zod";
 import { useForm } from "@conform-to/react";
 import { parse } from "@conform-to/zod";
+import {
+  type DataFunctionArgs,
+  Response,
+  json,
+  redirect
+} from "@remix-run/node";
+import { useFetcher } from "@remix-run/react";
+import { z } from "zod";
+
+import { Button } from "~/components/ui/button";
+import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 
 const EpisodeDuplicateSchema = z.object({
@@ -20,8 +21,8 @@ export const action = async ({ request }: DataFunctionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, {
-    schema: EpisodeDuplicateSchema,
-    acceptMultipleErrors: () => true
+    acceptMultipleErrors: () => true,
+    schema: EpisodeDuplicateSchema
   });
   if (!submission.value) {
     return json(
@@ -38,21 +39,21 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
   const { episodeId } = submission.value;
   const findResult = await prisma.episode.findUnique({
-    where: { id: episodeId },
     select: {
-      showId: true,
-      title: true,
-      startDate: true,
-      endDate: true,
       description: true,
-      vdoPassword: true,
+      endDate: true,
       guests: {
         select: {
           guestId: true,
           order: true
         }
-      }
-    }
+      },
+      showId: true,
+      startDate: true,
+      title: true,
+      vdoPassword: true
+    },
+    where: { id: episodeId }
   });
 
   if (!findResult) {
@@ -87,8 +88,8 @@ export function DuplicateEpisodeForm({ episodeId }: { episodeId: string }) {
 
   return (
     <duplicateEpisodeFetcher.Form
-      method="post"
       action="/resources/episode-duplicate"
+      method="post"
       {...form.props}
     >
       <input name="episodeId" type="hidden" value={episodeId} />

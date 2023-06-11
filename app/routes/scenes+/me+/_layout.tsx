@@ -1,10 +1,13 @@
-import type { ResolvedRemixLoader } from "~/utils/types";
 import type { LoaderArgs } from "@remix-run/node";
+
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react";
+
+import type { ResolvedRemixLoader } from "~/utils/types";
+
 import { NowPlaying } from "~/routes/resources+/spotify+/now-playing";
-import { getNextEpisode, prisma } from "~/utils/db.server";
 import { nowPlayingCookie } from "~/utils/cookies.server";
+import { getNextEpisode, prisma } from "~/utils/db.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   const url = new URL(request.url);
@@ -12,13 +15,13 @@ export const loader = async ({ request }: LoaderArgs) => {
   const [nextEpisode, spotifyConnection] = await Promise.all([
     getNextEpisode("ME"),
     prisma.connection.findUnique({
-      where: { id: "6a003ecf-8f0b-44d4-a943-ba97649587d2" },
       select: {
-        id: true,
-        refreshToken: true,
         accessToken: true,
-        expiresAt: true
-      }
+        expiresAt: true,
+        id: true,
+        refreshToken: true
+      },
+      where: { id: "6a003ecf-8f0b-44d4-a943-ba97649587d2" }
     })
   ]);
 

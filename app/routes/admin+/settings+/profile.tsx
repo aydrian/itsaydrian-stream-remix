@@ -1,5 +1,6 @@
-import { json, Response, type LoaderArgs } from "@remix-run/node";
+import { type LoaderArgs, Response, json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+
 import { Avatar } from "~/components/avatar";
 import {
   Card,
@@ -8,9 +9,6 @@ import {
   CardHeader,
   CardTitle
 } from "~/components/ui/card";
-import { requireUserId } from "~/utils/auth.server";
-import { prisma } from "~/utils/db.server";
-import { type ResolvedRemixLoader } from "~/utils/types";
 import {
   SpotifyConnect,
   SpotifyDisconnect
@@ -19,6 +17,9 @@ import {
   TwitchConnect,
   TwitchDisconnect
 } from "~/routes/resources+/twitch+/_index";
+import { requireUserId } from "~/utils/auth.server";
+import { prisma } from "~/utils/db.server";
+import { type ResolvedRemixLoader } from "~/utils/types";
 
 type User = ResolvedRemixLoader<typeof loader>["user"];
 
@@ -26,15 +27,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const userId = await requireUserId(request);
   try {
     const user = await prisma.user.findUniqueOrThrow({
-      where: {
-        id: userId
-      },
       select: {
-        id: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        guestProfile: true,
         connections: {
           select: {
             id: true,
@@ -42,7 +35,15 @@ export const loader = async ({ request }: LoaderArgs) => {
             providerAccountId: true,
             providerDisplayName: true
           }
-        }
+        },
+        email: true,
+        firstName: true,
+        guestProfile: true,
+        id: true,
+        lastName: true
+      },
+      where: {
+        id: userId
       }
     });
 
@@ -118,7 +119,7 @@ export default function Profile() {
                         Connected as{" "}
                         {twitch.providerDisplayName ?? twitch.providerAccountId}
                       </span>
-                      <Link to="../twitch" relative="path">
+                      <Link relative="path" to="../twitch">
                         Twitch Settings
                       </Link>
                     </div>
@@ -153,9 +154,9 @@ function GuestDetails({
       <CardContent>
         <div className="flex justify-center">
           <Avatar
-            src={guestProfile.avatarUrl}
             alt={`${guestProfile.firstName} ${guestProfile.lastName}`}
             className="aspect-square h-16 bg-gradient-to-r from-crl-electric-purple to-crl-iridescent-blue p-0.5"
+            src={guestProfile.avatarUrl}
           />
         </div>
         <dl>

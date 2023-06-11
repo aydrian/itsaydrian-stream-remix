@@ -1,10 +1,12 @@
 import type { ActionFunction } from "@remix-run/node";
 import type { HelixSchedule, HelixStream, HelixVideo } from "@twurple/api";
+
 import { Response } from "@remix-run/node";
-import crypto from "crypto";
-import invariant from "tiny-invariant";
 import { ApiClient } from "@twurple/api";
 import { AppTokenAuthProvider } from "@twurple/auth";
+import crypto from "crypto";
+import invariant from "tiny-invariant";
+
 // import { emitter } from "~/utils/emitter.server";
 import env from "~/utils/env.server";
 
@@ -19,20 +21,20 @@ export const scheduleToJSON = (schedule: HelixSchedule | null) => {
   if (!schedule) return null;
   const segments = schedule.segments.map((segment) => {
     return {
-      id: segment.id,
-      title: segment.title,
       categoryName: segment.categoryName,
+      endDate: segment.endDate,
+      id: segment.id,
       isRecurring: segment.isRecurring,
       startDate: segment.startDate,
-      endDate: segment.endDate
+      title: segment.title
     };
   });
   return {
-    broadcasterName: schedule.broadcasterName,
     broadcasterDisplayName: schedule.broadcasterDisplayName,
-    vacationStartDate: schedule.vacationStartDate,
+    broadcasterName: schedule.broadcasterName,
+    segments,
     vacationEndDate: schedule.vacationEndDate,
-    segments
+    vacationStartDate: schedule.vacationStartDate
   };
 };
 
@@ -40,26 +42,26 @@ export const streamToJSON = async (stream: HelixStream | null) => {
   if (!stream) return null;
   const game = await stream.getGame();
   return {
-    title: stream.title,
-    thumbnailUrl: stream.thumbnailUrl,
-    userName: stream.userName,
-    userDislayName: stream.userDisplayName,
+    gameBoxArtUrl: game?.boxArtUrl,
     gameName: game?.name,
-    gameBoxArtUrl: game?.boxArtUrl
+    thumbnailUrl: stream.thumbnailUrl,
+    title: stream.title,
+    userDislayName: stream.userDisplayName,
+    userName: stream.userName
   };
 };
 
 export const videoToJSON = (video: HelixVideo | null) => {
   if (!video) return null;
   return {
+    creationDate: video.creationDate,
+    description: video.description,
+    duration: video.duration,
+    thumbnailUrl: video.thumbnailUrl,
     title: video.title,
     url: video.url,
-    thumbnailUrl: video.thumbnailUrl,
-    duration: video.duration,
-    userName: video.userName,
     userDislayName: video.userDisplayName,
-    creationDate: video.creationDate,
-    description: video.description
+    userName: video.userName
   };
 };
 
@@ -126,38 +128,38 @@ export const requestAccessToken = async (
   code: string
 ): Promise<{
   access_token: string;
-  token_type: string;
-  scope: string[];
   expires_in: number;
   refresh_token: string;
+  scope: string[];
+  token_type: string;
 }> => {
   return fetch("https://id.twitch.tv/oauth2/token", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
     body: new URLSearchParams({
       client_id: TWITCH_CLIENT_ID,
       client_secret: TWITCH_CLIENT_SECRET,
       code: code,
       grant_type: "authorization_code",
       redirect_uri: TWITCH_REDIRECT_URI
-    })
+    }),
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    method: "POST"
   }).then((res) => res.json());
 };
 
 export const refreshAccessToken = async (refresh_token: string) => {
   return fetch(`https://id.twitch.tv/oauth2/token`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
     body: new URLSearchParams({
       client_id: TWITCH_CLIENT_ID,
       client_secret: TWITCH_CLIENT_SECRET,
       grant_type: "refresh_token",
       refresh_token
-    })
+    }),
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    method: "POST"
   }).then((res) => res.json());
 };
 
@@ -175,14 +177,14 @@ export const getUserEventSubSubscriptions = async (
   userId: string
 ): Promise<
   {
+    condition: { broadcaster_user_id: string };
+    cost: number;
+    created_at: string;
     id: string;
     status: string;
+    transport: { callback: string; method: string };
     type: string;
     version: string;
-    condition: { broadcaster_user_id: string };
-    created_at: string;
-    transport: { method: string; callback: string };
-    cost: number;
   }[]
 > => {
   const auth = await authProvider.getAppAccessToken();

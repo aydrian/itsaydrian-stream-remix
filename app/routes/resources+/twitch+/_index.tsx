@@ -1,20 +1,21 @@
 import { useForm } from "@conform-to/react";
+import { parse } from "@conform-to/zod";
 import {
-  redirect,
-  type LoaderArgs,
   type ActionArgs,
-  json
+  type LoaderArgs,
+  json,
+  redirect
 } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
+import { z } from "zod";
+
+import { Twitch } from "~/components/brand-logos";
+import { Button, type ButtonProps } from "~/components/ui/button";
 import { requireUserId } from "~/utils/auth.server";
-import { cn, generateRandomString } from "~/utils/misc";
 import { twitchStateCookie } from "~/utils/cookies.server";
 import { prisma } from "~/utils/db.server";
-import { z } from "zod";
-import { parse } from "@conform-to/zod";
-import { Twitch } from "~/components/brand-logos";
 import env from "~/utils/env.server";
-import { Button, type ButtonProps } from "~/components/ui/button";
+import { cn, generateRandomString } from "~/utils/misc";
 
 const { TWITCH_CLIENT_ID, TWITCH_REDIRECT_URI } = env;
 
@@ -52,8 +53,8 @@ export const action = async ({ request }: ActionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, {
-    schema: DisconnectSchema,
-    acceptMultipleErrors: () => true
+    acceptMultipleErrors: () => true,
+    schema: DisconnectSchema
   });
 
   if (!submission.value) {
@@ -84,7 +85,7 @@ export function TwitchConnect() {
   });
 
   return (
-    <twitchFetcher.Form method="GET" action="/resources/twitch" {...form.props}>
+    <twitchFetcher.Form action="/resources/twitch" method="GET" {...form.props}>
       <TwitchButton state={twitchFetcher.state} />
     </twitchFetcher.Form>
   );
@@ -99,25 +100,25 @@ export function TwitchDisconnect({ connectionId }: { connectionId: string }) {
 
   return (
     <twitchFetcher.Form
-      method="POST"
       action="/resources/twitch"
+      method="POST"
       {...form.props}
     >
-      <input type="hidden" name="connectionId" value={connectionId} />
+      <input name="connectionId" type="hidden" value={connectionId} />
       <TwitchButton state={twitchFetcher.state} title="Disconnect" />
     </twitchFetcher.Form>
   );
 }
 
 interface TwitchButtonProps extends ButtonProps {
+  state?: "idle" | "loading" | "submitting";
   title?: string;
-  state?: "idle" | "submitting" | "loading";
 }
 
 export function TwitchButton({
+  disabled,
   state = "idle",
   title = "Connect",
-  disabled,
   ...props
 }: TwitchButtonProps) {
   return (

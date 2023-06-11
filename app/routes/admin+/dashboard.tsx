@@ -1,42 +1,44 @@
 import type { LoaderArgs } from "@remix-run/node";
+
 import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
+
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateRange } from "~/utils/misc";
-import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireUserId(request);
   const shows = await prisma.show.findMany({
     select: {
-      id: true,
-      title: true,
       episodes: {
-        where: { startDate: { gte: new Date() } },
+        orderBy: { startDate: "asc" },
         select: {
-          id: true,
-          title: true,
-          startDate: true,
           endDate: true,
           guests: {
+            orderBy: { order: "asc" },
             select: {
-              order: true,
               guest: {
                 select: {
-                  id: true,
                   firstName: true,
+                  id: true,
                   lastName: true,
                   twitter: true
                 }
-              }
-            },
-            orderBy: { order: "asc" }
-          }
+              },
+              order: true
+            }
+          },
+          id: true,
+          startDate: true,
+          title: true
         },
-        orderBy: { startDate: "asc" },
-        take: 1
-      }
+        take: 1,
+        where: { startDate: { gte: new Date() } }
+      },
+      id: true,
+      title: true
     }
     // orderBy: { episodes: { startDate: "asc" } }
   });

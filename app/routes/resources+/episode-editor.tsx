@@ -1,21 +1,22 @@
-import { type DataFunctionArgs, redirect, json } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
-import { Button } from "~/components/ui/button";
-import { requireUserId } from "~/utils/auth.server";
-import { z } from "zod";
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { prisma } from "~/utils/db.server";
+import { type DataFunctionArgs, json, redirect } from "@remix-run/node";
+import { useFetcher } from "@remix-run/react";
+import { z } from "zod";
+
 import { ErrorList, Field } from "~/components/form";
+import { Button } from "~/components/ui/button";
+import { requireUserId } from "~/utils/auth.server";
+import { prisma } from "~/utils/db.server";
 import { formatDateForInput } from "~/utils/misc";
 
 export const EpisodeEditorSchema = z.object({
+  description: z.string().min(1, { message: "Description is required" }),
+  endDate: z.coerce.date({ required_error: "End Date is required" }),
   id: z.string().optional(),
   showId: z.string(),
-  title: z.string().min(1, { message: "Title is required" }),
-  description: z.string().min(1, { message: "Description is required" }),
   startDate: z.coerce.date({ required_error: "Start Date is required" }),
-  endDate: z.coerce.date({ required_error: "End Date is required" }),
+  title: z.string().min(1, { message: "Title is required" }),
   vdoPassword: z.string().default("cockroachIsC00l!")
   // guests: z.array(z.object({ order: z.coerce.number(), guestId: z.string() }))
 });
@@ -24,8 +25,8 @@ export const action = async ({ request }: DataFunctionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, {
-    schema: EpisodeEditorSchema,
-    acceptMultipleErrors: () => true
+    acceptMultipleErrors: () => true,
+    schema: EpisodeEditorSchema
   });
   if (!submission.value) {
     return json(
@@ -44,8 +45,8 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
   if (id) {
     await prisma.episode.update({
-      where: { id },
-      data
+      data,
+      where: { id }
     });
     return redirect(`/admin/shows/${data.showId}/episodes/${id}`);
   }
@@ -63,12 +64,12 @@ export function EpisodeEditor({
   showId
 }: {
   episode?: {
+    description: string;
+    endDate: Date;
     id: string;
     showId: string;
     startDate: Date;
-    endDate: Date;
     title: string;
-    description: string;
     vdoPassword: string;
     // guests: {
     //   order: number;
@@ -80,64 +81,64 @@ export function EpisodeEditor({
   const episodeEditorFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    id: "episode-editor",
     constraint: getFieldsetConstraint(EpisodeEditorSchema),
+    defaultValue: {
+      description: episode?.description,
+      endDate: formatDateForInput(episode?.endDate),
+      startDate: formatDateForInput(episode?.startDate),
+      title: episode?.title,
+      vdoPassword: episode?.vdoPassword
+    },
+    id: "episode-editor",
     lastSubmission: episodeEditorFetcher.data?.submission,
     onValidate({ formData }) {
       return parse(formData, { schema: EpisodeEditorSchema });
-    },
-    defaultValue: {
-      title: episode?.title,
-      description: episode?.description,
-      startDate: formatDateForInput(episode?.startDate),
-      endDate: formatDateForInput(episode?.endDate),
-      vdoPassword: episode?.vdoPassword
     },
     shouldRevalidate: "onBlur"
   });
 
   return (
     <episodeEditorFetcher.Form
-      method="post"
       action="/resources/episode-editor"
+      method="post"
       {...form.props}
       className="flex flex-col"
     >
       <input name="id" type="hidden" value={episode?.id} />
       <input name="showId" type="hidden" value={episode?.showId || showId} />
       <Field
-        labelProps={{ htmlFor: fields.title.id, children: "Title" }}
-        inputProps={conform.input(fields.title)}
         errors={fields.title.errors}
+        inputProps={conform.input(fields.title)}
+        labelProps={{ children: "Title", htmlFor: fields.title.id }}
       />
       <Field
-        labelProps={{ htmlFor: fields.description.id, children: "Description" }}
-        inputProps={conform.input(fields.description)}
         errors={fields.description.errors}
+        inputProps={conform.input(fields.description)}
+        labelProps={{ children: "Description", htmlFor: fields.description.id }}
       />
       <div className="flex w-full flex-row justify-between gap-1">
         <Field
-          className="grow"
-          labelProps={{ htmlFor: fields.startDate.id, children: "Start Date" }}
           inputProps={conform.input(fields.startDate, {
             type: "datetime-local"
           })}
+          className="grow"
           errors={fields.startDate.errors}
+          labelProps={{ children: "Start Date", htmlFor: fields.startDate.id }}
         />
         <Field
           className="grow"
-          labelProps={{ htmlFor: fields.endDate.id, children: "End Date" }}
-          inputProps={conform.input(fields.endDate, { type: "datetime-local" })}
           errors={fields.endDate.errors}
+          inputProps={conform.input(fields.endDate, { type: "datetime-local" })}
+          labelProps={{ children: "End Date", htmlFor: fields.endDate.id }}
         />
       </div>
       <Field
         labelProps={{
-          htmlFor: fields.vdoPassword.id,
-          children: "VDO Password"
+          children: "VDO Password",
+          htmlFor: fields.vdoPassword.id
         }}
-        inputProps={conform.input(fields.vdoPassword)}
         errors={fields.vdoPassword.errors}
+        inputProps={conform.input(fields.vdoPassword)}
       />
       <ErrorList errors={form.errors} id={form.errorId} />
       <Button>Submit</Button>

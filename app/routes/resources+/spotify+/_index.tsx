@@ -1,20 +1,21 @@
 import { useForm } from "@conform-to/react";
+import { parse } from "@conform-to/zod";
 import {
-  redirect,
-  type LoaderArgs,
   type ActionArgs,
-  json
+  type LoaderArgs,
+  json,
+  redirect
 } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
+import { z } from "zod";
+
+import { Spotify } from "~/components/brand-logos";
+import { Button, type ButtonProps } from "~/components/ui/button";
 import { requireUserId } from "~/utils/auth.server";
-import { cn, generateRandomString } from "~/utils/misc";
 import { spotifyStateCookie } from "~/utils/cookies.server";
 import { prisma } from "~/utils/db.server";
-import { z } from "zod";
-import { parse } from "@conform-to/zod";
-import { Spotify } from "~/components/brand-logos";
 import env from "~/utils/env.server";
-import { Button, type ButtonProps } from "~/components/ui/button";
+import { cn, generateRandomString } from "~/utils/misc";
 
 const { SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URI } = env;
 
@@ -49,8 +50,8 @@ export const action = async ({ request }: ActionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, {
-    schema: DisconnectSchema,
-    acceptMultipleErrors: () => true
+    acceptMultipleErrors: () => true,
+    schema: DisconnectSchema
   });
 
   if (!submission.value) {
@@ -82,8 +83,8 @@ export function SpotifyConnect() {
 
   return (
     <spotifyFetcher.Form
-      method="GET"
       action="/resources/spotify"
+      method="GET"
       {...form.props}
     >
       <SpotifyButton state={spotifyFetcher.state} />
@@ -100,25 +101,25 @@ export function SpotifyDisconnect({ connectionId }: { connectionId: string }) {
 
   return (
     <spotifyFetcher.Form
-      method="POST"
       action="/resources/spotify"
+      method="POST"
       {...form.props}
     >
-      <input type="hidden" name="connectionId" value={connectionId} />
+      <input name="connectionId" type="hidden" value={connectionId} />
       <SpotifyButton state={spotifyFetcher.state} title="Disconnect" />
     </spotifyFetcher.Form>
   );
 }
 
 interface SpotifyButtonProps extends ButtonProps {
+  state?: "idle" | "loading" | "submitting";
   title?: string;
-  state?: "idle" | "submitting" | "loading";
 }
 
 export function SpotifyButton({
+  disabled,
   state = "idle",
   title = "Connect",
-  disabled,
   ...props
 }: SpotifyButtonProps) {
   return (

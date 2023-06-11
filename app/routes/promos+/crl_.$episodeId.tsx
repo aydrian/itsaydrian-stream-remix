@@ -1,40 +1,41 @@
 import { type LoaderArgs } from "@remix-run/node";
-import * as CrlLogo from "~/components/cockroach-labs-logos";
-import { Avatar } from "~/components/avatar";
-import { prisma } from "~/utils/db.server";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
+
+import { Avatar } from "~/components/avatar";
 import { YouTube } from "~/components/brand-logos";
+import * as CrlLogo from "~/components/cockroach-labs-logos";
+import { prisma } from "~/utils/db.server";
 
 export const loader = async ({ params }: LoaderArgs) => {
   const { episodeId } = params;
   const findEvent = await prisma.episode.findUnique({
-    where: { id: episodeId },
     select: {
-      id: true,
-      startDate: true,
       endDate: true,
-      title: true,
+      guests: {
+        orderBy: { order: "asc" },
+        select: {
+          guest: {
+            select: {
+              avatarUrl: true,
+              company: true,
+              firstName: true,
+              id: true,
+              lastName: true,
+              title: true,
+              twitter: true
+            }
+          },
+          order: true
+        }
+      },
+      id: true,
       show: {
         select: { title: true }
       },
-      guests: {
-        select: {
-          order: true,
-          guest: {
-            select: {
-              id: true,
-              firstName: true,
-              lastName: true,
-              title: true,
-              company: true,
-              twitter: true,
-              avatarUrl: true
-            }
-          }
-        },
-        orderBy: { order: "asc" }
-      }
-    }
+      startDate: true,
+      title: true
+    },
+    where: { id: episodeId }
   });
   if (!findEvent) {
     throw new Response("Not Found", {
@@ -49,7 +50,7 @@ export const loader = async ({ params }: LoaderArgs) => {
 };
 
 export default function CrlPromo() {
-  const { title, show, guests, startDate } =
+  const { guests, show, startDate, title } =
     useTypedLoaderData<typeof loader>();
   return (
     <div className="flex aspect-video h-[1080px] flex-col justify-between bg-crl-deep-purple bg-[url('/img/crl-texture-7.svg')] bg-cover px-20 py-16 font-poppins text-white">
@@ -70,9 +71,9 @@ export default function CrlPromo() {
             <div className="flex flex-col">
               <div className="text-5xl font-semibold leading-tight">
                 {new Intl.DateTimeFormat("en-US", {
-                  weekday: "short",
-                  month: "short",
                   day: "numeric",
+                  month: "short",
+                  weekday: "short",
                   year: "numeric"
                 }).format(startDate)}
               </div>
@@ -106,14 +107,14 @@ export default function CrlPromo() {
         <div className="flex min-h-fit flex-row flex-wrap items-center justify-between gap-16">
           {guests.map((guest) => (
             <div
-              key={guest.id}
               className="flex min-h-fit max-w-min flex-col items-center gap-8 odd:-mt-40 even:mt-40"
+              key={guest.id}
             >
               <div className="min-h-fit min-w-fit">
                 <Avatar
-                  src={guest.avatarUrl}
                   alt={`${guest.firstName} ${guest.lastName}`}
                   className="aspect-square h-80 bg-gradient-to-r from-crl-electric-purple to-crl-iridescent-blue p-1.5"
+                  src={guest.avatarUrl}
                 />
               </div>
               <div className="flex flex-col items-center text-center">

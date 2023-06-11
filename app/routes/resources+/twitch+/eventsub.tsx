@@ -1,15 +1,17 @@
-import { json, type ActionArgs, type LoaderArgs } from "@remix-run/node";
+import { type ActionArgs, type LoaderArgs, json } from "@remix-run/node";
 import { eventStream } from "remix-utils";
-import { twitch, withVerifyTwitch } from "~/utils/twitch.server";
-import { emitter } from "~/utils/emitter.server";
+
 import type {
+  CPRedeemEvent,
   EventSubEvent,
   EventTypes,
-  CPRedeemEvent,
   FollowEvent,
   RaidEvent,
   SubscribeEvent
 } from "~/utils/types";
+
+import { emitter } from "~/utils/emitter.server";
+import { twitch, withVerifyTwitch } from "~/utils/twitch.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
   return eventStream(request.signal, function setup(send) {
@@ -31,16 +33,16 @@ export const loader = async ({ request }: LoaderArgs) => {
     function handleRedeemChannelPoints(event: CPRedeemEvent) {
       twitch.users.getUserById(event.user_id).then((viewer) => {
         send({
-          event: "redeem-channelpoints",
           data: JSON.stringify({
             reward: event.reward,
             viewer: {
+              displayName: viewer?.displayName,
               id: viewer?.id,
               name: viewer?.name,
-              displayName: viewer?.displayName,
               profilePictureUrl: viewer?.profilePictureUrl
             }
-          })
+          }),
+          event: "redeem-channelpoints"
         });
       });
     }
@@ -48,15 +50,15 @@ export const loader = async ({ request }: LoaderArgs) => {
     function handleFollow(event: FollowEvent) {
       twitch.users.getUserById(event.user_id).then((viewer) => {
         send({
-          event: "follow",
           data: JSON.stringify({
             viewer: {
+              displayName: viewer?.displayName,
               id: viewer?.id,
               name: viewer?.name,
-              displayName: viewer?.displayName,
               profilePictureUrl: viewer?.profilePictureUrl
             }
-          })
+          }),
+          event: "follow"
         });
       });
     }
@@ -64,17 +66,17 @@ export const loader = async ({ request }: LoaderArgs) => {
     function handleSubscribe(event: SubscribeEvent) {
       twitch.users.getUserById(event.user_id).then((viewer) => {
         send({
-          event: "subscribe",
           data: JSON.stringify({
-            tier: event.tier,
             isGift: event.is_gift,
+            tier: event.tier,
             viewer: {
+              displayName: viewer?.displayName,
               id: viewer?.id,
               name: viewer?.name,
-              displayName: viewer?.displayName,
               profilePictureUrl: viewer?.profilePictureUrl
             }
-          })
+          }),
+          event: "subscribe"
         });
       });
     }
@@ -84,16 +86,16 @@ export const loader = async ({ request }: LoaderArgs) => {
         .getUserById(event.from_broadcaster_user_id)
         .then((raider) => {
           send({
-            event: "raid",
             data: JSON.stringify({
-              viewers: event.viewers,
               raider: {
+                displayName: raider?.displayName,
                 id: raider?.id,
                 name: raider?.name,
-                displayName: raider?.displayName,
                 profilePictureUrl: raider?.profilePictureUrl
-              }
-            })
+              },
+              viewers: event.viewers
+            }),
+            event: "raid"
           });
         });
     }
@@ -109,7 +111,7 @@ export const action = withVerifyTwitch(async ({ request }: ActionArgs) => {
   if (request.method !== "POST") {
     return json(
       { message: "Method not allowed" },
-      { status: 405, headers: { Allow: "POST" } }
+      { headers: { Allow: "POST" }, status: 405 }
     );
   }
   const body = await request.json();

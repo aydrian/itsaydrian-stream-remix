@@ -1,9 +1,12 @@
-import type { EpisodeGuests } from "~/utils/db.server";
 import { type LoaderArgs, Response, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { useEpisode } from "./_layout";
-import { GuestsGrid } from "~/components/guests-grid";
+
+import type { EpisodeGuests } from "~/utils/db.server";
+
 import { Twitter } from "~/components/brand-logos";
+import { GuestsGrid } from "~/components/guests-grid";
+
+import { useEpisode } from "./_layout";
 
 export const loader = async ({ params }: LoaderArgs) => {
   const num = parseInt(params.num ?? "");
@@ -20,7 +23,7 @@ export default function Chatting() {
   const { guests, showGuides } = useEpisode();
   const slice = guests.slice(0, num);
   return (
-    <GuestsGrid guests={slice} showGuides={showGuides} Caption={CrlCaption} />
+    <GuestsGrid Caption={CrlCaption} guests={slice} showGuides={showGuides} />
   );
 }
 

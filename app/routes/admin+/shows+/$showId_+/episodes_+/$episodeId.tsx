@@ -1,5 +1,6 @@
-import { type LoaderArgs, json, Response } from "@remix-run/node";
+import { type LoaderArgs, Response, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateRange } from "~/utils/misc";
@@ -9,25 +10,25 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   await requireUserId(request);
   const { episodeId } = params;
   const findEpisode = await prisma.episode.findUnique({
-    where: { id: episodeId },
     select: {
-      id: true,
-      startDate: true,
-      endDate: true,
-      title: true,
       description: true,
-      vdoPassword: true,
+      endDate: true,
       guests: {
+        orderBy: { order: "asc" },
         select: {
-          order: true,
           guest: {
-            select: { id: true, firstName: true, lastName: true }
-          }
-        },
-        orderBy: { order: "asc" }
+            select: { firstName: true, id: true, lastName: true }
+          },
+          order: true
+        }
       },
-      show: { select: { title: true } }
-    }
+      id: true,
+      show: { select: { title: true } },
+      startDate: true,
+      title: true,
+      vdoPassword: true
+    },
+    where: { id: episodeId }
   });
   if (!findEpisode) {
     throw new Response("Not Found", {
@@ -38,16 +39,16 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   const guests = findGuests.map(({ guest, order }) => ({ order, ...guest }));
 
   const vdoConfig = {
-    room: show.title.toLowerCase().replace(/ /g, "_"),
+    hash: await generateVDOPassword(vdoPassword),
     password: vdoPassword,
-    hash: await generateVDOPassword(vdoPassword)
+    room: show.title.toLowerCase().replace(/ /g, "_")
   };
 
   return json({ ...rest, guests, show, vdoConfig });
 };
 
 export default function ShowPage() {
-  const { title, description, startDate, endDate, guests, vdoConfig } =
+  const { description, endDate, guests, startDate, title, vdoConfig } =
     useLoaderData<typeof loader>();
   return (
     <>

@@ -12,10 +12,10 @@ import { formatDateForInput } from "~/utils/misc";
 
 export const EpisodeEditorSchema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
-  endDate: z.coerce.date({ required_error: "End Date is required" }),
+  endDate: z.string().pipe(z.coerce.date()),
   id: z.string().optional(),
   showId: z.string(),
-  startDate: z.coerce.date({ required_error: "Start Date is required" }),
+  startDate: z.string().pipe(z.coerce.date()),
   title: z.string().min(1, { message: "Title is required" }),
   vdoPassword: z.string().default("cockroachIsC00l!")
   // guests: z.array(z.object({ order: z.coerce.number(), guestId: z.string() }))
@@ -44,6 +44,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
   const { id, ...data } = submission.value;
 
   if (id) {
+    console.log({ startDate: data.startDate });
     await prisma.episode.update({
       data,
       where: { id }
@@ -56,7 +57,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
     select: { id: true }
   });
 
-  return redirect(`/admin/show/${data.showId}/episodes/${episode.id}`);
+  return redirect(`/admin/shows/${data.showId}/episodes/${episode.id}`);
 };
 
 export function EpisodeEditor({

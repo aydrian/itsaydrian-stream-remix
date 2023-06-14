@@ -2,6 +2,7 @@ import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
+import { toDate } from "date-fns-tz";
 import { z } from "zod";
 
 import { ErrorList, Field } from "~/components/form";
@@ -12,10 +13,11 @@ import { formatDateForInput } from "~/utils/misc";
 
 export const EpisodeEditorSchema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
-  endDate: z.string().pipe(z.coerce.date()),
+  endDate: z.string().min(1, { message: "End Date is required" }),
   id: z.string().optional(),
   showId: z.string(),
-  startDate: z.string().pipe(z.coerce.date()),
+  startDate: z.string().min(1, { message: "Start Date is required" }),
+  timeZone: z.string(),
   title: z.string().min(1, { message: "Title is required" }),
   vdoPassword: z.string().default("cockroachIsC00l!")
   // guests: z.array(z.object({ order: z.coerce.number(), guestId: z.string() }))
@@ -41,18 +43,26 @@ export const action = async ({ request }: DataFunctionArgs) => {
     return json({ status: "idle", submission } as const);
   }
 
-  const { id, ...data } = submission.value;
+  const { endDate, id, startDate, timeZone, ...data } = submission.value;
 
   if (id) {
     await prisma.episode.update({
-      data,
+      data: {
+        ...data,
+        endDate: toDate(endDate, { timeZone }),
+        startDate: toDate(startDate, { timeZone })
+      },
       where: { id }
     });
     return redirect(`/admin/shows/${data.showId}/episodes/${id}`);
   }
 
   const episode = await prisma.episode.create({
-    data,
+    data: {
+      ...data,
+      endDate: toDate(endDate, { timeZone }),
+      startDate: toDate(startDate, { timeZone })
+    },
     select: { id: true }
   });
 
@@ -117,6 +127,11 @@ export function EpisodeEditor({
         labelProps={{ children: "Description", htmlFor: fields.description.id }}
       />
       <div className="flex w-full flex-row justify-between gap-1">
+        <input
+          name="timeZone"
+          type="hidden"
+          value={Intl.DateTimeFormat().resolvedOptions().timeZone}
+        />
         <Field
           inputProps={conform.input(fields.startDate, {
             type: "datetime-local"

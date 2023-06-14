@@ -44,7 +44,6 @@ export const action = async ({ request }: DataFunctionArgs) => {
   const { id, ...data } = submission.value;
 
   if (id) {
-    console.log({ startDate: data.startDate });
     await prisma.episode.update({
       data,
       where: { id }

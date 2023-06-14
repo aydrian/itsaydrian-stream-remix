@@ -42,6 +42,8 @@ export const loader = async ({ request }: LoaderArgs) => {
     }
     // orderBy: { episodes: { startDate: "asc" } }
   });
+
+  console.log({ now: new Date() });
   return json({ shows });
 };
 

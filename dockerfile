@@ -7,8 +7,10 @@ ENV NODE_ENV production
 # Install openssl for Prisma
 RUN apt-get update && apt-get install -y openssl
 
-# Get the needed libraries to run Playwright
-RUN apt-get update && apt-get -y install libnss3 libatk-bridge2.0-0 libdrm-dev libxkbcommon-dev libgbm-dev libasound-dev libatspi2.0-0 libxshmfence-dev
+
+# Install Chromium deps & browser
+RUN npx playwright install-deps chromium
+RUN npx playwright install chromium
 
 # Install all node_modules, including dev dependencies
 FROM base as deps
@@ -51,8 +53,5 @@ COPY --from=build /myapp/node_modules/.prisma /myapp/node_modules/.prisma
 COPY --from=build /myapp/build /myapp/build
 COPY --from=build /myapp/public /myapp/public
 ADD . .
-
-# Install Chromium browser
-RUN npx playwright install-deps chromium
 
 CMD ["npm", "start"]

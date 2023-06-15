@@ -75,7 +75,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
   });
 
   return redirect(
-    `/admin/shows/${originalEpisode.showId}/${newEpisode.id}/edit`
+    `/admin/shows/${originalEpisode.showId}/episodes/${newEpisode.id}/edit`
   );
 };
 

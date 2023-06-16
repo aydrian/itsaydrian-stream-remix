@@ -1,10 +1,12 @@
 import { type LoaderArgs } from "@remix-run/node";
 import { chromium } from "playwright";
 
+import env from "~/utils/env.server";
+
 export const loader = async ({ params }: LoaderArgs) => {
   const { episodeId } = params;
 
-  const url = `https://stream.itsaydrian.com/promos/crl/${episodeId}`;
+  const url = `${env.RENDER_EXTERNAL_URL}/promos/crl/${episodeId}`;
   const browser = await chromium.launch();
   const page = await browser.newPage();
 

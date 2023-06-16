@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+// import { Link } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
 import { prisma } from "~/utils/db.server";
@@ -40,19 +40,19 @@ export default function CrlPromos() {
                 {formatDateRange(episode.startDate, episode.endDate)}
               </td>
               <td className="px-6 py-4">
-                {/* <a
+                <a
                   className="font-medium text-crl-dark-blue hover:underline"
                   href={`/resources/promos/${episode.id}.png`}
                 >
                   {episode.title}
-                </a> */}
-                <Link
+                </a>
+                {/* <Link
                   className="font-medium text-crl-dark-blue hover:underline"
                   relative="path"
                   to={`./${episode.id}`}
                 >
                   {episode.title}
-                </Link>
+                </Link> */}
               </td>
             </tr>
           ))}

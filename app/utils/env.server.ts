@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const envSchema = z.object({
   DATABASE_URL: z.string().nonempty(),
+  RENDER_EXTERNAL_URL: z.string().default("http://localhost:3000"),
   SESSION_SECRET: z.string().nonempty(),
   SPOTIFY_CLIENT_ID: z.string().nonempty(),
   SPOTIFY_CLIENT_SECRET: z.string().nonempty(),

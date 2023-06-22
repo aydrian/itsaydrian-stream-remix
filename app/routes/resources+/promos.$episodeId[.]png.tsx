@@ -6,7 +6,11 @@ import env from "~/utils/env.server";
 export const loader = async ({ params }: LoaderArgs) => {
   const { episodeId } = params;
 
-  const url = `${env.RENDER_EXTERNAL_URL}/promos/crl/${episodeId}`;
+  const url = `${
+    env.NODE_ENV === "development"
+      ? "http://localhost:3000"
+      : `https://${env.FLY_APP_NAME}.fly.dev`
+  }/promos/crl/${episodeId}`;
   const browser = await chromium.launch();
   const page = await browser.newPage();
 

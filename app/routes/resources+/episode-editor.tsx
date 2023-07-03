@@ -1,8 +1,16 @@
-import { conform, useForm } from "@conform-to/react";
+import {
+  type FieldConfig,
+  conform,
+  list,
+  useFieldList,
+  useFieldset,
+  useForm
+} from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { toDate } from "date-fns-tz";
+import { useRef } from "react";
 import { z } from "zod";
 
 import { ErrorList, Field } from "~/components/form";
@@ -11,16 +19,23 @@ import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateForInput } from "~/utils/misc";
 
+import { GuestSelect } from "./guests";
+
+export const EpisodeGuestSchema = z.object({
+  guestId: z.string().optional(),
+  order: z.coerce.number()
+});
+
 export const EpisodeEditorSchema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
   endDate: z.string().min(1, { message: "End Date is required" }),
+  guests: z.array(EpisodeGuestSchema).min(1),
   id: z.string().optional(),
   showId: z.string(),
   startDate: z.string().min(1, { message: "Start Date is required" }),
   timeZone: z.string(),
   title: z.string().min(1, { message: "Title is required" }),
   vdoPassword: z.string().default("cockroachIsC00l!")
-  // guests: z.array(z.object({ order: z.coerce.number(), guestId: z.string() }))
 });
 
 export const action = async ({ request }: DataFunctionArgs) => {
@@ -43,7 +58,8 @@ export const action = async ({ request }: DataFunctionArgs) => {
     return json({ status: "idle", submission } as const);
   }
 
-  const { endDate, id, startDate, timeZone, ...data } = submission.value;
+  const { endDate, guests, id, startDate, timeZone, ...data } =
+    submission.value;
 
   if (id) {
     await prisma.episode.update({
@@ -76,25 +92,40 @@ export function EpisodeEditor({
   episode?: {
     description: string;
     endDate: Date;
+    guests: {
+      guestId: string;
+      order: number;
+    }[];
     id: string;
     showId: string;
     startDate: Date;
     title: string;
     vdoPassword: string;
-    // guests: {
-    //   order: number;
-    //   guestId: string;
-    // }[];
   };
-  showId: string;
+  showId?: string;
 }) {
   const episodeEditorFetcher = useFetcher<typeof action>();
 
-  const [form, fields] = useForm({
+  const [
+    form,
+    {
+      description,
+      endDate,
+      guests,
+      id,
+      showId: show_id,
+      startDate,
+      title,
+      vdoPassword
+    }
+  ] = useForm({
     constraint: getFieldsetConstraint(EpisodeEditorSchema),
     defaultValue: {
       description: episode?.description,
       endDate: formatDateForInput(episode?.endDate),
+      guests: episode?.guests,
+      id: episode?.id,
+      showId: episode?.showId ?? showId,
       startDate: formatDateForInput(episode?.startDate),
       title: episode?.title,
       vdoPassword: episode?.vdoPassword
@@ -106,6 +137,7 @@ export function EpisodeEditor({
     },
     shouldRevalidate: "onBlur"
   });
+  const guestList = useFieldList(form.ref, guests);
 
   return (
     <episodeEditorFetcher.Form
@@ -114,17 +146,17 @@ export function EpisodeEditor({
       {...form.props}
       className="flex flex-col"
     >
-      <input name="id" type="hidden" value={episode?.id} />
-      <input name="showId" type="hidden" value={episode?.showId || showId} />
+      <input name={id.name} type="hidden" value={id.defaultValue} />
+      <input name={show_id.name} type="hidden" value={show_id.defaultValue} />
       <Field
-        errors={fields.title.errors}
-        inputProps={conform.input(fields.title)}
-        labelProps={{ children: "Title", htmlFor: fields.title.id }}
+        errors={title.errors}
+        inputProps={conform.input(title)}
+        labelProps={{ children: "Title", htmlFor: title.id }}
       />
       <Field
-        errors={fields.description.errors}
-        inputProps={conform.input(fields.description)}
-        labelProps={{ children: "Description", htmlFor: fields.description.id }}
+        errors={description.errors}
+        inputProps={conform.input(description)}
+        labelProps={{ children: "Description", htmlFor: description.id }}
       />
       <div className="flex w-full flex-row justify-between gap-1">
         <input
@@ -133,30 +165,77 @@ export function EpisodeEditor({
           value={Intl.DateTimeFormat().resolvedOptions().timeZone}
         />
         <Field
-          inputProps={conform.input(fields.startDate, {
+          inputProps={conform.input(startDate, {
             type: "datetime-local"
           })}
           className="grow"
-          errors={fields.startDate.errors}
-          labelProps={{ children: "Start Date", htmlFor: fields.startDate.id }}
+          errors={startDate.errors}
+          labelProps={{ children: "Start Date", htmlFor: startDate.id }}
         />
         <Field
           className="grow"
-          errors={fields.endDate.errors}
-          inputProps={conform.input(fields.endDate, { type: "datetime-local" })}
-          labelProps={{ children: "End Date", htmlFor: fields.endDate.id }}
+          errors={endDate.errors}
+          inputProps={conform.input(endDate, { type: "datetime-local" })}
+          labelProps={{ children: "End Date", htmlFor: endDate.id }}
         />
       </div>
       <Field
         labelProps={{
           children: "VDO Password",
-          htmlFor: fields.vdoPassword.id
+          htmlFor: vdoPassword.id
         }}
-        errors={fields.vdoPassword.errors}
-        inputProps={conform.input(fields.vdoPassword)}
+        errors={vdoPassword.errors}
+        inputProps={conform.input(vdoPassword)}
       />
+      <h3 className="mb-1.5 text-xl font-semibold leading-tight text-gray-700">
+        Select your guests
+      </h3>
+      <ul>
+        {guestList.map((guest, index) => (
+          <li className="relative" key={guest.key}>
+            <GuestFieldset {...guest} index={index} />
+            {guestList.length > 1 ? (
+              <Button
+                className="absolute bottom-2 right-2 text-xs"
+                size="sm"
+                variant="destructive"
+                {...list.remove(guests.name, { index })}
+              >
+                Remove
+              </Button>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+      <Button
+        className="mb-3"
+        size="sm"
+        variant="secondary"
+        {...list.append(guests.name)}
+      >
+        Add a Guest
+      </Button>
       <ErrorList errors={form.errors} id={form.errorId} />
       <Button>Submit</Button>
     </episodeEditorFetcher.Form>
+  );
+}
+
+function GuestFieldset(
+  config: FieldConfig<z.input<typeof EpisodeGuestSchema>> & { index: number }
+) {
+  const ref = useRef<HTMLFieldSetElement>(null);
+  const { guestId, order } = useFieldset(ref, config);
+
+  return (
+    <fieldset ref={ref}>
+      <input name={order.name} type="hidden" value={String(config.index)} />
+      <Field
+        errors={guestId.errors}
+        inputProps={conform.input(guestId)}
+        labelProps={{ children: "Guest Id", htmlFor: guestId.id }}
+      />
+      <GuestSelect defaultValue={guestId.defaultValue} name={guestId.name} />
+    </fieldset>
   );
 }

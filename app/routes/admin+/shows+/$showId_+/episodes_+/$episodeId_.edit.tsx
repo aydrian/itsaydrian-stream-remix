@@ -12,12 +12,15 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     select: {
       description: true,
       endDate: true,
+      guests: {
+        orderBy: { order: "asc" },
+        select: { guestId: true, order: true }
+      },
       id: true,
       showId: true,
       startDate: true,
       title: true,
       vdoPassword: true
-      // guests: { select: { order: true, guestId: true } }
     },
     where: { id: episodeId }
   });

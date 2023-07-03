@@ -17,6 +17,6 @@ module.exports = {
         prefer: "type-imports"
       }
     ],
-    "@typescript-eslint/no-duplicate-imports": "warn"
+    "import/no-duplicates": "warn"
   }
 };

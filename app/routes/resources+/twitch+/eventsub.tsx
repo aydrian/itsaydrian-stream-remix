@@ -1,21 +1,21 @@
 import { type ActionArgs, type LoaderArgs, json } from "@remix-run/node";
 import { eventStream } from "remix-utils";
 
-import type {
-  CPRedeemEvent,
-  EventSubEvent,
-  EventTypes,
-  FollowEvent,
-  RaidEvent,
-  SubscribeEvent
-} from "~/utils/types";
-
 import { emitter } from "~/utils/emitter.server";
 import { twitch, withVerifyTwitch } from "~/utils/twitch.server";
 
+import type {
+  CPRedeemEvent,
+  Event,
+  EventType,
+  FollowEvent,
+  RaidEvent,
+  SubscribeEvent
+} from "./types";
+
 export const loader = async ({ request }: LoaderArgs) => {
   return eventStream(request.signal, function setup(send) {
-    function handle(type: EventTypes, event: EventSubEvent) {
+    function handle(type: EventType, event: Event) {
       if (type === "channel.channel_points_custom_reward_redemption.add") {
         return handleRedeemChannelPoints(event as CPRedeemEvent);
       }

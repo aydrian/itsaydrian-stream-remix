@@ -47,7 +47,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   return json({ ...rest, guests, show, vdoConfig });
 };
 
-export default function ShowPage() {
+export default function EpisodeIdIndex() {
   const { description, endDate, guests, startDate, title, vdoConfig } =
     useLoaderData<typeof loader>();
   return (

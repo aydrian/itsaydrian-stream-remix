@@ -29,7 +29,7 @@ export const EpisodeGuestSchema = z.object({
 export const EpisodeEditorSchema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
   endDate: z.string().min(1, { message: "End Date is required" }),
-  guests: z.array(EpisodeGuestSchema).min(1),
+  // guests: z.array(EpisodeGuestSchema).min(1),
   id: z.string().optional(),
   showId: z.string(),
   startDate: z.string().min(1, { message: "Start Date is required" }),

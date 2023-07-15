@@ -33,6 +33,10 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   return typedjson({ episode });
 };
 
+export const handle = {
+  breadcrumb: () => <span>Edit</span>
+};
+
 export default function EditEpisode() {
   const { episode } = useTypedLoaderData<typeof loader>();
 

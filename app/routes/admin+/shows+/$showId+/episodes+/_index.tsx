@@ -1,4 +1,4 @@
-import { type LoaderArgs, Response, json } from "@remix-run/node";
+import { type LoaderArgs, json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
 import { Button } from "~/components/ui/button";
@@ -19,36 +19,35 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   const { showId } = params;
   const show = await prisma.show.findUnique({
     select: {
-      description: true,
       episodes: {
         orderBy: { startDate: "desc" },
-        select: { endDate: true, id: true, startDate: true, title: true }
+        select: {
+          endDate: true,
+          id: true,
+          startDate: true,
+          title: true
+        }
       },
       id: true,
       title: true
     },
     where: { id: showId }
   });
-  if (!show) {
-    throw new Response("Not Found", {
-      status: 404
-    });
-  }
 
   return json({ ...show });
 };
 
-export default function ShowPage() {
-  const { episodes, title } = useLoaderData<typeof loader>();
+export default function EpisodesIndex() {
+  const { episodes } = useLoaderData<typeof loader>();
+
   return (
-    <>
-      <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
-      <Card className="max-w-fit">
-        <CardHeader>
-          <CardTitle>Episodes</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-start gap-4">
+    <Card className="max-w-fit">
+      <CardHeader>
+        <CardTitle>Episodes</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {episodes ? (
+          <div className="flex flex-wrap justify-start gap-4">
             {episodes.map((episode) => (
               <Card className="max-w-xs" key={episode.id}>
                 <CardHeader>
@@ -59,15 +58,17 @@ export default function ShowPage() {
                 </CardContent>
                 <CardFooter className="flex justify-between">
                   <Button asChild>
-                    <Link to={`./episodes/${episode.id}`}>View</Link>
+                    <Link to={`./${episode.id}`}>View</Link>
                   </Button>
                   <DuplicateEpisodeForm episodeId={episode.id} />
                 </CardFooter>
               </Card>
             ))}
           </div>
-        </CardContent>
-      </Card>
-    </>
+        ) : (
+          <div>This show has not eposides</div>
+        )}
+      </CardContent>
+    </Card>
   );
 }

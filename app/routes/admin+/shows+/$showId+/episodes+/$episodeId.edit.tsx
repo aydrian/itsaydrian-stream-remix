@@ -34,7 +34,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 };
 
 export const handle = {
-  breadcrumb: () => <span>Edit</span>
+  breadcrumb: () => <span>Edit Episode</span>
 };
 
 export default function EditEpisode() {
@@ -42,7 +42,7 @@ export default function EditEpisode() {
 
   return (
     <>
-      <h2 className="text-3xl font-bold tracking-tight">Edit Episode</h2>
+      <h3 className="text-xl font-bold tracking-tight">Edit Episode</h3>
       <EpisodeEditor episode={episode} showId={episode.showId} />
     </>
   );

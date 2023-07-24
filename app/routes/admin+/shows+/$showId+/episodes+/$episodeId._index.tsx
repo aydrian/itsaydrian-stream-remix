@@ -1,6 +1,16 @@
 import { type LoaderArgs, Response, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 
+import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "~/components/ui/card";
+import { DuplicateEpisodeForm } from "~/routes/resources+/episode-duplicate";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateRange } from "~/utils/misc";
@@ -9,7 +19,7 @@ import { generateVDOPassword } from "~/utils/vdo-ninja.server";
 export const loader = async ({ params, request }: LoaderArgs) => {
   await requireUserId(request);
   const { episodeId } = params;
-  const findEpisode = await prisma.episode.findUnique({
+  const episode = await prisma.episode.findUnique({
     select: {
       description: true,
       endDate: true,
@@ -30,69 +40,86 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     },
     where: { id: episodeId }
   });
-  if (!findEpisode) {
+  if (!episode) {
     throw new Response("Not Found", {
       status: 404
     });
   }
-  const { guests: findGuests, show, vdoPassword, ...rest } = findEpisode;
-  const guests = findGuests.map(({ guest, order }) => ({ order, ...guest }));
 
   const vdoConfig = {
-    hash: await generateVDOPassword(vdoPassword),
-    password: vdoPassword,
-    room: show.title.toLowerCase().replace(/ /g, "_")
+    hash: await generateVDOPassword(episode.vdoPassword),
+    password: episode.vdoPassword,
+    room: episode.show.title.toLowerCase().replace(/ /g, "_")
   };
 
-  return json({ ...rest, guests, show, vdoConfig });
+  return json({ ...episode, vdoConfig });
 };
 
 export default function EpisodeIdIndex() {
-  const { description, endDate, guests, startDate, title, vdoConfig } =
+  const { description, endDate, guests, id, startDate, title, vdoConfig } =
     useLoaderData<typeof loader>();
+
   return (
     <>
-      <section>
-        <h2>{title}</h2>
-        <div>{formatDateRange(startDate, endDate)}</div>
-        {description ? <p>{description}</p> : null}
-      </section>
-      <section>
-        <h3>Guests</h3>
-        <ol>
-          {guests.map((guest) => (
-            <li key={guest.id}>
-              {guest.firstName} {guest.lastName}
-            </li>
-          ))}
-        </ol>
-      </section>
-      <section>
-        <h3>Links</h3>
-        <div>
-          <span>Control Center:</span>
-          <pre>
-            <a
-              href={`https://vdo.ninja/?director=${vdoConfig.room}&password=${vdoConfig.password}`}
-            >{`https://vdo.ninja/?director=${vdoConfig.room}&password=${vdoConfig.password}`}</a>
-          </pre>
-        </div>
-        <div>
-          <span>Invite Guest:</span>
-          <ol>
-            {guests.slice(1).map((guest) => (
-              <li key={guest.id}>
-                {guest.firstName}:
-                <pre>
-                  <a
-                    href={`https://vdo.ninja/?room=${vdoConfig.room}&id=Guest${guest.order}&hash=${vdoConfig.hash}`}
-                  >{`https://vdo.ninja/?room=${vdoConfig.room}&id=Guest${guest.order}&hash=${vdoConfig.hash}`}</a>
-                </pre>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+      <Card>
+        <CardHeader>
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>
+            {formatDateRange(startDate, endDate)}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div>{description}</div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Participants</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-2">
+                {guests.map(({ guest, order }, index) => (
+                  <Card key={guest.id}>
+                    <CardHeader>
+                      <CardTitle>{`${guest.firstName} ${guest.lastName}`}</CardTitle>
+                      <CardDescription>
+                        {index === 0 ? "Host" : `Guest ${index}`}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {index === 0 ? (
+                        <div>
+                          Control Center:{" "}
+                          <pre className="text-xs">
+                            <a
+                              href={`https://vdo.ninja/?director=${vdoConfig.room}&password=${vdoConfig.password}`}
+                              rel="noreferrer"
+                              target="_blank"
+                            >{`https://vdo.ninja/?director=${vdoConfig.room}&password=${vdoConfig.password}`}</a>
+                          </pre>
+                        </div>
+                      ) : (
+                        <div>
+                          Join Link:{" "}
+                          <pre className="text-xs">
+                            <a
+                              href={`https://vdo.ninja/?room=${vdoConfig.room}&id=Guest${order}&hash=${vdoConfig.hash}`}
+                            >{`https://vdo.ninja/?room=${vdoConfig.room}&id=Guest${order}&hash=${vdoConfig.hash}`}</a>
+                          </pre>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </CardContent>
+        <CardFooter className="flex gap-2">
+          <Button asChild size="sm">
+            <Link to="./edit">Edit</Link>
+          </Button>
+          <DuplicateEpisodeForm episodeId={id} />
+        </CardFooter>
+      </Card>
     </>
   );
 }

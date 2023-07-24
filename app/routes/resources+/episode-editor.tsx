@@ -15,11 +15,16 @@ import { z } from "zod";
 
 import { ErrorList, Field } from "~/components/form";
 import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle
+} from "~/components/ui/card";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateForInput } from "~/utils/misc";
-
-import { GuestSelect } from "./guests";
 
 export const EpisodeGuestSchema = z.object({
   guestId: z.string().optional(),
@@ -29,7 +34,7 @@ export const EpisodeGuestSchema = z.object({
 export const EpisodeEditorSchema = z.object({
   description: z.string().min(1, { message: "Description is required" }),
   endDate: z.string().min(1, { message: "End Date is required" }),
-  // guests: z.array(EpisodeGuestSchema).min(1),
+  guests: z.array(EpisodeGuestSchema).min(1),
   id: z.string().optional(),
   showId: z.string(),
   startDate: z.string().min(1, { message: "Start Date is required" }),
@@ -187,34 +192,36 @@ export function EpisodeEditor({
         errors={vdoPassword.errors}
         inputProps={conform.input(vdoPassword)}
       />
-      <h3 className="mb-1.5 text-xl font-semibold leading-tight text-gray-700">
+      <h4 className="mb-1.5 text-lg font-semibold leading-tight text-gray-700">
         Select your guests
-      </h3>
-      <ul>
-        {guestList.map((guest, index) => (
-          <li className="relative" key={guest.key}>
-            <GuestFieldset {...guest} index={index} />
-            {guestList.length > 1 ? (
-              <Button
-                className="absolute bottom-2 right-2 text-xs"
-                size="sm"
-                variant="destructive"
-                {...list.remove(guests.name, { index })}
-              >
-                Remove
-              </Button>
-            ) : null}
-          </li>
-        ))}
-      </ul>
-      <Button
-        className="mb-3"
-        size="sm"
-        variant="secondary"
-        {...list.append(guests.name)}
-      >
+      </h4>
+      {/* <Button className="mb-3" size="sm" {...list.append(guests.name)}>
         Add a Guest
-      </Button>
+      </Button> */}
+      <div className="flex flex-wrap gap-4">
+        {guestList.map((guest, index) => (
+          <Card key={guest.key}>
+            <CardHeader>
+              <CardTitle>{index === 0 ? "Host" : `Guest ${index}`}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <GuestFieldset {...guest} index={index} />
+            </CardContent>
+            <CardFooter>
+              {guestList.length > 1 ? (
+                <Button
+                  className="bottom-2 right-2 text-xs"
+                  size="sm"
+                  variant="destructive"
+                  {...list.remove(guests.name, { index })}
+                >
+                  Remove
+                </Button>
+              ) : null}
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
       <ErrorList errors={form.errors} id={form.errorId} />
       <Button>Submit</Button>
     </episodeEditorFetcher.Form>
@@ -229,13 +236,13 @@ function GuestFieldset(
 
   return (
     <fieldset ref={ref}>
-      <input name={order.name} type="hidden" value={String(config.index)} />
-      <Field
-        errors={guestId.errors}
-        inputProps={conform.input(guestId)}
-        labelProps={{ children: "Guest Id", htmlFor: guestId.id }}
+      <div>{guestId.defaultValue}</div>
+      <input
+        name={order.name}
+        type="hidden"
+        value={order.defaultValue ?? String(config.index)}
       />
-      <GuestSelect defaultValue={guestId.defaultValue} name={guestId.name} />
+      <input name={guestId.name} type="hidden" value={guestId.defaultValue} />
     </fieldset>
   );
 }

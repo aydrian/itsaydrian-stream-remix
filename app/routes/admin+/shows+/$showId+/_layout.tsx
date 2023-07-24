@@ -1,7 +1,8 @@
 import { type LoaderArgs, json } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { Tv2 } from "lucide-react";
 
+import { Button } from "~/components/ui/button";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { type ResolvedRemixLoader } from "~/utils/types";
@@ -38,7 +39,12 @@ export default function ShowIdLayout() {
   const { description, title } = useLoaderData<typeof loader>();
   return (
     <>
-      <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
+      <div className="flex justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
+        <Button asChild size="sm">
+          <Link to="./episodes/new">New Episode</Link>
+        </Button>
+      </div>
       <p>{description}</p>
       <Outlet />
     </>

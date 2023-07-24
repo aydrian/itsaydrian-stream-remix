@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle
@@ -21,6 +22,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
       episodes: {
         orderBy: { startDate: "asc" },
         select: {
+          description: true,
           endDate: true,
           guests: {
             orderBy: { order: "asc" },
@@ -70,33 +72,43 @@ export default function ShowIndex() {
         <CardContent>
           {episodes.length ? (
             <div className="flex flex-wrap gap-4">
-              {episodes.map((episode) => (
-                <Card key={episode.id}>
-                  <CardHeader>
-                    <CardTitle>{episode.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div>
-                      {formatDateRange(episode.startDate, episode.endDate)}
-                    </div>
-                    <div>
-                      <span className="font-semibold">Guests: </span>
-                      {episode.guests.map(({ guest }, index) => (
-                        <span key={guest.id}>
-                          {`${guest.firstName} ${guest.lastName}${
-                            index !== episode.guests.length - 1 ? ", " : ""
-                          }`}
-                        </span>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button asChild>
-                      <Link to={`./episodes/${episode.id}`}>View</Link>
-                    </Button>
-                  </CardFooter>
-                </Card>
-              ))}
+              {episodes.map((episode) => {
+                const [host, ...guests] = episode.guests;
+                return (
+                  <Card className="max-w-xs" key={episode.id}>
+                    <CardHeader>
+                      <CardTitle>{episode.title}</CardTitle>
+                      <CardDescription>
+                        {formatDateRange(episode.startDate, episode.endDate)}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div>{episode.description}</div>
+                      <div>
+                        <div className="font-semibold">
+                          Host:{" "}
+                          {`${host.guest.firstName} ${host.guest.lastName}`}
+                        </div>
+                        <div className="font-semibold">
+                          Guests:{" "}
+                          {guests.map(({ guest }, index) => (
+                            <span key={guest.id}>
+                              {`${guest.firstName} ${guest.lastName}${
+                                index !== guests.length - 1 ? ", " : ""
+                              }`}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-between">
+                      <Button asChild size="sm">
+                        <Link to={`./episodes/${episode.id}`}>View</Link>
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
             </div>
           ) : (
             <div>No upcoming episodes</div>

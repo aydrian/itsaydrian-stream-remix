@@ -38,7 +38,7 @@ export default function ShowsIndex() {
                 </CardHeader>
                 <CardContent>{show.description}</CardContent>
                 <CardFooter>
-                  <Button asChild>
+                  <Button asChild size="sm">
                     <Link to={`./${show.id}`}>View</Link>
                   </Button>
                 </CardFooter>

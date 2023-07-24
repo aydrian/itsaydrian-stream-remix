@@ -12,6 +12,14 @@ import {
 import stylesheet from "~/tailwind.css";
 
 export const links: LinksFunction = () => [
+  // Preload CSS as a resource to avoid render blocking
+  {
+    as: "style",
+    href: "/fonts/atkinson-hyperlegible/font.css",
+    rel: "preload"
+  },
+  { as: "style", href: "/fonts/poppins/font.css", rel: "preload" },
+  { as: "style", href: stylesheet, rel: "preload" },
   { href: "/fonts/atkinson-hyperlegible/font.css", rel: "stylesheet" },
   { href: "/fonts/poppins/font.css", rel: "stylesheet" },
   { href: stylesheet, rel: "stylesheet" }

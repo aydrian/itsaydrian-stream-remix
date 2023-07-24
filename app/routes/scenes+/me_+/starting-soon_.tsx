@@ -20,7 +20,9 @@ export default function StartingSoon() {
               <h1 className="max-w-fit bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-center text-9xl font-bold leading-tight text-transparent">
                 {show.title}
               </h1>
-              <h2 className="text-7xl font-semibold leading-tight">{title}</h2>
+              <h2 className="text-center text-7xl font-semibold leading-tight">
+                {title}
+              </h2>
             </div>
             <h2 className="max-w-fit animate-pulse bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text p-8 text-7xl font-bold leading-tight text-transparent">
               Starting Soon...

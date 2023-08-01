@@ -8,12 +8,12 @@ import {
 } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json, redirect } from "@remix-run/node";
-import { useFetcher } from "@remix-run/react";
+import { Link, useFetcher } from "@remix-run/react";
 import { toDate } from "date-fns-tz";
 import { useRef } from "react";
 import { z } from "zod";
 
-import { ErrorList, Field } from "~/components/form";
+import { ErrorList, Field, TextareaField } from "~/components/form";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -158,10 +158,10 @@ export function EpisodeEditor({
         inputProps={conform.input(title)}
         labelProps={{ children: "Title", htmlFor: title.id }}
       />
-      <Field
+      <TextareaField
         errors={description.errors}
-        inputProps={conform.input(description)}
         labelProps={{ children: "Description", htmlFor: description.id }}
+        textareaProps={conform.textarea(description)}
       />
       <div className="flex w-full flex-row justify-between gap-1">
         <input
@@ -223,7 +223,12 @@ export function EpisodeEditor({
         ))}
       </div>
       <ErrorList errors={form.errors} id={form.errorId} />
-      <Button>Submit</Button>
+      <div className="mt-2 flex w-full gap-2">
+        <Button>Submit</Button>
+        <Button asChild variant="secondary">
+          <Link to="../">Cancel</Link>
+        </Button>
+      </div>
     </episodeEditorFetcher.Form>
   );
 }

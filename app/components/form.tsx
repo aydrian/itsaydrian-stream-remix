@@ -5,6 +5,7 @@ import { Label } from "~/components/ui/label";
 import { cn } from "~/utils/misc";
 
 import { Button } from "./ui/button";
+import { Textarea } from "./ui/textarea";
 
 export type ListOfErrors = Array<null | string | undefined> | null | undefined;
 
@@ -53,6 +54,36 @@ export function Field({
         {...inputProps}
       />
       <div className="px-4 pb-3 pt-1">
+        {errorId ? <ErrorList errors={errors} id={errorId} /> : null}
+      </div>
+    </div>
+  );
+}
+
+export function TextareaField({
+  className,
+  errors,
+  labelProps,
+  textareaProps
+}: {
+  className?: string;
+  errors?: ListOfErrors;
+  labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
+  textareaProps: React.InputHTMLAttributes<HTMLTextAreaElement>;
+}) {
+  const fallbackId = useId();
+  const id = textareaProps.id ?? textareaProps.name ?? fallbackId;
+  const errorId = errors?.length ? `${id}-error` : undefined;
+  return (
+    <div className={className}>
+      <Label htmlFor={id} {...labelProps} />
+      <Textarea
+        aria-describedby={errorId}
+        aria-invalid={errorId ? true : undefined}
+        id={id}
+        {...textareaProps}
+      />
+      <div className="min-h-[32px] px-4 pb-3 pt-1">
         {errorId ? <ErrorList errors={errors} id={errorId} /> : null}
       </div>
     </div>

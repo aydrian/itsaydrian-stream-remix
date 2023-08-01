@@ -13,6 +13,10 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   return json({ showId });
 };
 
+export const handle = {
+  breadcrumb: () => <span>New</span>
+};
+
 export default function NewEpisode() {
   const { showId } = useLoaderData<typeof loader>();
 

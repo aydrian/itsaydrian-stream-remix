@@ -50,8 +50,7 @@ export default function AdminDashboard() {
   const { shows } = useLoaderData<typeof loader>();
   return (
     <>
-      <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-      <Card className="max-w-fit">
+      <Card>
         <CardHeader>
           <CardTitle>Upcoming Episodes</CardTitle>
         </CardHeader>

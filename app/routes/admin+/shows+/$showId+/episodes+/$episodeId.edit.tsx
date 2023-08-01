@@ -12,12 +12,15 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     select: {
       description: true,
       endDate: true,
+      guests: {
+        orderBy: { order: "asc" },
+        select: { guestId: true, order: true }
+      },
       id: true,
       showId: true,
       startDate: true,
       title: true,
       vdoPassword: true
-      // guests: { select: { order: true, guestId: true } }
     },
     where: { id: episodeId }
   });
@@ -30,12 +33,16 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   return typedjson({ episode });
 };
 
+export const handle = {
+  breadcrumb: () => <span>Edit Episode</span>
+};
+
 export default function EditEpisode() {
   const { episode } = useTypedLoaderData<typeof loader>();
 
   return (
     <>
-      <h2 className="text-3xl font-bold tracking-tight">Edit Episode</h2>
+      <h3 className="text-xl font-bold tracking-tight">Edit Episode</h3>
       <EpisodeEditor episode={episode} showId={episode.showId} />
     </>
   );

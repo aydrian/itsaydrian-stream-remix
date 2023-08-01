@@ -93,7 +93,9 @@ export function DuplicateEpisodeForm({ episodeId }: { episodeId: string }) {
       {...form.props}
     >
       <input name="episodeId" type="hidden" value={episodeId} />
-      <Button variant="secondary">Duplicate</Button>
+      <Button size="sm" variant="secondary">
+        Duplicate
+      </Button>
     </duplicateEpisodeFetcher.Form>
   );
 }

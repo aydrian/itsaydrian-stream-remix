@@ -17,13 +17,11 @@ authenticator.use(
     invariant(typeof email === "string", "email must be a string");
     invariant(typeof password === "string", "password must be a string");
 
-    const user = await verifyLogin(email, password);
-    if (!user) {
-      throw new AuthorizationError(
-        "Username/Password combination is incorrect"
-      );
+    const userId = await verifyLogin(email, password);
+    if (!userId) {
+      throw new AuthorizationError("Email/Password combination is incorrect");
     }
-    return user.id;
+    return userId;
   }),
   FormStrategy.name
 );
@@ -58,5 +56,29 @@ export async function verifyLogin(email: User["email"], password: string) {
     return null;
   }
 
-  return { id: userWithPassword.id };
+  return userWithPassword.id;
+}
+
+export async function changePassword(
+  email: User["email"],
+  password: string,
+  newPassword: string
+) {
+  const userId = await verifyLogin(email, password);
+  if (!userId) {
+    throw new Error("Password incorrect.");
+  }
+
+  const passwordHash = await bcrypt.hash(newPassword, 10);
+
+  try {
+    await prisma.user.update({
+      data: { passwordHash },
+      select: { id: true },
+      where: { id: userId }
+    });
+  } catch (err) {
+    console.error(`Error changing password for ${email}: `, err);
+    throw new Error("Unable to change password. Please try again.");
+  }
 }

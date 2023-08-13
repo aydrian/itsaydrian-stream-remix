@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle
 } from "~/components/ui/card";
+import { ChangePwdForm } from "~/routes/auth+/form.changePwd";
 import {
   SpotifyConnect,
   SpotifyDisconnect
@@ -74,6 +75,14 @@ export default function Profile() {
               <dt className="font-semibold">Email</dt>
               <dd className="text-sm">{user?.email}</dd>
             </dl>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Change Password</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChangePwdForm email={user.email} />
           </CardContent>
         </Card>
         {user?.guestProfile ? (

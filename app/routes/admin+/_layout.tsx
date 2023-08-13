@@ -48,7 +48,7 @@ export default function AdminLayout() {
         <div className="container mx-auto flex flex-col flex-wrap items-center md:flex-row">
           <div className="md:w-2/6">
             <div className="fill current w-auto text-3xl font-bold">
-              Stream Admin
+              Control Room
             </div>
           </div>
           <div className="flex items-center space-x-4 md:w-2/6 lg:space-x-6">

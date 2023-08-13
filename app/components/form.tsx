@@ -19,9 +19,9 @@ export function ErrorList({
   const errorsToRender = errors?.filter(Boolean);
   if (!errorsToRender?.length) return null;
   return (
-    <ul className="space-y-1" id={id}>
+    <ul className="flex flex-col gap-1" id={id}>
       {errorsToRender.map((e) => (
-        <li className="text-brand-danger text-xs" key={e}>
+        <li className="text-[10px] text-red-600" key={e}>
           {e}
         </li>
       ))}
@@ -104,7 +104,7 @@ export function SubmitButton({
       className={props.className}
       disabled={props.disabled || state !== "idle"}
     >
-      <span>{state === "submitting" ? submittingText : props.children}</span>
+      <span>{state !== "idle" ? submittingText : props.children}</span>
     </Button>
   );
 }

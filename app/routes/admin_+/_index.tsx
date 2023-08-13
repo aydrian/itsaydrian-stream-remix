@@ -4,7 +4,7 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { FormLoginForm } from "~/routes/auth.form";
+import { FormLoginForm } from "~/routes/auth+/form";
 import { authenticator } from "~/utils/auth.server";
 import { redirectToCookie } from "~/utils/cookies.server";
 import { commitSession, getSession } from "~/utils/session.server";

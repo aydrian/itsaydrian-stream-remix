@@ -106,3 +106,77 @@ export function FormLoginForm({ formError }: { formError?: null | string }) {
     </loginFetcher.Form>
   );
 }
+
+const ChangePwdSchema = z
+  .object({
+    confirmPassword: z.string({
+      required_error: "Please confirm your new password"
+    }),
+    newPassword: z
+      .string({ required_error: "New Password is required" })
+      .min(6, "Password must be at least 6 characters long"),
+    password: z.string({ required_error: "Current Password is required" }),
+    userId: z.string()
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"]
+  });
+
+export function ChangePwdForm({ userId }: { userId: string }) {
+  const changePwdFetcher = useFetcher<typeof action>();
+
+  const [form, fields] = useForm({
+    constraint: getFieldsetConstraint(ChangePwdSchema),
+    id: "form-change-pwd-form",
+    lastSubmission: changePwdFetcher.data?.submission,
+    onValidate({ formData }) {
+      return parse(formData, { schema: LoginFormSchema });
+    },
+    shouldRevalidate: "onBlur"
+  });
+
+  return (
+    <changePwdFetcher.Form
+      action="/auth/form"
+      method="POST"
+      {...form.props}
+      className="mb-8 flex flex-col sm:mb-4"
+    >
+      <input {...conform.input(fields.userId, { type: "hidden" })} />
+      <Field
+        errors={fields.password.errors}
+        inputProps={{ ...conform.input(fields.password, { type: "password" }) }}
+        labelProps={{ children: "Password", htmlFor: fields.password.id }}
+      />
+      <Field
+        inputProps={{
+          ...conform.input(fields.newPassword, { type: "password" })
+        }}
+        labelProps={{
+          children: "New Password",
+          htmlFor: fields.newPassword.id
+        }}
+        errors={fields.newPassword.errors}
+      />
+      <Field
+        inputProps={{
+          ...conform.input(fields.confirmPassword, { type: "password" })
+        }}
+        labelProps={{
+          children: "Confirm Password",
+          htmlFor: fields.confirmPassword.id
+        }}
+        errors={fields.confirmPassword.errors}
+      />
+      <ErrorList errors={form.errors} id={form.errorId} />
+      <SubmitButton
+        className="mt-4 px-6 py-2"
+        state={changePwdFetcher.state}
+        type="submit"
+      >
+        Submit
+      </SubmitButton>
+    </changePwdFetcher.Form>
+  );
+}

@@ -21,7 +21,6 @@ export const action = async ({ request }: DataFunctionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, {
-    acceptMultipleErrors: () => true,
     schema: EpisodeDuplicateSchema
   });
   if (!submission.value) {

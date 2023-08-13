@@ -28,18 +28,18 @@ import { formatDateForInput } from "~/utils/misc";
 
 export const EpisodeGuestSchema = z.object({
   guestId: z.string().optional(),
-  order: z.coerce.number()
+  order: z.number()
 });
 
 export const EpisodeEditorSchema = z.object({
-  description: z.string().min(1, { message: "Description is required" }),
-  endDate: z.string().min(1, { message: "End Date is required" }),
+  description: z.string({ required_error: "Description is required" }),
+  endDate: z.string({ required_error: "End Date is required" }),
   guests: z.array(EpisodeGuestSchema).min(1),
   id: z.string().optional(),
   showId: z.string(),
-  startDate: z.string().min(1, { message: "Start Date is required" }),
+  startDate: z.string({ required_error: "Start Date is required" }),
   timeZone: z.string(),
-  title: z.string().min(1, { message: "Title is required" }),
+  title: z.string({ required_error: "Title is required" }),
   vdoPassword: z.string().default("cockroachIsC00l!")
 });
 
@@ -47,7 +47,6 @@ export const action = async ({ request }: DataFunctionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, {
-    acceptMultipleErrors: () => true,
     schema: EpisodeEditorSchema
   });
   if (!submission.value) {

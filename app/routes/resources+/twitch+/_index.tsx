@@ -53,7 +53,6 @@ export const action = async ({ request }: ActionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, {
-    acceptMultipleErrors: () => true,
     schema: DisconnectSchema
   });
 

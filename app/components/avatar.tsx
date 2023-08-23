@@ -1,6 +1,6 @@
 import clsx from "clsx";
 
-import { Shorthand } from "./cockroach-labs-logos";
+import { Icon } from "./icon";
 
 export function Avatar({
   alt,
@@ -20,7 +20,10 @@ export function Avatar({
           src={src}
         />
       ) : (
-        <Shorthand className="aspect-square h-full text-white" />
+        <Icon
+          className="aspect-square h-full text-white"
+          name="crl-shorthand"
+        />
       )}
     </div>
   );

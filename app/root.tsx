@@ -9,10 +9,12 @@ import {
   ScrollRestoration
 } from "@remix-run/react";
 
+import iconHref from "~/components/icons/sprite.svg";
 import stylesheet from "~/tailwind.css";
 
 export const links: LinksFunction = () => [
   // Preload CSS as a resource to avoid render blocking
+  { as: "image", href: iconHref, rel: "preload", type: "image/svg+xml" },
   {
     as: "style",
     href: "/fonts/atkinson-hyperlegible/font.css",

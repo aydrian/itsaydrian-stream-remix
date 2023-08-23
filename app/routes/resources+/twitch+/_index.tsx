@@ -9,7 +9,7 @@ import {
 import { useFetcher } from "@remix-run/react";
 import { z } from "zod";
 
-import { Twitch } from "~/components/brand-logos";
+import { Icon } from "~/components/icon";
 import { Button, type ButtonProps } from "~/components/ui/button";
 import { requireUserId } from "~/utils/auth.server";
 import { twitchStateCookie } from "~/utils/cookies.server";
@@ -126,7 +126,7 @@ export function TwitchButton({
       className={cn(props.className, "bg-[#9146FF] py-6 text-white")}
       disabled={disabled || state !== "idle"}
     >
-      <Twitch className="mr-2 h-6 w-auto" />
+      <Icon className="mr-2 h-6 w-6" name="twitch" />
       <span>{title}</span>
     </Button>
   );

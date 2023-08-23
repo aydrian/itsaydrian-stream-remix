@@ -3,8 +3,8 @@ import { useLoaderData } from "@remix-run/react";
 
 import type { EpisodeGuests } from "~/utils/db.server";
 
-import { Twitter } from "~/components/brand-logos";
 import { GuestsGrid } from "~/components/guests-grid";
+import { Icon } from "~/components/icon";
 
 import { useEpisode } from "./_layout";
 
@@ -39,7 +39,7 @@ function CrlCaption({ guest }: { guest: EpisodeGuests[number] }) {
         )}
         {guest.twitter && (
           <h3 className="text-2xl text-crl-neutral-300">
-            <Twitter className="mr-2 inline-block h-6 w-auto" />
+            <Icon className="mr-2 inline-block h-6 w-6" name="twitter" />
             <span>@{guest.twitter}</span>
           </h3>
         )}

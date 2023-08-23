@@ -9,7 +9,7 @@ import {
 import { useFetcher } from "@remix-run/react";
 import { z } from "zod";
 
-import { Spotify } from "~/components/brand-logos";
+import { Icon } from "~/components/icon";
 import { Button, type ButtonProps } from "~/components/ui/button";
 import { requireUserId } from "~/utils/auth.server";
 import { spotifyStateCookie } from "~/utils/cookies.server";
@@ -127,7 +127,7 @@ export function SpotifyButton({
       className={cn(props.className, "bg-[#1db954] py-6 text-white")}
       disabled={disabled || state !== "idle"}
     >
-      <Spotify className="mr-2 h-6 w-auto" />
+      <Icon className="mr-2 h-6 w-6" name="spotify" />
       <span>{title}</span>
     </Button>
   );

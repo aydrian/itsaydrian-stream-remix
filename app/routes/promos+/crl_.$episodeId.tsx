@@ -2,8 +2,7 @@ import { type LoaderArgs } from "@remix-run/node";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
 import { Avatar } from "~/components/avatar";
-import { YouTube } from "~/components/brand-logos";
-import * as CrlLogo from "~/components/cockroach-labs-logos";
+import { Icon } from "~/components/icon";
 import { prisma } from "~/utils/db.server";
 
 export const loader = async ({ params }: LoaderArgs) => {
@@ -55,7 +54,10 @@ export default function CrlPromo() {
   return (
     <div className="flex aspect-video h-[1080px] flex-col justify-between bg-crl-deep-purple bg-[url('/img/crl-texture-7.svg')] bg-cover px-20 py-16 font-poppins text-white">
       <header>
-        <CrlLogo.FullHorizontal className="aspect-auto h-16 w-auto text-white" />
+        <Icon
+          className="aspect-auto h-16 w-auto text-white"
+          name="crl-full-horizontal"
+        />
       </header>
       <div className="flex grow">
         <div className="flex h-full w-[58%] flex-col justify-between">
@@ -97,7 +99,7 @@ export default function CrlPromo() {
               <div className="text-4xl font-semibold text-crl-iridescent-blue">
                 Watch at
               </div>
-              <YouTube className="h-14 w-auto" />
+              <Icon className="h-14 w-14" name="youtube" />
               <span className="text-4xl font-semibold">
                 youtube.com/cockroachdb
               </span>

@@ -5,8 +5,7 @@ import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react";
 
 import type { ResolvedRemixLoader } from "~/utils/types";
 
-import { GitHub, Instagram, Twitter, YouTube } from "~/components/brand-logos";
-import * as CrlLogo from "~/components/cockroach-labs-logos";
+import { Icon } from "~/components/icon";
 import { getNextEpisode } from "~/utils/db.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -37,12 +36,12 @@ export default function ScenesLayout() {
             <h2 className=" text-4xl font-semibold">{title}</h2>
           </div>
           <div className="flex flex-col justify-center gap-4">
-            <CrlLogo.FullHorizontal className="h-16 w-auto" />
+            <Icon className="h-16 w-auto" name="crl-full-horizontal" />
             <div className="flex items-center justify-center gap-2">
-              <GitHub className="h-8 w-auto" />
-              <Instagram className="h-8 w-auto" />
-              <Twitter className="h-8 w-auto" />
-              <YouTube className="h-8 w-auto" />
+              <Icon className="h-8 w-8" name="github" />
+              <Icon className="h-8 w-8" name="instagram" />
+              <Icon className="h-8 w-8" name="twitter" />
+              <Icon className="h-8 w-8" name="youtube" />
               <span className="text-4xl font-semibold">@cockroachdb</span>
             </div>
           </div>

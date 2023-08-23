@@ -1,7 +1,7 @@
 import { type LoaderArgs, json } from "@remix-run/node";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
-import { Tv2 } from "lucide-react";
 
+import { Icon } from "~/components/icon";
 import { Button } from "~/components/ui/button";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
@@ -30,7 +30,7 @@ export async function loader({ params, request }: LoaderArgs) {
 export const handle = {
   breadcrumb: (data: ResolvedRemixLoader<typeof loader>) => (
     <>
-      <Tv2 className="mr-1" />
+      <Icon className="mr-1 h-6 w-6" name="tv-2" />
       <span>{data.title}</span>
     </>
   )

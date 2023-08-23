@@ -1,10 +1,10 @@
 import type { LoaderArgs } from "@remix-run/node";
 
 import { Link, NavLink, Outlet } from "@remix-run/react";
-import { LogOut, User } from "lucide-react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 import { twMerge } from "tailwind-merge";
 
+import { Icon } from "~/components/icon";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
@@ -108,13 +108,13 @@ export default function AdminLayout() {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
+                    <Icon className="mr-2 h-4 w-4" name="user" />
                     <Link to="/admin/settings/profile">Profile</Link>
                     <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" />
+                    <Icon className="mr-2 h-4 w-4" name="log-out" />
                     <Link to="/admin/logout">Log out</Link>
                     <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                   </DropdownMenuItem>

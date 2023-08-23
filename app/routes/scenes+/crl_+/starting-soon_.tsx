@@ -2,7 +2,7 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { Avatar } from "~/components/avatar";
-import * as CrlLogo from "~/components/cockroach-labs-logos";
+import { Icon } from "~/components/icon";
 import { getNextEpisode } from "~/utils/db.server";
 
 export const loader = async () => {
@@ -15,7 +15,10 @@ export default function StartingSoon() {
   return (
     <div className="flex aspect-video h-[1080px] flex-col justify-between bg-crl-deep-purple bg-[url('/img/crl-texture-7.svg')] bg-cover px-20 py-16 font-poppins text-white">
       <header>
-        <CrlLogo.FullHorizontal className="aspect-auto h-16 w-auto text-white" />
+        <Icon
+          className="aspect-auto h-16 w-auto text-white"
+          name="crl-full-horizontal"
+        />
       </header>
       <div className="flex justify-between">
         <div className="flex h-full w-[58%] flex-col justify-center">

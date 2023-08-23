@@ -1,6 +1,4 @@
-import { HomeIcon } from "lucide-react";
-
-import { GitHub, Instagram, Twitch, Twitter } from "~/components/brand-logos";
+import { Icon } from "~/components/icon";
 import atticusAndMe from "~/images/atticus-and-me.png";
 
 export default function VideoPlayerBanner() {
@@ -21,17 +19,17 @@ export default function VideoPlayerBanner() {
           </div>
           <ul className="flex w-full items-center justify-around  p-12 text-4xl font-medium">
             <li className="flex items-center gap-2">
-              <Twitter className="h-8 w-auto" />
-              <Instagram className="h-8 w-auto" />
-              <Twitch className="h-8 w-auto" />
+              <Icon className="h-8 w-8" name="twitter" />
+              <Icon className="h-8 w-8" name="instagram" />
+              <Icon className="h-8 w-8" name="twitch" />
               <span>itsaydrian</span>
             </li>
             <li className="flex items-center gap-2">
-              <GitHub className="h-8 w-auto" />
+              <Icon className="h-8 w-8" name="github" />
               <span>aydrian</span>
             </li>
             <li className="flex items-center gap-2">
-              <HomeIcon className="h-8 w-auto" />
+              <Icon className="h-8 w-8" name="home" />
               <span>itsaydrian.com</span>
             </li>
           </ul>

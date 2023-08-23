@@ -1,8 +1,8 @@
 import type { LoaderArgs } from "@remix-run/node";
 
 import { Outlet } from "@remix-run/react";
-import { Video } from "lucide-react";
 
+import { Icon } from "~/components/icon";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { type ResolvedRemixLoader } from "~/utils/types";
@@ -27,7 +27,7 @@ export async function loader({ params, request }: LoaderArgs) {
 export const handle = {
   breadcrumb: (data: ResolvedRemixLoader<typeof loader>) => (
     <>
-      <Video className="mr-1" />
+      <Icon className="mr-1 h-6 w-6" name="video" />
       <span>{data.title}</span>
     </>
   )

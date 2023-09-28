@@ -10,10 +10,11 @@ import { getFieldsetConstraint, parse } from "@conform-to/zod";
 import { type DataFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, useFetcher } from "@remix-run/react";
 import { toDate } from "date-fns-tz";
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { z } from "zod";
 
 import { ErrorList, Field, TextareaField } from "~/components/form";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -22,19 +23,35 @@ import {
   CardHeader,
   CardTitle
 } from "~/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "~/components/ui/select";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateForInput } from "~/utils/misc";
 
+import { useEpisodesLayoutLoaderData } from "../admin+/shows+/$showId+/episodes+/_layout";
+
 export const EpisodeGuestSchema = z.object({
-  guestId: z.string().optional(),
+  guest: z
+    .object({
+      avatarUrl: z.string().nullable(),
+      firstName: z.string(),
+      lastName: z.string()
+    })
+    .optional(),
+  guestId: z.string(),
   order: z.number()
 });
 
 export const EpisodeEditorSchema = z.object({
   description: z.string({ required_error: "Description is required" }),
   endDate: z.string({ required_error: "End Date is required" }),
-  guests: z.array(EpisodeGuestSchema).min(1),
+  guests: z.array(EpisodeGuestSchema.omit({ guest: true })).min(1),
   id: z.string().optional(),
   showId: z.string(),
   startDate: z.string({ required_error: "Start Date is required" }),
@@ -64,9 +81,10 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
   const { endDate, guests, id, startDate, timeZone, ...data } =
     submission.value;
+  console.log({ guests });
 
   if (id) {
-    await prisma.episode.update({
+    const episodeUpdate = prisma.episode.update({
       data: {
         ...data,
         endDate: toDate(endDate, { timeZone }),
@@ -74,6 +92,27 @@ export const action = async ({ request }: DataFunctionArgs) => {
       },
       where: { id }
     });
+
+    const guestsDelete = prisma.guestsForEpisode.deleteMany({
+      where: { guestId: { notIn: guests.map((g) => g.guestId) } }
+    });
+
+    const guestUpserts = guests.map((guest) => {
+      return prisma.guestsForEpisode.upsert({
+        create: {
+          episodeId: id,
+          guestId: guest.guestId,
+          order: guest.order
+        },
+        update: { order: guest.order },
+        where: {
+          episodeId_guestId: { episodeId: id, guestId: guest.guestId }
+        }
+      });
+    });
+
+    await prisma.$transaction([episodeUpdate, guestsDelete, ...guestUpserts]);
+
     return redirect(`/admin/shows/${data.showId}/episodes/${id}`);
   }
 
@@ -81,6 +120,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
     data: {
       ...data,
       endDate: toDate(endDate, { timeZone }),
+      guests: { create: guests },
       startDate: toDate(startDate, { timeZone })
     },
     select: { id: true }
@@ -97,6 +137,11 @@ export function EpisodeEditor({
     description: string;
     endDate: Date;
     guests: {
+      guest: {
+        avatarUrl: null | string;
+        firstName: string;
+        lastName: string;
+      };
       guestId: string;
       order: number;
     }[];
@@ -141,7 +186,6 @@ export function EpisodeEditor({
     },
     shouldRevalidate: "onBlur"
   });
-  const guestList = useFieldList(form.ref, guests);
 
   return (
     <episodeEditorFetcher.Form
@@ -194,33 +238,8 @@ export function EpisodeEditor({
       <h4 className="mb-1.5 text-lg font-semibold leading-tight text-gray-700">
         Select your guests
       </h4>
-      {/* <Button className="mb-3" size="sm" {...list.append(guests.name)}>
-        Add a Guest
-      </Button> */}
-      <div className="flex flex-wrap gap-4">
-        {guestList.map((guest, index) => (
-          <Card key={guest.key}>
-            <CardHeader>
-              <CardTitle>{index === 0 ? "Host" : `Guest ${index}`}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <GuestFieldset {...guest} index={index} />
-            </CardContent>
-            <CardFooter>
-              {guestList.length > 1 ? (
-                <Button
-                  className="bottom-2 right-2 text-xs"
-                  size="sm"
-                  variant="destructive"
-                  {...list.remove(guests.name, { index })}
-                >
-                  Remove
-                </Button>
-              ) : null}
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      <GuestSelector formRef={form.ref} guests={guests} />
+
       <ErrorList errors={form.errors} id={form.errorId} />
       <div className="mt-2 flex w-full gap-2">
         <Button>Submit</Button>
@@ -232,21 +251,124 @@ export function EpisodeEditor({
   );
 }
 
-function GuestFieldset(
-  config: FieldConfig<z.input<typeof EpisodeGuestSchema>> & { index: number }
-) {
+function GuestSelector({
+  formRef,
+  guests
+}: {
+  formRef: React.RefObject<HTMLFormElement>;
+  guests: FieldConfig<z.input<typeof EpisodeGuestSchema>[]>;
+}) {
+  const guestList = useFieldList(formRef, guests);
+  const { allGuests } = useEpisodesLayoutLoaderData();
+  const [selectedGuest, setSelectedGuest] = React.useState<
+    Omit<z.input<typeof EpisodeGuestSchema>, "order"> | undefined
+  >(undefined);
+  return (
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center gap-1.5">
+        <Select
+          onValueChange={(value) => {
+            const guest = allGuests.find(({ id }) => id === value);
+            if (guest) {
+              setSelectedGuest({
+                guest: {
+                  avatarUrl: guest.avatarUrl,
+                  firstName: guest.firstName,
+                  lastName: guest.lastName
+                },
+                guestId: guest.id
+              });
+            }
+          }}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select a guest" />
+          </SelectTrigger>
+          <SelectContent>
+            {allGuests.map((guest) => (
+              <SelectItem
+                key={guest.id}
+                value={guest.id}
+              >{`${guest.firstName} ${guest.lastName}`}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          className="bottom-2 right-2 text-xs"
+          size="sm"
+          variant="secondary"
+          {...list.insert(guests.name, { defaultValue: selectedGuest })}
+        >
+          Add
+        </Button>
+      </div>
+      <div className="flex flex-wrap gap-4">
+        {guestList.map(({ key, ...guest }, index) => {
+          return (
+            <GuestFieldset
+              config={guest}
+              index={index}
+              isRemovable={guestList.length > 1}
+              key={key}
+              listName={guests.name}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function GuestFieldset({
+  config,
+  index,
+  isRemovable = false,
+  listName
+}: {
+  config: FieldConfig<z.input<typeof EpisodeGuestSchema>>;
+  index: number;
+  isRemovable?: boolean;
+  listName: string;
+}) {
   const ref = useRef<HTMLFieldSetElement>(null);
-  const { guestId, order } = useFieldset(ref, config);
+  const { guest, guestId, order } = useFieldset(ref, config);
 
   return (
     <fieldset ref={ref}>
-      <div>{guestId.defaultValue}</div>
+      <input {...conform.input(guestId, { type: "hidden" })} />
       <input
-        name={order.name}
-        type="hidden"
-        value={order.defaultValue ?? String(config.index)}
+        {...conform.input(order, { type: "hidden" })}
+        defaultValue={order.defaultValue ?? index}
       />
-      <input name={guestId.name} type="hidden" value={guestId.defaultValue} />
+      <Card className="w-48">
+        <CardHeader>
+          <CardTitle>{index === 0 ? "Host" : `Guest ${index}`}</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-2">
+          <Avatar className="mx-auto h-32 w-32 shadow-md">
+            <AvatarImage
+              alt={`${guest.defaultValue?.firstName} ${guest.defaultValue?.lastName}`}
+              src={guest.defaultValue?.avatarUrl ?? undefined}
+            />
+            <AvatarFallback>{`${guest.defaultValue?.firstName.charAt(
+              0
+            )}${guest.defaultValue?.lastName.charAt(0)}`}</AvatarFallback>
+          </Avatar>
+          <CardTitle>{`${guest.defaultValue?.firstName} ${guest.defaultValue?.lastName}`}</CardTitle>
+        </CardContent>
+        <CardFooter>
+          {isRemovable ? (
+            <Button
+              className="bottom-2 right-2 text-xs"
+              size="sm"
+              variant="destructive"
+              {...list.remove(listName, { index })}
+            >
+              Remove
+            </Button>
+          ) : null}
+        </CardFooter>
+      </Card>
     </fieldset>
   );
 }

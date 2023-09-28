@@ -19,32 +19,31 @@ import { generateVDOPassword } from "~/utils/vdo-ninja.server";
 export const loader = async ({ params, request }: LoaderArgs) => {
   await requireUserId(request);
   const { episodeId } = params;
-  const episode = await prisma.episode.findUnique({
-    select: {
-      description: true,
-      endDate: true,
-      guests: {
-        orderBy: { order: "asc" },
-        select: {
-          guest: {
-            select: { firstName: true, id: true, lastName: true }
-          },
-          order: true
-        }
+  const episode = await prisma.episode
+    .findUniqueOrThrow({
+      select: {
+        description: true,
+        endDate: true,
+        guests: {
+          orderBy: { order: "asc" },
+          select: {
+            guest: {
+              select: { firstName: true, id: true, lastName: true }
+            },
+            order: true
+          }
+        },
+        id: true,
+        show: { select: { title: true } },
+        startDate: true,
+        title: true,
+        vdoPassword: true
       },
-      id: true,
-      show: { select: { title: true } },
-      startDate: true,
-      title: true,
-      vdoPassword: true
-    },
-    where: { id: episodeId }
-  });
-  if (!episode) {
-    throw new Response("Not Found", {
-      status: 404
+      where: { id: episodeId }
+    })
+    .catch(() => {
+      throw new Response(null, { status: 404, statusText: "Not Found" });
     });
-  }
 
   const vdoConfig = {
     hash: await generateVDOPassword(episode.vdoPassword),
@@ -75,9 +74,9 @@ export default function EpisodeIdIndex() {
               <CardTitle>Participants</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {guests.map(({ guest, order }, index) => (
-                  <Card key={guest.id}>
+                  <Card className="md:w-60" key={guest.id}>
                     <CardHeader>
                       <CardTitle>{`${guest.firstName} ${guest.lastName}`}</CardTitle>
                       <CardDescription>

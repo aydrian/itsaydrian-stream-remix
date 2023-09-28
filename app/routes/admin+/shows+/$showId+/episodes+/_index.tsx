@@ -99,7 +99,7 @@ export default function EpisodesIndex() {
               })}
             </div>
           ) : (
-            <div>This show has not eposides</div>
+            <div>This show has no episodes</div>
           )}
         </CardContent>
       </Card>

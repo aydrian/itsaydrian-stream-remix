@@ -1,11 +1,13 @@
 import { type LoaderArgs, json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import { Button } from "~/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle
 } from "~/components/ui/card";
@@ -32,13 +34,16 @@ export default function Guests() {
   const { guests } = useLoaderData<typeof loader>();
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="flex-row items-center justify-between space-y-0">
         <CardTitle>Guests</CardTitle>
+        <Button asChild size="sm">
+          <Link to="./new">New Guest</Link>
+        </Button>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {guests.map((guest) => (
-            <Card key={guest.id}>
+            <Card className="md:w-60" key={guest.id}>
               <CardHeader>
                 <CardTitle className="flex flex-row items-center gap-1.5">
                   <Avatar className="h-8 w-8">
@@ -54,6 +59,14 @@ export default function Guests() {
                 </CardTitle>
                 <CardDescription>{`${guest.title} at ${guest.company}`}</CardDescription>
               </CardHeader>
+              <CardFooter className="gap-2">
+                <Button asChild size="sm">
+                  <Link to={`./${guest.id}`}>View</Link>
+                </Button>
+                <Button asChild size="sm">
+                  <Link to={`./${guest.id}/edit`}>Edit</Link>
+                </Button>
+              </CardFooter>
             </Card>
           ))}
         </div>

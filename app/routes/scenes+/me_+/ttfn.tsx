@@ -29,12 +29,12 @@ export default function TTFN() {
         TTFN
       </h1>
       <h2
+        className="text-7xl font-bold leading-tight text-cyan-500"
+        ref={target}
         style={{
           clipPath: "polygon(0 0, 100% 0, 100% 100%, 0% 100%)",
           visibility: "hidden"
         }}
-        className="text-7xl font-bold leading-tight text-cyan-500"
-        ref={target}
       >
         Ta-Ta For Now 👋
       </h2>

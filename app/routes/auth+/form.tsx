@@ -150,6 +150,7 @@ export function ChangePwdForm({ userId }: { userId: string }) {
         labelProps={{ children: "Password", htmlFor: fields.password.id }}
       />
       <Field
+        errors={fields.newPassword.errors}
         inputProps={{
           ...conform.input(fields.newPassword, { type: "password" })
         }}
@@ -157,9 +158,9 @@ export function ChangePwdForm({ userId }: { userId: string }) {
           children: "New Password",
           htmlFor: fields.newPassword.id
         }}
-        errors={fields.newPassword.errors}
       />
       <Field
+        errors={fields.confirmPassword.errors}
         inputProps={{
           ...conform.input(fields.confirmPassword, { type: "password" })
         }}
@@ -167,7 +168,6 @@ export function ChangePwdForm({ userId }: { userId: string }) {
           children: "Confirm Password",
           htmlFor: fields.confirmPassword.id
         }}
-        errors={fields.confirmPassword.errors}
       />
       <ErrorList errors={form.errors} id={form.errorId} />
       <SubmitButton

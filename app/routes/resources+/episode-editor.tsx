@@ -213,11 +213,11 @@ export function EpisodeEditor({
           value={Intl.DateTimeFormat().resolvedOptions().timeZone}
         />
         <Field
+          className="grow"
+          errors={startDate.errors}
           inputProps={conform.input(startDate, {
             type: "datetime-local"
           })}
-          className="grow"
-          errors={startDate.errors}
           labelProps={{ children: "Start Date", htmlFor: startDate.id }}
         />
         <Field
@@ -228,12 +228,12 @@ export function EpisodeEditor({
         />
       </div>
       <Field
+        errors={vdoPassword.errors}
+        inputProps={conform.input(vdoPassword)}
         labelProps={{
           children: "VDO Password",
           htmlFor: vdoPassword.id
         }}
-        errors={vdoPassword.errors}
-        inputProps={conform.input(vdoPassword)}
       />
       <h4 className="mb-1.5 text-lg font-semibold leading-tight text-gray-700">
         Select your guests

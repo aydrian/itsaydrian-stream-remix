@@ -179,6 +179,7 @@ export function EpisodeEditor({
       id: episode?.id,
       showId: episode?.showId ?? showId,
       startDate: formatDateForInput(episode?.startDate),
+      subtitle: episode?.subtitle,
       title: episode?.title,
       vdoPassword: episode?.vdoPassword
     },

@@ -20,7 +20,7 @@ export default function StartingSoon() {
           name="crl-full-horizontal"
         />
       </header>
-      <div className="row-start-2 flex h-full w-[1020px] shrink-0 flex-col justify-center">
+      <div className="row-start-2 flex h-full w-[1020px] shrink-0 flex-col justify-center pr-16">
         <h1 className="mb-1 flex max-w-fit bg-gradient-to-r from-crl-iridescent-blue to-crl-electric-purple bg-clip-text text-7xl font-bold leading-tight text-transparent">
           {show.title}
         </h1>

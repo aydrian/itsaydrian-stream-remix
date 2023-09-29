@@ -21,7 +21,8 @@ export type OutLetContext = {
 };
 
 export default function ScenesLayout() {
-  const { guests, show, showGuides, title } = useLoaderData<typeof loader>();
+  const { guests, show, showGuides, subtitle, title } =
+    useLoaderData<typeof loader>();
   return (
     <div className="grid aspect-video h-[1080px] grid-rows-[auto_200px] font-poppins">
       <main className="h-[880px]">
@@ -33,7 +34,10 @@ export default function ScenesLayout() {
             <h1 className="mb-1 flex min-w-fit bg-gradient-to-r from-crl-iridescent-blue to-crl-electric-purple bg-clip-text text-6xl font-bold leading-tight text-transparent">
               {show.title}
             </h1>
-            <h2 className=" text-4xl font-semibold">{title}</h2>
+            <h2 className=" text-4xl font-semibold leading-tight">{title}</h2>
+            <h3 className=" text-3xl font-medium leading-tight text-gray-200">
+              {subtitle}
+            </h3>
           </div>
           <div className="flex flex-col justify-center gap-4">
             <Icon className="h-16 w-auto" name="crl-full-horizontal" />

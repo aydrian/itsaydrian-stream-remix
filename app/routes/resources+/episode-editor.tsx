@@ -55,6 +55,7 @@ export const EpisodeEditorSchema = z.object({
   id: z.string().optional(),
   showId: z.string(),
   startDate: z.string({ required_error: "Start Date is required" }),
+  subtitle: z.string().optional(),
   timeZone: z.string(),
   title: z.string({ required_error: "Title is required" }),
   vdoPassword: z.string().default("cockroachIsC00l!")
@@ -94,7 +95,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
     });
 
     const guestsDelete = prisma.guestsForEpisode.deleteMany({
-      where: { guestId: { notIn: guests.map((g) => g.guestId) } }
+      where: { episodeId: id, guestId: { notIn: guests.map((g) => g.guestId) } }
     });
 
     const guestUpserts = guests.map((guest) => {
@@ -148,6 +149,7 @@ export function EpisodeEditor({
     id: string;
     showId: string;
     startDate: Date;
+    subtitle: null | string;
     title: string;
     vdoPassword: string;
   };
@@ -164,6 +166,7 @@ export function EpisodeEditor({
       id,
       showId: show_id,
       startDate,
+      subtitle,
       title,
       vdoPassword
     }
@@ -200,6 +203,11 @@ export function EpisodeEditor({
         errors={title.errors}
         inputProps={conform.input(title)}
         labelProps={{ children: "Title", htmlFor: title.id }}
+      />
+      <Field
+        errors={subtitle.errors}
+        inputProps={conform.input(subtitle)}
+        labelProps={{ children: "Subtitle", htmlFor: subtitle.id }}
       />
       <TextareaField
         errors={description.errors}

@@ -36,6 +36,7 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
         select: { title: true }
       },
       startDate: true,
+      subtitle: true,
       title: true
     },
     where: {
@@ -65,11 +66,13 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
           id: "5c78fa61-df73-41e4-a4c4-f5f26507b9a2",
           lastName: "Howard",
           order: 1,
-          title: "Chief Woof Officer"
+          title: "Chief Woof Officer",
+          twitter: null
         }
       ],
       id: "a1961b04-a5f5-4494-b49b-a15407648f62",
       show: { title: "Test Show" },
+      subtitle: null,
       title: "Test Episode"
     };
   }

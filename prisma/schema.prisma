@@ -45,6 +45,7 @@ model Episode {
   startDate   DateTime           @map("start_date") @db.Timestamptz(0)
   endDate     DateTime           @map("end_date") @db.Timestamptz(0)
   title       String
+  subtitle    String?
   description String
   vdoPassword String             @default("cockroachIsC00l!") @map("vdo_password")
   createdAt   DateTime           @default(now()) @map("created_at") @db.Timestamptz(0)

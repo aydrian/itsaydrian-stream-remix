@@ -26,6 +26,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
         id: true,
         showId: true,
         startDate: true,
+        subtitle: true,
         title: true,
         vdoPassword: true
       },

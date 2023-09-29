@@ -36,12 +36,14 @@ export const loader = async ({ params, request }: LoaderArgs) => {
         id: true,
         show: { select: { title: true } },
         startDate: true,
+        subtitle: true,
         title: true,
         vdoPassword: true
       },
       where: { id: episodeId }
     })
-    .catch(() => {
+    .catch((error) => {
+      console.error(error);
       throw new Response(null, { status: 404, statusText: "Not Found" });
     });
 
@@ -55,14 +57,25 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 };
 
 export default function EpisodeIdIndex() {
-  const { description, endDate, guests, id, startDate, title, vdoConfig } =
-    useLoaderData<typeof loader>();
+  const {
+    description,
+    endDate,
+    guests,
+    id,
+    startDate,
+    subtitle,
+    title,
+    vdoConfig
+  } = useLoaderData<typeof loader>();
 
   return (
     <>
       <Card>
         <CardHeader>
-          <CardTitle>{title}</CardTitle>
+          <CardTitle>
+            {title}
+            {subtitle ? `: ${subtitle}` : null}
+          </CardTitle>
           <CardDescription>
             {formatDateRange(startDate, endDate)}
           </CardDescription>

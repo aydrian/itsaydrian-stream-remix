@@ -55,9 +55,9 @@ export function GuestsGrid({
 function CrlSuperCompactCaption({ guest }: { guest: EpisodeGuests[number] }) {
   return (
     <figcaption className="absolute bottom-0 left-0 z-10 w-full bg-crl-deep-purple px-4 pb-[.625rem] pt-2">
-      <div className="flex w-full flex-col flex-wrap justify-between">
-        <h1 className="relative z-10 block text-xl font-semibold text-white">
-          <span>{guest.firstName}</span>
+      <div className="flex w-full flex-wrap items-center gap-2">
+        <h1 className="relative z-10 text-xl font-semibold text-white">
+          {guest.firstName}
         </h1>
         {guest.twitter && (
           <h2 className="text-base text-crl-neutral-200">

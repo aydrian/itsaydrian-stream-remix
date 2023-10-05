@@ -1,5 +1,6 @@
 import { type SceneCollection } from "@prisma/client";
 import { type LoaderArgs, json } from "@remix-run/node";
+import { startOfToday } from "date-fns";
 
 import { prisma } from "~/utils/db.server";
 import { generateVDOPassword } from "~/utils/vdo-ninja.server";
@@ -31,6 +32,9 @@ export async function loader({ params, request }: LoaderArgs) {
       },
       id: true,
       vdoPassword: true
+    },
+    where: {
+      AND: [{ endDate: { gte: startOfToday() } }, { show: { sceneCollection } }]
     }
   });
 
@@ -39,7 +43,7 @@ export async function loader({ params, request }: LoaderArgs) {
   }
 
   const { guests, id, vdoPassword } = result;
-  const vdoHash = generateVDOPassword(vdoPassword);
+  const vdoHash = await generateVDOPassword(vdoPassword);
   const flatGuests = guests.map(({ guest, order }) => ({ ...guest, order }));
   return json({ guests: flatGuests, id, vdoHash, vdoPassword });
 }

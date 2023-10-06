@@ -1,4 +1,4 @@
-import { useEventSource } from "remix-utils";
+import { useEventSource } from "remix-utils/sse/react";
 
 export default function Overlays() {
   const redeemData = useEventSource("/resources/twitch/eventsub", {

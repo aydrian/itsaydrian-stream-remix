@@ -1,5 +1,9 @@
-import { type ActionArgs, type LoaderArgs, json } from "@remix-run/node";
-import { eventStream } from "remix-utils";
+import {
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+  json
+} from "@remix-run/node";
+import { eventStream } from "remix-utils/sse/server";
 
 import { emitter } from "~/utils/emitter.server";
 import { twitch, withVerifyTwitch } from "~/utils/twitch.server";
@@ -13,7 +17,7 @@ import type {
   SubscribeEvent
 } from "./types";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   return eventStream(request.signal, function setup(send) {
     function handle(type: EventType, event: Event) {
       if (type === "channel.channel_points_custom_reward_redemption.add") {
@@ -107,45 +111,47 @@ export const loader = async ({ request }: LoaderArgs) => {
   });
 };
 
-export const action = withVerifyTwitch(async ({ request }: ActionArgs) => {
-  if (request.method !== "POST") {
-    return json(
-      { message: "Method not allowed" },
-      { headers: { Allow: "POST" }, status: 405 }
-    );
-  }
-  const body = await request.json();
-  const messageType = request.headers.get("twitch-eventsub-message-type");
-  if (messageType === "webhook_callback_verification") {
-    return new Response(body.challenge, { status: 200 });
-  } else if (messageType === "notification") {
-    const {
-      event,
-      subscription: { type }
-    } = body;
-
-    console.log(
-      `Receiving ${type} request for ${event.broadcaster_user_name}: `,
-      event
-    );
-
-    try {
-      if (
-        type === "stream.online" ||
-        type === "channel.follow" ||
-        type === "channel.raid" ||
-        type === "channel.subscribe" ||
-        type === "channel.channel_points_custom_reward_redemption.add"
-      ) {
-        emitter.emit("new-event", type, event);
-      }
-    } catch (ex) {
-      console.log(
-        `An error occurred sending the ${type} notification for ${event.broadcaster_user_name}: `,
-        ex
+export const action = withVerifyTwitch(
+  async ({ request }: ActionFunctionArgs) => {
+    if (request.method !== "POST") {
+      return json(
+        { message: "Method not allowed" },
+        { headers: { Allow: "POST" }, status: 405 }
       );
     }
-  }
+    const body = await request.json();
+    const messageType = request.headers.get("twitch-eventsub-message-type");
+    if (messageType === "webhook_callback_verification") {
+      return new Response(body.challenge, { status: 200 });
+    } else if (messageType === "notification") {
+      const {
+        event,
+        subscription: { type }
+      } = body;
 
-  return new Response(null, { status: 200 });
-});
+      console.log(
+        `Receiving ${type} request for ${event.broadcaster_user_name}: `,
+        event
+      );
+
+      try {
+        if (
+          type === "stream.online" ||
+          type === "channel.follow" ||
+          type === "channel.raid" ||
+          type === "channel.subscribe" ||
+          type === "channel.channel_points_custom_reward_redemption.add"
+        ) {
+          emitter.emit("new-event", type, event);
+        }
+      } catch (ex) {
+        console.log(
+          `An error occurred sending the ${type} notification for ${event.broadcaster_user_name}: `,
+          ex
+        );
+      }
+    }
+
+    return new Response(null, { status: 200 });
+  }
+);

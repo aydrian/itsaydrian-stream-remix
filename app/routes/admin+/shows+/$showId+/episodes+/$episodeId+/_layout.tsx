@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { Outlet } from "@remix-run/react";
 
@@ -7,7 +7,7 @@ import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { type ResolvedRemixLoader } from "~/utils/types";
 
-export async function loader({ params, request }: LoaderArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   await requireUserId(request);
   const { episodeId } = params;
 

@@ -1,4 +1,4 @@
-import { type LoaderArgs, Response, json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import type { EpisodeGuests } from "~/utils/db.server";
@@ -9,7 +9,7 @@ import { ScreenContainer } from "~/components/screen-container";
 
 import { useEpisode } from "./_layout";
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const num = parseInt(params.num ?? "");
 
   if (isNaN(num)) {

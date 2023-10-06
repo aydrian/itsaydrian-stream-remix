@@ -1,7 +1,6 @@
 import type { ActionFunction } from "@remix-run/node";
 import type { HelixSchedule, HelixStream, HelixVideo } from "@twurple/api";
 
-import { Response } from "@remix-run/node";
 import { ApiClient } from "@twurple/api";
 import { AppTokenAuthProvider } from "@twurple/auth";
 import crypto from "crypto";

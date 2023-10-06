@@ -1,6 +1,7 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
-import { eventStream, useEventSource } from "remix-utils";
+import { useEventSource } from "remix-utils/sse/react";
+import { eventStream } from "remix-utils/sse/server";
 import invariant from "tiny-invariant";
 
 import type { Song } from "~/utils/spotify.server";
@@ -10,7 +11,7 @@ import { getUsersNowPlaying } from "~/utils/spotify.server";
 
 const sleep = (ms: number) => new Promise((_) => setTimeout(_, ms));
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const cookie = await nowPlayingCookie.parse(request.headers.get("Cookie"));
 
   return eventStream(request.signal, function setup(send) {

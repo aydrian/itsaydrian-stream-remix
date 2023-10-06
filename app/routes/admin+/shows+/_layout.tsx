@@ -1,17 +1,27 @@
 import { Link, Outlet, useMatches } from "@remix-run/react";
+import { z } from "zod";
 
 import { cn } from "~/utils/misc";
+
+export const BreadcrumbHandle = z.object({ breadcrumb: z.any() });
+export type BreadcrumbHandle = z.infer<typeof BreadcrumbHandle>;
+
+const BreadcrumbHandleMatch = z.object({
+  handle: BreadcrumbHandle
+});
 
 export default function ShowsLayout() {
   const matches = useMatches();
   const breadcrumbs = matches
-    .map((m) =>
-      m.handle?.breadcrumb ? (
+    .map((m) => {
+      const result = BreadcrumbHandleMatch.safeParse(m);
+      if (!result.success || !result.data.handle.breadcrumb) return null;
+      return (
         <Link className="flex items-center" key={m.id} to={m.pathname}>
-          {m.handle.breadcrumb(m.data)}
+          {result.data.handle.breadcrumb}
         </Link>
-      ) : null
-    )
+      );
+    })
     .filter(Boolean);
   return (
     <>

@@ -1,11 +1,11 @@
 import { type SceneCollection } from "@prisma/client";
-import { type LoaderArgs, json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { startOfToday } from "date-fns";
 
 import { prisma } from "~/utils/db.server";
 import { generateVDOPassword } from "~/utils/vdo-ninja.server";
 
-export async function loader({ params, request }: LoaderArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   // TODO: Make sure request is coming from SAMMI
   const sceneCollection: SceneCollection | undefined = params.sceneCollection
     ? (params.sceneCollection.toUpperCase() as SceneCollection)

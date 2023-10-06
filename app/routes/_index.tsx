@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -13,7 +13,7 @@ import {
 
 const { TWITCH_USER_ID } = env;
 
-export const loader = async (_args: LoaderArgs) => {
+export const loader = async (_args: LoaderFunctionArgs) => {
   const [hStream, { data: hSchedule }, { data: videoData }] = await Promise.all(
     [
       twitch.streams.getStreamByUserId(TWITCH_USER_ID),

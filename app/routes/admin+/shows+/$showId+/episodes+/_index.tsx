@@ -1,4 +1,4 @@
-import { type LoaderArgs, json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
 import { Button } from "~/components/ui/button";
@@ -15,7 +15,7 @@ import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateRange } from "~/utils/misc";
 
-export const loader = async ({ params, request }: LoaderArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request);
   const { showId } = params;
   const episodes = await prisma.episode.findMany({

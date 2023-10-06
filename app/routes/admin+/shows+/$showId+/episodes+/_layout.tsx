@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { Outlet } from "@remix-run/react";
 import { typedjson, useTypedRouteLoaderData } from "remix-typedjson";
@@ -6,7 +6,7 @@ import { typedjson, useTypedRouteLoaderData } from "remix-typedjson";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   await requireUserId(request);
   const allGuests = await prisma.guest.findMany({
     orderBy: [{ lastName: "asc" }, { firstName: "asc" }],

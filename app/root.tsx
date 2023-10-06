@@ -1,4 +1,4 @@
-import type { LinksFunction, V2_MetaFunction } from "@remix-run/node";
+import type { LinksFunction, MetaFunction } from "@remix-run/node";
 
 import {
   Links,
@@ -27,7 +27,7 @@ export const links: LinksFunction = () => [
   { href: stylesheet, rel: "stylesheet" }
 ];
 
-export const meta: V2_MetaFunction = () => {
+export const meta: MetaFunction = () => {
   return [
     { charset: "utf-8" },
     { title: "ItsAydrian Stream" },

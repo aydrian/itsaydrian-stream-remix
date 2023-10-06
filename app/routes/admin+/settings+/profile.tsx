@@ -1,4 +1,4 @@
-import { type LoaderArgs, Response, json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 
 import { Avatar } from "~/components/avatar";
@@ -24,7 +24,7 @@ import { type ResolvedRemixLoader } from "~/utils/types";
 
 type User = ResolvedRemixLoader<typeof loader>["user"];
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
   try {
     const user = await prisma.user.findUniqueOrThrow({

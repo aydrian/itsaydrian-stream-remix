@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { Link, NavLink, Outlet } from "@remix-run/react";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
@@ -19,7 +19,7 @@ import {
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
   const dbUser = await prisma.user
     .findUniqueOrThrow({

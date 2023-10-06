@@ -1,11 +1,11 @@
-import { type LoaderArgs, redirect } from "@remix-run/node";
+import { type LoaderFunctionArgs, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 
 import { spotifyStateCookie } from "~/utils/cookies.server";
 import { prisma } from "~/utils/db.server";
 import { getUserProfile, requestAccessToken } from "~/utils/spotify.server";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");
   invariant(typeof code === "string", "Expected code to not be null.");

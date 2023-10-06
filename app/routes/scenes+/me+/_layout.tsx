@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { json } from "@remix-run/node";
 import { Outlet, useLoaderData, useOutletContext } from "@remix-run/react";
@@ -9,7 +9,7 @@ import { NowPlaying } from "~/routes/resources+/spotify+/now-playing";
 import { nowPlayingCookie } from "~/utils/cookies.server";
 import { getNextEpisode, prisma } from "~/utils/db.server";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const showGuides = Boolean(url.searchParams.get("showGuides"));
   const [nextEpisode, spotifyConnection] = await Promise.all([

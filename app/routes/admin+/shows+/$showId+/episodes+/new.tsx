@@ -1,11 +1,11 @@
-import { type LoaderArgs, json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
 import { EpisodeEditor } from "~/routes/resources+/episode-editor";
 import { requireUserId } from "~/utils/auth.server";
 
-export const loader = async ({ params, request }: LoaderArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request);
   const { showId } = params;
   invariant(typeof showId === "string", "Show ID should be a string.");

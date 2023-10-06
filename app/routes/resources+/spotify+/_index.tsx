@@ -1,8 +1,8 @@
 import { useForm } from "@conform-to/react";
 import { parse } from "@conform-to/zod";
 import {
-  type ActionArgs,
-  type LoaderArgs,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
   json,
   redirect
 } from "@remix-run/node";
@@ -23,7 +23,7 @@ const DisconnectSchema = z.object({
   connectionId: z.string()
 });
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await requireUserId(request);
 
   const state = generateRandomString(16);
@@ -46,7 +46,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   });
 };
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
   const submission = parse(formData, {

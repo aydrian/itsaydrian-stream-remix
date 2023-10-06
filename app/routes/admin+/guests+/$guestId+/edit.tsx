@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
@@ -6,7 +6,7 @@ import { GuestEditor } from "~/routes/resources+/guest-editor";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 
-export async function loader({ params, request }: LoaderArgs) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   await requireUserId(request);
   const { guestId } = params;
   const guest = await prisma.guest

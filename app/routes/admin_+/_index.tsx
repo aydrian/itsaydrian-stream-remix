@@ -1,4 +1,4 @@
-import type { LoaderArgs } from "@remix-run/node";
+import type { LoaderFunctionArgs } from "@remix-run/node";
 
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -9,7 +9,7 @@ import { authenticator } from "~/utils/auth.server";
 import { redirectToCookie } from "~/utils/cookies.server";
 import { commitSession, getSession } from "~/utils/session.server";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticator.isAuthenticated(request, {
     successRedirect: "/admin/dashboard"
   });

@@ -1,11 +1,11 @@
-import { type LoaderArgs } from "@remix-run/node";
+import { type LoaderFunctionArgs } from "@remix-run/node";
 import { typedjson, useTypedLoaderData } from "remix-typedjson";
 
 import { Avatar } from "~/components/avatar";
 import { Icon } from "~/components/icon";
 import { prisma } from "~/utils/db.server";
 
-export const loader = async ({ params }: LoaderArgs) => {
+export const loader = async ({ params }: LoaderFunctionArgs) => {
   const { episodeId } = params;
   const findEvent = await prisma.episode
     .findUniqueOrThrow({

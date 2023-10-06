@@ -1,4 +1,4 @@
-import { type LoaderArgs, Response, json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import type { EpisodeGuests } from "~/utils/db.server";
@@ -12,7 +12,7 @@ import {
 
 import { useEpisode } from "./_layout";
 
-export const loader = async ({ params, request }: LoaderArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const num = parseInt(params.num ?? "");
   const url = new URL(request.url);
   const screenSize =

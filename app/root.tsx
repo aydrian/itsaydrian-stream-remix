@@ -8,6 +8,7 @@ import {
   Scripts,
   ScrollRestoration
 } from "@remix-run/react";
+import rdtStylesheet from "remix-development-tools/index.css";
 
 import iconHref from "~/components/icons/sprite.svg";
 import stylesheet from "~/tailwind.css";
@@ -24,7 +25,10 @@ export const links: LinksFunction = () => [
   { as: "style", href: stylesheet, rel: "preload" },
   { href: "/fonts/atkinson-hyperlegible/font.css", rel: "stylesheet" },
   { href: "/fonts/poppins/font.css", rel: "stylesheet" },
-  { href: stylesheet, rel: "stylesheet" }
+  { href: stylesheet, rel: "stylesheet" },
+  ...(process.env.NODE_ENV === "development"
+    ? [{ href: rdtStylesheet, rel: "stylesheet" }]
+    : [])
 ];
 
 export const meta: MetaFunction = () => {
@@ -35,7 +39,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export default function App() {
+function App() {
   return (
     <html lang="en">
       <head>
@@ -51,3 +55,11 @@ export default function App() {
     </html>
   );
 }
+
+let AppExport = App;
+if (process.env.NODE_ENV === "development") {
+  const { withDevTools } = await import("remix-development-tools");
+  AppExport = withDevTools(AppExport);
+}
+
+export default AppExport;

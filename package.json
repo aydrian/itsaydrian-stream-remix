@@ -5,7 +5,7 @@
   "scripts": {
     "build": "remix build",
     "build:icons": "tsx build-icons.ts",
-    "dev": "remix dev --manual -c \"node server.js\"",
+    "dev": "remix dev -c \"rdt-serve ./build/index.js\" --manual",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "lint:fix": "eslint --fix --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "cross-env NODE_ENV=production node ./server.js",
@@ -78,6 +78,7 @@
     "prettier": "^3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.5",
     "prisma": "^5.4.1",
+    "remix-development-tools": "^3.2.1",
     "remix-flat-routes": "^0.5.12",
     "tailwindcss": "^3.3.3",
     "tailwindcss-animate": "^1.0.7",

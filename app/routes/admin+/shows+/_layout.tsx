@@ -12,13 +12,14 @@ const BreadcrumbHandleMatch = z.object({
 
 export default function ShowsLayout() {
   const matches = useMatches();
+  console.log({ matches });
   const breadcrumbs = matches
     .map((m) => {
       const result = BreadcrumbHandleMatch.safeParse(m);
       if (!result.success || !result.data.handle.breadcrumb) return null;
       return (
         <Link className="flex items-center" key={m.id} to={m.pathname}>
-          {result.data.handle.breadcrumb}
+          {result.data.handle.breadcrumb(m.data)}
         </Link>
       );
     })

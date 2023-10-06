@@ -54,7 +54,15 @@ async function createDevRequestHandler() {
   /**
    * @type { import('@remix-run/node').ServerBuild | Promise<import('@remix-run/node').ServerBuild> }
    */
-  let devBuild = build;
+
+  const { defineServerConfig, withServerDevTools } = await import(
+    "remix-development-tools/server"
+  );
+  // Allows you to define the configuration for the dev tools
+  const devToolsConfig = defineServerConfig({
+    //... your config here ...
+  });
+  let devBuild = withServerDevTools(build, devToolsConfig);
   const chokidar = await import("chokidar");
 
   const watcher = chokidar.watch(BUILD_PATH, { ignoreInitial: true });

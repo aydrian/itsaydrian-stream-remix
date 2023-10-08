@@ -61,7 +61,7 @@ export default function AdminLogin() {
       </div>
       <a
         className="absolute right-4 top-4"
-        href="https://github.com/aydrian/roach-mart"
+        href="https://github.com/aydrian/itsaydrian-stream-remix"
         rel="noreferrer"
         target="_blank"
       >

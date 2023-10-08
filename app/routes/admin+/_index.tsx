@@ -46,7 +46,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({ shows });
 };
 
-export default function AdminDashboard() {
+export default function AdminIndex() {
   const { shows } = useLoaderData<typeof loader>();
   return (
     <>

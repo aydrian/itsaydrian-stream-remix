@@ -35,7 +35,7 @@ export const requireUserId = async (
     ["loginMessage", "Please login to continue"]
   ]);
   const userId = await authenticator.isAuthenticated(request, {
-    failureRedirect: `/admin?${searchParams}`
+    failureRedirect: `/admin/login?${searchParams}`
   });
   return userId;
 };

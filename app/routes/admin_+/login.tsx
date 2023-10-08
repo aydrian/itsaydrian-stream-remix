@@ -13,7 +13,7 @@ import { commitSession, getSession } from "~/utils/session.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticator.isAuthenticated(request, {
-    successRedirect: "/admin/dashboard"
+    successRedirect: "/admin"
   });
   const url = new URL(request.url);
   const redirectTo = url.searchParams.get("redirectTo");
@@ -34,7 +34,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({ formError: errorMessage, loginMessage }, { headers });
 };
 
-export default function AdminIndex() {
+export default function AdminLogin() {
   const data = useLoaderData<typeof loader>();
   return (
     <main className="flex h-screen flex-col justify-evenly bg-[#f5f5f5] md:flex-row">

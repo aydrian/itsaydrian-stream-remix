@@ -56,9 +56,9 @@ export default function AdminLayout() {
               className={({ isActive }) =>
                 twMerge(navLinkDefaultClassName, isActive && "text-blue-700")
               }
-              to="/admin/dashboard"
+              to="/admin"
             >
-              Dashboard
+              Home
             </NavLink>
             <NavLink
               className={({ isActive }) =>

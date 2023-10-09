@@ -60,7 +60,7 @@ export default function AdminIndex() {
               <Card key={show.id}>
                 <CardHeader>
                   <CardTitle>
-                    <Link to={`../shows/${show.id}`}>{show.title}</Link>
+                    <Link to={`./shows/${show.id}`}>{show.title}</Link>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -68,7 +68,7 @@ export default function AdminIndex() {
                     <div>
                       <div>
                         <Link
-                          to={`../shows/${show.id}/episodes/${show.episodes[0].id}`}
+                          to={`./shows/${show.id}/episodes/${show.episodes[0].id}`}
                         >
                           {show.episodes[0].title}
                         </Link>

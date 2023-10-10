@@ -3,12 +3,13 @@ import { cn } from "~/utils/misc";
 
 export type ScreenSize = "16:9" | "16:10";
 
-type props = {
+export function ScreenContainer({
+  screenSize = "16:9",
+  showGuides
+}: {
   screenSize?: ScreenSize;
   showGuides?: boolean;
-};
-
-export function ScreenContainer({ screenSize = "16:10", showGuides }: props) {
+}) {
   const { Guide, elementRef } = useShowGuides<HTMLDivElement>(
     `Screen ${screenSize}`
   );

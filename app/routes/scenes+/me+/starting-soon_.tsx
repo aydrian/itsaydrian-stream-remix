@@ -1,16 +1,8 @@
-import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
-
 import atticusAndMe from "~/images/atticus-and-me.png";
-import { getNextEpisode } from "~/utils/db.server";
-
-export const loader = async () => {
-  const nextEpisode = await getNextEpisode("ME");
-  return json(nextEpisode);
-};
+import { useEpisode } from "~/routes/scenes+/me+/_layout";
 
 export default function StartingSoon() {
-  const { show, title } = useLoaderData<typeof loader>();
+  const { show, title } = useEpisode();
   return (
     <div className="flex h-screen w-screen items-center justify-between bg-blue-950 text-white">
       <div className="h-full grow bg-gradient-to-r from-cyan-500 to-green-500 p-8">

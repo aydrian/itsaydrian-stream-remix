@@ -2,8 +2,7 @@ import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { GuestsGrid } from "~/components/guests-grid";
-
-import { useEpisode } from "./_layout";
+import { useEpisode, useOptions } from "~/routes/scenes+/me+/_layout";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const num = parseInt(params.num ?? "");
@@ -17,7 +16,9 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
 
 export default function Chatting() {
   const { num } = useLoaderData<typeof loader>();
-  const { guests, showGuides } = useEpisode();
+  const { guests } = useEpisode();
+  const { showGuides } = useOptions();
   const slice = guests.slice(0, num);
+
   return <GuestsGrid guests={slice} showGuides={showGuides} />;
 }

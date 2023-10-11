@@ -3,6 +3,7 @@ import type { LoaderFunctionArgs } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
+import ControlRoomLogo from "~/images/control-room-logo.svg";
 import env from "~/utils/env.server";
 import {
   scheduleToJSON,
@@ -37,8 +38,9 @@ export const loader = async (_args: LoaderFunctionArgs) => {
 export default function Index() {
   const { stream } = useLoaderData<typeof loader>();
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>ItsAydrian Stream (Remix Edition)</h1>
+    <div className="flex min-h-[100svh] w-full flex-col items-start justify-center bg-gradient-to-r from-cyan-500 to-green-500 pt-12 md:items-center md:pt-0">
+      <img alt="Control Room" className="h-auto w-1/3" src={ControlRoomLogo} />
+      <h1 className="text-6xl font-bold">Control Room</h1>
       {stream ? (
         <h2>
           {" "}

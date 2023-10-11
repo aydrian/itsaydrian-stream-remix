@@ -5,7 +5,7 @@ import { useLoaderData } from "@remix-run/react";
 
 import { Icon } from "~/components/icon";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import ControlRoomLogo from "~/images/control- room-logo.svg";
+import ControlRoomLogo from "~/images/control-room-logo.svg";
 import { FormLoginForm } from "~/routes/auth+/form";
 import { authenticator } from "~/utils/auth.server";
 import { redirectToCookie } from "~/utils/cookies.server";

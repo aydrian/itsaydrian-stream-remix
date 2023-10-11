@@ -1,5 +1,6 @@
 import { VideoContainer } from "~/components/video-container";
-import { useEpisode, useOptions } from "~/routes/scenes+/me+/_layout";
+import { useOptions } from "~/routes/scenes+/_layout";
+import { useEpisode } from "~/routes/scenes+/me+/_layout";
 
 export default function Chatting2() {
   const { guests } = useEpisode();

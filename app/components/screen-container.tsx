@@ -1,7 +1,10 @@
+import { z } from "zod";
+
 import { useShowGuides } from "~/hooks/use-show-guides";
 import { cn } from "~/utils/misc";
 
-export type ScreenSize = "16:9" | "16:10";
+export const ScreenSizeSchema = z.enum(["16:9", "16:10"]);
+export type ScreenSize = z.infer<typeof ScreenSizeSchema>;
 
 export function ScreenContainer({
   screenSize = "16:9",

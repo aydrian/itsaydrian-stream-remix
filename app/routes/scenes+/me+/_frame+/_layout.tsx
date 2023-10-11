@@ -3,7 +3,7 @@ import { Outlet } from "@remix-run/react";
 import { NowPlaying } from "~/routes/resources+/spotify+/now-playing";
 import { useEpisode } from "~/routes/scenes+/me+/_layout";
 
-export default function ScenesLayout() {
+export default function MeFramesLayout() {
   const { title } = useEpisode();
   return (
     <div className="grid aspect-video h-[1080px] grid-rows-[50px_auto_150px]">

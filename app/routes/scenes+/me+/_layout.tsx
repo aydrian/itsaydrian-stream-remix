@@ -2,16 +2,11 @@ import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { Outlet, useRouteLoaderData } from "@remix-run/react";
 
 import { Icon } from "~/components/icon";
-import { type ScreenSize } from "~/components/screen-container";
 import { nowPlayingCookie } from "~/utils/cookies.server";
 import { getNextEpisode, prisma } from "~/utils/db.server";
 import { type EpisodeGuests } from "~/utils/db.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const url = new URL(request.url);
-  const showGuides = Boolean(url.searchParams.get("showGuides"));
-  const screenSize =
-    (url.searchParams.get("screenSize") as ScreenSize) || undefined;
   const [episode, spotifyConnection] = await Promise.all([
     getNextEpisode("ME"),
     // TODO: Need better way to get Spotify connection
@@ -26,7 +21,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
     })
   ]);
   return json(
-    { episode, options: { screenSize, showGuides } },
+    { episode },
     {
       headers: {
         "Set-Cookie": await nowPlayingCookie.serialize(spotifyConnection)
@@ -43,16 +38,6 @@ export function useEpisode() {
     );
   }
   return { ...data.episode };
-}
-
-export function useOptions() {
-  const data = useRouteLoaderData<typeof loader>("routes/scenes+/me+/_layout");
-  if (data === undefined) {
-    throw new Error(
-      "useOptions must be used within the routes/scenes+/me+/ route or its children"
-    );
-  }
-  return { ...data.options };
 }
 
 export default function Layout() {

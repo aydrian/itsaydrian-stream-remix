@@ -1,7 +1,8 @@
 import { Outlet } from "@remix-run/react";
 
 import { ScreenContainer } from "~/components/screen-container";
-import { useEpisode, useOptions } from "~/routes/scenes+/me+/_layout";
+import { useOptions } from "~/routes/scenes+/_layout";
+import { useEpisode } from "~/routes/scenes+/me+/_layout";
 
 export default function ProgrammingLayout() {
   const { guests } = useEpisode();

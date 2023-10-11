@@ -1,9 +1,6 @@
 import { VideoContainer } from "~/components/video-container";
-import {
-  CompactCaption,
-  useEpisode,
-  useOptions
-} from "~/routes/scenes+/me+/_layout";
+import { useOptions } from "~/routes/scenes+/_layout";
+import { CompactCaption, useEpisode } from "~/routes/scenes+/me+/_layout";
 
 export default function Programming2() {
   const { guests } = useEpisode();

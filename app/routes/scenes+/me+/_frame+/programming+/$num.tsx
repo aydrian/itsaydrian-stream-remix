@@ -1,19 +1,22 @@
 import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+import { getParams } from "remix-params-helper";
+import { z } from "zod";
 
 import { GuestsGrid } from "~/components/guests-grid";
-import {
-  CompactCaption,
-  useEpisode,
-  useOptions
-} from "~/routes/scenes+/me+/_layout";
+import { useOptions } from "~/routes/scenes+/_layout";
+import { CompactCaption, useEpisode } from "~/routes/scenes+/me+/_layout";
+
+const ParamsSchema = z.object({
+  num: z.number().optional()
+});
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
-  const num = parseInt(params.num ?? "");
-
-  if (isNaN(num)) {
-    throw new Response("Parameter expected to be a number", { status: 400 });
+  const result = getParams(params, ParamsSchema);
+  if (!result.success) {
+    throw json(result.errors, { status: 400 });
   }
+  const num = result.data.num;
 
   return json({ num });
 };

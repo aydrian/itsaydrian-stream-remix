@@ -1,17 +1,10 @@
-import { typedjson, useTypedLoaderData } from "remix-typedjson";
-
 import { Avatar } from "~/components/avatar";
 import { Icon } from "~/components/icon";
 import { TitleGuest } from "~/components/title-guest";
-import { getNextEpisode } from "~/utils/db.server";
-
-export const loader = async () => {
-  const nextEpisode = await getNextEpisode("CRL");
-  return typedjson(nextEpisode);
-};
+import { useEpisode } from "~/routes/scenes+/crl+/_layout";
 
 export default function StartingSoon() {
-  const { guests, show, subtitle, title } = useTypedLoaderData<typeof loader>();
+  const { guests, show, subtitle, title } = useEpisode();
   return (
     <div className="grid aspect-video h-[1080px] grid-cols-[1020px_auto] grid-rows-[min-content_auto_min-content] bg-crl-deep-purple bg-[url('/img/crl-texture-7.svg')] bg-cover px-20 py-16 font-poppins text-white">
       <header className="col-span-2">

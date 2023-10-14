@@ -13,7 +13,7 @@ import { commitSession, getSession } from "~/utils/session.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticator.isAuthenticated(request, {
-    successRedirect: "/admin/dashboard"
+    successRedirect: "/admin"
   });
   const url = new URL(request.url);
   const redirectTo = url.searchParams.get("redirectTo");
@@ -37,16 +37,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function AdminIndex() {
   const data = useLoaderData<typeof loader>();
   return (
-    <main className="flex h-screen flex-col justify-evenly bg-[#f5f5f5] md:flex-row">
+    <main className="flex h-screen flex-col justify-evenly bg-gradient-to-r from-cyan-500 to-green-500 md:flex-row">
       <div className="flex basis-1/4 flex-col items-center justify-center gap-2 md:basis-1/2">
         <img
           alt="Control Room"
-          className="h-auto w-1/2"
+          className="h-auto w-2/3"
           src={ControlRoomLogo}
         />
         <h1 className="text-6xl font-bold">Control Room</h1>
       </div>
-      <div className="flex basis-3/4 items-start justify-center bg-gradient-to-r from-cyan-500 to-green-500 pt-12 md:basis-1/2 md:items-center md:pt-0">
+      <div className="flex basis-3/4 items-start justify-center pt-12 md:basis-1/2 md:items-center md:pt-0">
         <Card className="w-3/4">
           <CardHeader>
             <CardTitle>Login</CardTitle>

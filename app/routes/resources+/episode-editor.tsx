@@ -30,11 +30,10 @@ import {
   SelectTrigger,
   SelectValue
 } from "~/components/ui/select";
+import { useEpisodesLayoutLoaderData } from "~/routes/admin+/shows+/$showId+/episodes+/_layout";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateForInput } from "~/utils/misc";
-
-import { useEpisodesLayoutLoaderData } from "../admin+/shows+/$showId+/episodes+/_layout";
 
 export const EpisodeGuestSchema = z.object({
   guest: z

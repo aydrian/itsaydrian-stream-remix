@@ -18,10 +18,10 @@ export default function StartingSoon() {
                   src={guests[0].avatarUrl ?? atticusAndMe}
                 />
               ) : null}
-              <h1 className="max-w-fit bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-center text-9xl font-bold leading-tight text-transparent">
+              <h1 className="max-w-fit bg-gradient-to-r from-cyan-500 to-green-500 bg-clip-text text-center text-8xl font-bold leading-tight text-transparent">
                 {show.title}
               </h1>
-              <h2 className="text-center text-7xl font-semibold leading-tight">
+              <h2 className="text-center text-6xl font-semibold leading-tight">
                 {title}
               </h2>
             </div>

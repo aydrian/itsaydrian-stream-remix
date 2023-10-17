@@ -15,7 +15,6 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!result.success) {
     throw json(result.errors, { status: 400 });
   }
-  console.log({ result, url: request.url });
   const screenSize = result.data.screenSize;
   const showGuides = result.data.showGuides;
 

@@ -68,6 +68,11 @@ export default function EpisodeIdIndex() {
     vdoConfig
   } = useLoaderData<typeof loader>();
 
+  const directorSearchParams = new URLSearchParams([
+    ["director", vdoConfig.room],
+    ["password", vdoConfig.password]
+  ]);
+
   return (
     <>
       <Card>
@@ -88,39 +93,82 @@ export default function EpisodeIdIndex() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {guests.map(({ guest, order }, index) => (
-                  <Card className="md:w-60" key={guest.id}>
-                    <CardHeader>
-                      <CardTitle>{`${guest.firstName} ${guest.lastName}`}</CardTitle>
-                      <CardDescription>
-                        {index === 0 ? "Host" : `Guest ${index}`}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      {index === 0 ? (
-                        <div>
-                          Control Center:{" "}
-                          <pre className="text-xs">
-                            <a
-                              href={`https://vdo.ninja/?director=${vdoConfig.room}&password=${vdoConfig.password}`}
-                              rel="noreferrer"
-                              target="_blank"
-                            >{`https://vdo.ninja/?director=${vdoConfig.room}&password=${vdoConfig.password}`}</a>
-                          </pre>
-                        </div>
-                      ) : (
-                        <div>
-                          Join Link:{" "}
-                          <pre className="text-xs">
-                            <a
-                              href={`https://vdo.ninja/?room=${vdoConfig.room}&id=Guest${order}&hash=${vdoConfig.hash}`}
-                            >{`https://vdo.ninja/?room=${vdoConfig.room}&id=Guest${order}&hash=${vdoConfig.hash}`}</a>
-                          </pre>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
+                {guests.map(({ guest, order }, index) => {
+                  const joinSearchParams = new URLSearchParams([
+                    ["hash", vdoConfig.hash],
+                    ["id", `Guest${order}`],
+                    ["r", vdoConfig.room]
+                  ]);
+                  const pushCameraSearchParams = new URLSearchParams([
+                    ["password", vdoConfig.password],
+                    ["room", vdoConfig.room],
+                    ["solo", ""],
+                    ["view", `Guest${order}`]
+                  ]);
+                  const pushScreenSearchParams = new URLSearchParams([
+                    ...Array.from(pushCameraSearchParams.entries()),
+                    ["view", `Guest${order}:s`]
+                  ]);
+                  return (
+                    <Card className="md:w-60" key={guest.id}>
+                      <CardHeader>
+                        <CardTitle>{`${guest.firstName} ${guest.lastName}`}</CardTitle>
+                        <CardDescription>
+                          {index === 0 ? "Host" : `Guest ${index}`}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        {index === 0 ? (
+                          <div>
+                            Control Center:{" "}
+                            <pre className="text-xs">
+                              <a
+                                href={`https://vdo.ninja/?${directorSearchParams.toString()}`}
+                                rel="noreferrer"
+                                target="_blank"
+                              >{`https://vdo.ninja/?${directorSearchParams}`}</a>
+                            </pre>
+                          </div>
+                        ) : (
+                          <>
+                            <div>
+                              Push Camera Link:{" "}
+                              <pre className="text-xs">
+                                <a
+                                  href={`https://vdo.ninja/?${pushCameraSearchParams
+                                    .toString()
+                                    .replace(/=(?=&|$)/gm, "")}`}
+                                >{`https://vdo.ninja/?${pushCameraSearchParams
+                                  .toString()
+                                  .replace(/=(?=&|$)/gm, "")}`}</a>
+                              </pre>
+                            </div>
+                            <div>
+                              Push Screen Link:{" "}
+                              <pre className="text-xs">
+                                <a
+                                  href={`https://vdo.ninja/?${pushScreenSearchParams
+                                    .toString()
+                                    .replace(/=(?=&|$)/gm, "")}`}
+                                >{`https://vdo.ninja/?${pushScreenSearchParams
+                                  .toString()
+                                  .replace(/=(?=&|$)/gm, "")}`}</a>
+                              </pre>
+                            </div>
+                            <div>
+                              Join Link:{" "}
+                              <pre className="text-xs">
+                                <a
+                                  href={`https://vdo.ninja/?${joinSearchParams}`}
+                                >{`https://vdo.ninja/?${joinSearchParams}`}</a>
+                              </pre>
+                            </div>
+                          </>
+                        )}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

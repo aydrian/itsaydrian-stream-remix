@@ -81,7 +81,6 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
   const { endDate, guests, id, startDate, timeZone, ...data } =
     submission.value;
-  console.log({ guests });
 
   if (id) {
     const episodeUpdate = prisma.episode.update({

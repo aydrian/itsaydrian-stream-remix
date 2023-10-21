@@ -34,7 +34,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({ formError: errorMessage, loginMessage }, { headers });
 };
 
-export default function AdminIndex() {
+export default function AdminLogin() {
   const data = useLoaderData<typeof loader>();
   return (
     <main className="flex h-screen flex-col justify-evenly bg-gradient-to-r from-cyan-500 to-green-500 md:flex-row">
@@ -61,7 +61,7 @@ export default function AdminIndex() {
       </div>
       <a
         className="absolute right-4 top-4"
-        href="https://github.com/aydrian/roach-mart"
+        href="https://github.com/aydrian/itsaydrian-stream-remix"
         rel="noreferrer"
         target="_blank"
       >

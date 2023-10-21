@@ -39,7 +39,7 @@ export default function ShowIdLayout() {
   const { description, title } = useLoaderData<typeof loader>();
   return (
     <>
-      <div className="flex justify-between">
+      <div className="mb-2 flex justify-between">
         <h2 className="text-3xl font-bold tracking-tight">{title}</h2>
         <Button asChild size="sm">
           <Link to="./episodes/new">New Episode</Link>

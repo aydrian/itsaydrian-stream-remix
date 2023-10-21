@@ -10,44 +10,43 @@ import { formatDateRange } from "~/utils/misc";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireUserId(request);
-  const shows = await prisma.show.findMany({
+  const episodes = await prisma.episode.findMany({
+    orderBy: { startDate: "asc" },
     select: {
-      episodes: {
-        orderBy: { startDate: "asc" },
+      endDate: true,
+      guests: {
+        orderBy: { order: "asc" },
         select: {
-          endDate: true,
-          guests: {
-            orderBy: { order: "asc" },
+          guest: {
             select: {
-              guest: {
-                select: {
-                  firstName: true,
-                  id: true,
-                  lastName: true,
-                  twitter: true
-                }
-              },
-              order: true
+              firstName: true,
+              id: true,
+              lastName: true,
+              twitter: true
             }
           },
-          id: true,
-          startDate: true,
-          title: true
-        },
-        take: 1,
-        where: { startDate: { gte: new Date() } }
+          order: true
+        }
       },
       id: true,
+      show: {
+        select: {
+          id: true,
+          title: true
+        }
+      },
+      startDate: true,
       title: true
-    }
-    // orderBy: { episodes: { startDate: "asc" } }
+    },
+    take: 1,
+    where: { startDate: { gte: new Date() } }
   });
 
-  return json({ shows });
+  return json({ episodes });
 };
 
-export default function AdminDashboard() {
-  const { shows } = useLoaderData<typeof loader>();
+export default function AdminIndex() {
+  const { episodes } = useLoaderData<typeof loader>();
   return (
     <>
       <Card>
@@ -56,37 +55,33 @@ export default function AdminDashboard() {
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">
-            {shows.map((show) => (
-              <Card key={show.id}>
+            {episodes.length === 0 ? (
+              <div>There are no upcoming episodes.</div>
+            ) : null}
+            {episodes.map(({ show, ...episode }) => (
+              <Card key={episode.id}>
                 <CardHeader>
                   <CardTitle>
                     <Link to={`./shows/${show.id}`}>{show.title}</Link>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {show.episodes.length ? (
+                  {episodes.length ? (
                     <div>
                       <div>
-                        <Link
-                          to={`./shows/${show.id}/episodes/${show.episodes[0].id}`}
-                        >
-                          {show.episodes[0].title}
+                        <Link to={`./shows/${show.id}/episodes/${episode.id}`}>
+                          {episode.title}
                         </Link>
                       </div>
                       <div>
-                        {formatDateRange(
-                          show.episodes[0].startDate,
-                          show.episodes[0].endDate
-                        )}
+                        {formatDateRange(episode.startDate, episode.endDate)}
                       </div>
                       <div>
                         <span className="font-semibold">Guests: </span>
-                        {show.episodes[0].guests.map(({ guest }, index) => (
+                        {episode.guests.map(({ guest }, index) => (
                           <span key={guest.id}>
                             {`${guest.firstName} ${guest.lastName}${
-                              index !== show.episodes[0].guests.length - 1
-                                ? ", "
-                                : ""
+                              index !== episode.guests.length - 1 ? ", " : ""
                             }`}
                           </span>
                         ))}

@@ -25,7 +25,7 @@ export default function GuestsLayout() {
     .filter(Boolean);
   return (
     <>
-      <ul className="flex gap-3">
+      <ul className="mb-4 flex gap-3">
         <li>
           <Link className="text-muted-foreground" to="/admin/guests">
             Guests

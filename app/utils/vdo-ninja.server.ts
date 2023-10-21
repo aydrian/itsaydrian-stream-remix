@@ -1,5 +1,7 @@
 import crypto from "crypto";
 
+const VDO_BASE_URL = "https://vdo.ninja/";
+
 export const generateVDOPassword = async (password: string) => {
   return generateHash(password + "vdo.ninja", 4);
 };
@@ -23,3 +25,51 @@ function toHexString(byteArray: Uint8Array) {
     })
     .join("");
 }
+
+export const generatePushUrl = (
+  room: string,
+  guest: string,
+  password: string,
+  type: "camera" | "screen" = "camera"
+) => {
+  return `${VDO_BASE_URL}?${new URLSearchParams([
+    ["password", password],
+    ["room", room],
+    ["solo", ""],
+    ["view", type === "camera" ? guest : `${guest}:s`]
+  ])
+    .toString()
+    .replace(/=(?=&|$)/gm, "")}`;
+};
+
+export const generateDirectorUrl = (room: string, password: string) => {
+  return `${VDO_BASE_URL}?${new URLSearchParams([
+    ["director", room],
+    ["password", password]
+  ])}`;
+};
+
+export const generateJoinUrl = async (
+  room: string,
+  guest: string,
+  password: string
+) => {
+  const hash = await generateVDOPassword(password);
+  return `${VDO_BASE_URL}?${new URLSearchParams([
+    ["hash", hash],
+    ["id", guest],
+    ["r", room]
+  ]).toString()}`;
+};
+
+export const getGuestLinks = async (
+  room: string,
+  guest: string,
+  password: string
+) => {
+  return {
+    joinUrl: await generateJoinUrl(room, guest, password),
+    pushCameraUrl: generatePushUrl(room, guest, password),
+    pushScreenUrl: generatePushUrl(room, guest, password, "screen")
+  };
+};

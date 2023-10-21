@@ -1,14 +1,18 @@
+import { z } from "zod";
+
 import { useShowGuides } from "~/hooks/use-show-guides";
 import { cn } from "~/utils/misc";
 
-export type ScreenSize = "16:9" | "16:10";
+export const ScreenSizeSchema = z.enum(["16:9", "16:10"]);
+export type ScreenSize = z.infer<typeof ScreenSizeSchema>;
 
-type props = {
+export function ScreenContainer({
+  screenSize = "16:9",
+  showGuides
+}: {
   screenSize?: ScreenSize;
   showGuides?: boolean;
-};
-
-export function ScreenContainer({ screenSize = "16:10", showGuides }: props) {
+}) {
   const { Guide, elementRef } = useShowGuides<HTMLDivElement>(
     `Screen ${screenSize}`
   );

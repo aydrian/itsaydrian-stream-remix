@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from "@remix-run/react";
 import { useEffect } from "react";
 
-import { useEpisode } from "./_layout";
+import { useEpisode } from "~/routes/scenes+/crl+/_layout";
 
 export default function Programming() {
   const navigate = useNavigate();

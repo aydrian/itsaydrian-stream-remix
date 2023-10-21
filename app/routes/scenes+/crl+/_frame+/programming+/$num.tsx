@@ -1,33 +1,33 @@
 import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-
-import type { EpisodeGuests } from "~/utils/db.server";
+import { getParams } from "remix-params-helper";
+import { z } from "zod";
 
 import { GuestsGrid } from "~/components/guests-grid";
 import { Icon } from "~/components/icon";
-import {
-  ScreenContainer,
-  type ScreenSize
-} from "~/components/screen-container";
+import { ScreenContainer } from "~/components/screen-container";
+import { useOptions } from "~/routes/scenes+/_layout";
+import { useEpisode } from "~/routes/scenes+/crl+/_layout";
+import { type EpisodeGuests } from "~/utils/db.server";
 
-import { useEpisode } from "./_layout";
+const ParamsSchema = z.object({
+  num: z.number().optional()
+});
 
-export const loader = async ({ params, request }: LoaderFunctionArgs) => {
-  const num = parseInt(params.num ?? "");
-  const url = new URL(request.url);
-  const screenSize =
-    (url.searchParams.get("screenSize") as ScreenSize) || undefined;
-
-  if (isNaN(num)) {
-    throw new Response("Parameter expected to be a number", { status: 400 });
+export const loader = async ({ params }: LoaderFunctionArgs) => {
+  const result = getParams(params, ParamsSchema);
+  if (!result.success) {
+    throw json(result.errors, { status: 400 });
   }
+  const num = result.data.num;
 
-  return json({ num, screenSize });
+  return json({ num });
 };
 
 export default function Programming() {
-  const { num, screenSize } = useLoaderData<typeof loader>();
-  const { guests, showGuides } = useEpisode();
+  const { num } = useLoaderData<typeof loader>();
+  const { guests } = useEpisode();
+  const { screenSize, showGuides } = useOptions();
   const slice = guests.slice(0, num);
   return (
     // <div className="grid h-full grid-cols-[auto_1408px]">

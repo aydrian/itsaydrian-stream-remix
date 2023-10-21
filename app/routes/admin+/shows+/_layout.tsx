@@ -12,7 +12,6 @@ const BreadcrumbHandleMatch = z.object({
 
 export default function ShowsLayout() {
   const matches = useMatches();
-  console.log({ matches });
   const breadcrumbs = matches
     .map((m) => {
       const result = BreadcrumbHandleMatch.safeParse(m);

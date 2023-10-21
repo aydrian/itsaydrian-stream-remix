@@ -30,11 +30,10 @@ import {
   SelectTrigger,
   SelectValue
 } from "~/components/ui/select";
+import { useEpisodesLayoutLoaderData } from "~/routes/admin+/shows+/$showId+/episodes+/_layout";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateForInput } from "~/utils/misc";
-
-import { useEpisodesLayoutLoaderData } from "../admin+/shows+/$showId+/episodes+/_layout";
 
 export const EpisodeGuestSchema = z.object({
   guest: z
@@ -82,7 +81,6 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
   const { endDate, guests, id, startDate, timeZone, ...data } =
     submission.value;
-  console.log({ guests });
 
   if (id) {
     const episodeUpdate = prisma.episode.update({

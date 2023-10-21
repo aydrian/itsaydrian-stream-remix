@@ -14,12 +14,12 @@ import { DuplicateEpisodeForm } from "~/routes/resources+/episode-duplicate";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateRange } from "~/utils/misc";
-import { generateVDOPassword } from "~/utils/vdo-ninja.server";
+import { generateDirectorUrl, getGuestLinks } from "~/utils/vdo-ninja.server";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request);
   const { episodeId } = params;
-  const episode = await prisma.episode
+  const episodeResult = await prisma.episode
     .findUniqueOrThrow({
       select: {
         description: true,
@@ -46,26 +46,31 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
       console.error(error);
       throw new Response(null, { status: 404, statusText: "Not Found" });
     });
+  const { guests: guestResults, ...episode } = episodeResult;
 
-  const vdoConfig = {
-    hash: await generateVDOPassword(episode.vdoPassword),
-    password: episode.vdoPassword,
-    room: episode.show.title.toLowerCase().replace(/ /g, "_")
-  };
+  const room = episode.show.title.toLowerCase().replace(/ /g, "_");
+  const guests = await Promise.all(
+    guestResults.map(async ({ guest, order }) => ({
+      ...guest,
+      ...(await getGuestLinks(room, `Guest${order}`, episode.vdoPassword))
+    }))
+  );
 
-  return json({ ...episode, vdoConfig });
+  const directorUrl = generateDirectorUrl(room, episode.vdoPassword);
+
+  return json({ ...episode, directorUrl, guests });
 };
 
 export default function EpisodeIdIndex() {
   const {
     description,
+    directorUrl,
     endDate,
     guests,
     id,
     startDate,
     subtitle,
-    title,
-    vdoConfig
+    title
   } = useLoaderData<typeof loader>();
 
   return (
@@ -88,7 +93,7 @@ export default function EpisodeIdIndex() {
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {guests.map(({ guest, order }, index) => (
+                {guests.map((guest, index) => (
                   <Card className="md:w-60" key={guest.id}>
                     <CardHeader>
                       <CardTitle>{`${guest.firstName} ${guest.lastName}`}</CardTitle>
@@ -102,21 +107,39 @@ export default function EpisodeIdIndex() {
                           Control Center:{" "}
                           <pre className="text-xs">
                             <a
-                              href={`https://vdo.ninja/?director=${vdoConfig.room}&password=${vdoConfig.password}`}
+                              href={directorUrl}
                               rel="noreferrer"
                               target="_blank"
-                            >{`https://vdo.ninja/?director=${vdoConfig.room}&password=${vdoConfig.password}`}</a>
+                            >
+                              {directorUrl}
+                            </a>
                           </pre>
                         </div>
                       ) : (
-                        <div>
-                          Join Link:{" "}
-                          <pre className="text-xs">
-                            <a
-                              href={`https://vdo.ninja/?room=${vdoConfig.room}&id=Guest${order}&hash=${vdoConfig.hash}`}
-                            >{`https://vdo.ninja/?room=${vdoConfig.room}&id=Guest${order}&hash=${vdoConfig.hash}`}</a>
-                          </pre>
-                        </div>
+                        <>
+                          <div>
+                            Push Camera Link:{" "}
+                            <pre className="text-xs">
+                              <a href={guest.pushCameraUrl}>
+                                {guest.pushCameraUrl}
+                              </a>
+                            </pre>
+                          </div>
+                          <div>
+                            Push Screen Link:{" "}
+                            <pre className="text-xs">
+                              <a href={guest.pushScreenUrl}>
+                                {guest.pushScreenUrl}
+                              </a>
+                            </pre>
+                          </div>
+                          <div>
+                            Join Link:{" "}
+                            <pre className="text-xs">
+                              <a href={guest.joinUrl}>{guest.joinUrl}</a>
+                            </pre>
+                          </div>
+                        </>
                       )}
                     </CardContent>
                   </Card>

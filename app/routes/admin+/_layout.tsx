@@ -16,7 +16,7 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger
 } from "~/components/ui/dropdown-menu";
-import controlRoomLogo from "~/images/control- room-logo.svg";
+import controlRoomLogo from "~/images/control-room-logo.svg";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 
@@ -63,10 +63,10 @@ export default function AdminLayout() {
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
-                      className="relative h-8 w-8 rounded-full"
+                      className="relative h-12 w-12 rounded-lg"
                       variant="ghost"
                     >
-                      <Avatar>
+                      <Avatar className="h-12 w-12 rounded-lg">
                         <AvatarImage
                           src={user.guestProfile?.avatarUrl ?? undefined}
                         />

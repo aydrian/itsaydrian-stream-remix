@@ -55,7 +55,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
   }
 
-  return redirect(`/admin/guests`);
+  return redirect(`/console/guests`);
 }
 
 export function GuestEditor({ guest }: { guest?: Guest }) {

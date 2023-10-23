@@ -7,13 +7,13 @@ import { Icon } from "~/components/icon";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import ControlRoomLogo from "~/images/control-room-logo.svg";
 import { FormLoginForm } from "~/routes/auth+/form";
-import { authenticator } from "~/utils/auth.server";
+import { DEFAULT_SUCCESS_REDIRECT, authenticator } from "~/utils/auth.server";
 import { redirectToCookie } from "~/utils/cookies.server";
 import { commitSession, getSession } from "~/utils/session.server";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticator.isAuthenticated(request, {
-    successRedirect: "/admin"
+    successRedirect: DEFAULT_SUCCESS_REDIRECT
   });
   const url = new URL(request.url);
   const redirectTo = url.searchParams.get("redirectTo");
@@ -34,7 +34,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({ formError: errorMessage, loginMessage }, { headers });
 };
 
-export default function AdminLogin() {
+export default function ConsoleLogin() {
   const data = useLoaderData<typeof loader>();
   return (
     <main className="flex h-screen flex-col justify-evenly bg-gradient-to-r from-cyan-500 to-green-500 md:flex-row">

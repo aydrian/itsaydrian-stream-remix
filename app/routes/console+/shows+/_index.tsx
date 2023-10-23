@@ -16,7 +16,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireUserId(request);
 
   const shows = await prisma.show.findMany({
-    select: { description: true, id: true, title: true }
+    select: { description: true, id: true, title: true },
+    where: { archived: false }
   });
   return json({ shows });
 };
@@ -26,8 +27,11 @@ export default function ShowsIndex() {
   return (
     <>
       <Card>
-        <CardHeader>
+        <CardHeader className="flex-row items-center justify-between">
           <CardTitle>Shows</CardTitle>
+          <Button asChild size="sm">
+            <Link to="./new">New Show</Link>
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="flex gap-4">

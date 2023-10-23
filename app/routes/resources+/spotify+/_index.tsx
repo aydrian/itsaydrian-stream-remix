@@ -70,7 +70,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   await prisma.connection.delete({ where: { id: connectionId } });
 
-  return redirect(`/admin/settings/profile`);
+  return redirect(`/console/settings/profile`);
 };
 
 export function SpotifyConnect() {

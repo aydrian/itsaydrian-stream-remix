@@ -8,7 +8,7 @@ const { SESSION_SECRET } = env;
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
     httpOnly: true, // for security reasons, make this cookie http only
-    name: "__session", // use any name you want here
+    name: "__itsaydrian_stream_session", // use any name you want here
     path: "/", // remember to add this so the cookie will work in all routes
     sameSite: "lax", // this helps with CSRF
     secrets: [SESSION_SECRET], // replace this with an actual secret

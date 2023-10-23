@@ -27,7 +27,7 @@ export default function GuestsLayout() {
     <>
       <ul className="mb-4 flex gap-3">
         <li>
-          <Link className="text-muted-foreground" to="/admin/guests">
+          <Link className="text-muted-foreground" to="/console/guests">
             Guests
           </Link>
         </li>

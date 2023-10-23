@@ -45,7 +45,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return json({ episodes });
 };
 
-export default function AdminIndex() {
+export default function ConsoleIndex() {
   const { episodes } = useLoaderData<typeof loader>();
   return (
     <>

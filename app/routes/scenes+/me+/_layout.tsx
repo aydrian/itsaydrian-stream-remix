@@ -52,7 +52,7 @@ export function CompactCaption({ guest }: { guest: EpisodeGuests[number] }) {
           <span>{guest.firstName}</span>
         </h1>
         {guest.twitter && (
-          <h2 className="text-2xl text-crl-neutral-200">
+          <h2 className="text-2xl text-slate-100">
             <Icon className="mr-2 inline-block h-6 w-6" name="twitter" />
             <span>@{guest.twitter}</span>
           </h2>

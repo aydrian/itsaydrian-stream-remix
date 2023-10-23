@@ -30,7 +30,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "~/components/ui/select";
-import { useEpisodesLayoutLoaderData } from "~/routes/admin+/shows+/$showId+/episodes+/_layout";
+import { useEpisodesLayoutLoaderData } from "~/routes/console+/shows+/$showId+/episodes+/_layout";
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 import { formatDateForInput } from "~/utils/misc";
@@ -112,7 +112,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
 
     await prisma.$transaction([episodeUpdate, guestsDelete, ...guestUpserts]);
 
-    return redirect(`/admin/shows/${data.showId}/episodes/${id}`);
+    return redirect(`/console/shows/${data.showId}/episodes/${id}`);
   }
 
   const episode = await prisma.episode.create({
@@ -125,7 +125,7 @@ export const action = async ({ request }: DataFunctionArgs) => {
     select: { id: true }
   });
 
-  return redirect(`/admin/shows/${data.showId}/episodes/${episode.id}`);
+  return redirect(`/console/shows/${data.showId}/episodes/${episode.id}`);
 };
 
 export function EpisodeEditor({

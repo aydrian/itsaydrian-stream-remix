@@ -19,7 +19,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     where: { provider: "twitch", userId: userId }
   });
   if (!connection) {
-    return redirect("/admin/settings/profile");
+    return redirect("/console/settings/profile");
   }
   const eventSubSubscriptions = await getUserEventSubSubscriptions(
     connection?.providerAccountId

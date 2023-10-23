@@ -21,7 +21,7 @@ export const handle = {
 
 export function useEpisodesLayoutLoaderData() {
   const data = useTypedRouteLoaderData<typeof loader>(
-    "routes/admin+/shows+/$showId+/episodes+/_layout"
+    "routes/console+/shows+/$showId+/episodes+/_layout"
   );
 
   if (data === undefined) {

@@ -35,6 +35,7 @@ model Show {
   description     String?
   sceneCollection SceneCollection @map("scene_collection")
   episodes        Episode[]
+  archived        Boolean         @default(false)
 
   @@map("shows")
 }

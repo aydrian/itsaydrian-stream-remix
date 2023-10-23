@@ -7,7 +7,7 @@ import { FormStrategy } from "remix-auth-form";
 import { z } from "zod";
 
 import { ErrorList, Field, SubmitButton } from "~/components/form";
-import { authenticator } from "~/utils/auth.server";
+import { DEFAULT_SUCCESS_REDIRECT, authenticator } from "~/utils/auth.server";
 import { redirectToCookie } from "~/utils/cookies.server";
 
 const LoginFormSchema = z.object({
@@ -34,7 +34,8 @@ export const action = async ({ request }: DataFunctionArgs) => {
     );
   }
   const redirectTo =
-    (await redirectToCookie.parse(request.headers.get("Cookie"))) ?? "/admin";
+    (await redirectToCookie.parse(request.headers.get("Cookie"))) ??
+    DEFAULT_SUCCESS_REDIRECT;
 
   try {
     await authenticator.authenticate(FormStrategy.name, request, {

@@ -37,7 +37,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       userId: cookie.userId
     }
   });
-  return redirect(`/admin/settings/profile`, {
+  return redirect(`/console/settings/profile`, {
     headers: { "Set-Cookie": await twitchStateCookie.serialize(null) }
   });
 };

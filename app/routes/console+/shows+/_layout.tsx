@@ -27,7 +27,7 @@ export default function ShowsLayout() {
     <>
       <ul className="mb-4 flex gap-3">
         <li>
-          <Link className="text-muted-foreground" to="/admin/shows">
+          <Link className="text-muted-foreground" to="/console/shows">
             Shows
           </Link>
         </li>

@@ -39,7 +39,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return typedjson({ user: dbUser });
 };
 
-export default function AdminLayout() {
+export default function ConsoleLayout() {
   const { user } = useTypedLoaderData<typeof loader>();
   const navLinkDefaultClassName =
     "text-sm font-medium transition-colors hover:text-primary";
@@ -90,13 +90,13 @@ export default function AdminLayout() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
                       <Icon className="mr-2 h-4 w-4" name="user" />
-                      <Link to="/admin/settings/profile">Profile</Link>
+                      <Link to="/console/settings/profile">Profile</Link>
                       <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
                       <Icon className="mr-2 h-4 w-4" name="log-out" />
-                      <Link to="/admin/logout">Log out</Link>
+                      <Link to="/auth/logout">Log out</Link>
                       <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -111,7 +111,7 @@ export default function AdminLayout() {
               className={({ isActive }) =>
                 twMerge(navLinkDefaultClassName, isActive && "text-green-800")
               }
-              to="/admin"
+              to="/console"
             >
               Home
             </NavLink>
@@ -119,7 +119,7 @@ export default function AdminLayout() {
               className={({ isActive }) =>
                 twMerge(navLinkDefaultClassName, isActive && "text-green-800")
               }
-              to="/admin/shows"
+              to="/console/shows"
             >
               Shows
             </NavLink>
@@ -127,7 +127,7 @@ export default function AdminLayout() {
               className={({ isActive }) =>
                 twMerge(navLinkDefaultClassName, isActive && "text-green-800")
               }
-              to="/admin/guests"
+              to="/console/guests"
             >
               Guests
             </NavLink>

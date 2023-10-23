@@ -164,7 +164,7 @@ function GuestDetails({
         <div className="flex justify-center">
           <Avatar
             alt={`${guestProfile.firstName} ${guestProfile.lastName}`}
-            className="aspect-square h-16 bg-gradient-to-r from-crl-electric-purple to-crl-iridescent-blue p-0.5"
+            className="aspect-square h-16 bg-gradient-to-r from-cyan-500 to-green-500 p-0.5"
             src={guestProfile.avatarUrl}
           />
         </div>

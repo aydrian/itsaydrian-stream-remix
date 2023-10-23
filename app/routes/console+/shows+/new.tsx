@@ -1,5 +1,6 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
+import { ShowEditor } from "~/routes/resources+/show-editor";
 import { requireUserId } from "~/utils/auth.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -15,6 +16,7 @@ export default function NewShow() {
   return (
     <>
       <h2 className="text-3xl font-bold tracking-tight">New Show</h2>
+      <ShowEditor />
     </>
   );
 }

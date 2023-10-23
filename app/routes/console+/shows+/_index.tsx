@@ -41,9 +41,12 @@ export default function ShowsIndex() {
                   <CardTitle>{show.title}</CardTitle>
                 </CardHeader>
                 <CardContent>{show.description}</CardContent>
-                <CardFooter>
+                <CardFooter className="gap-2">
                   <Button asChild size="sm">
                     <Link to={`./${show.id}`}>View</Link>
+                  </Button>
+                  <Button asChild size="sm" variant="secondary">
+                    <Link to={`./${show.id}/edit`}>Edit</Link>
                   </Button>
                 </CardFooter>
               </Card>

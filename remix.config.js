@@ -5,5 +5,6 @@ export default {
   ignoredRouteFiles: ["**/.*"],
   routes: async (defineRoutes) => {
     return flatRoutes("routes", defineRoutes);
-  }
+  },
+  serverDependenciesToBundle: [/^rehype.*/]
 };

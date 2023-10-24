@@ -8,6 +8,7 @@ import {
   Scripts,
   ScrollRestoration
 } from "@remix-run/react";
+import { ToastContainer } from "react-toastify";
 import rdtStylesheet from "remix-development-tools/index.css";
 
 import iconHref from "~/components/icons/sprite.svg";
@@ -48,6 +49,7 @@ function App() {
       </head>
       <body className="flex min-h-screen flex-col">
         <Outlet />
+        <ToastContainer />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />

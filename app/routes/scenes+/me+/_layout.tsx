@@ -1,7 +1,14 @@
 import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { Outlet, useRouteLoaderData } from "@remix-run/react";
+import { toast } from "react-toastify";
+import { rehype } from "rehype";
+import sanitize from "rehype-sanitize";
 
 import { Icon } from "~/components/icon";
+import {
+  type ChatMessage,
+  useChat
+} from "~/routes/resources+/twitch+/chat.$channel";
 import { nowPlayingCookie } from "~/utils/cookies.server";
 import { getNextEpisode, prisma } from "~/utils/db.server";
 import { type EpisodeGuests } from "~/utils/db.server";
@@ -41,7 +48,54 @@ export function useEpisode() {
 }
 
 export default function Layout() {
+  const chat = useChat("itsaydrian");
+  if (chat) {
+    toast(<Chat message={chat} />, {
+      position: "bottom-right",
+      theme: "light"
+    });
+  }
   return <Outlet />;
+}
+
+function Chat({ message }: { message: ChatMessage }) {
+  if (!message.html) {
+    return;
+  }
+
+  const text = rehype()
+    .data("settings", { fragment: true })
+    .use(sanitize, {
+      attributes: {
+        "*": ["alt"],
+        img: ["src"]
+      },
+      protocols: {
+        src: ["https"]
+      },
+      strip: ["script"],
+      tagNames: ["img", "marquee"]
+    })
+    .processSync(message.html)
+    .toString();
+
+  if (!text.length) {
+    return;
+  }
+
+  return (
+    <div className="flex">
+      <img
+        alt={message.author.username}
+        className="h-16 w-16 rounded-md"
+        src={message.author.profileImageUrl}
+      />
+      <div>
+        <h2 className="font-semibold">{message.author.username}</h2>
+        <p dangerouslySetInnerHTML={{ __html: text }} />
+      </div>
+    </div>
+  );
 }
 
 export function CompactCaption({ guest }: { guest: EpisodeGuests[number] }) {

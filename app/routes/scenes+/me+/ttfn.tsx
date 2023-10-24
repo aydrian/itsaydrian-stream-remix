@@ -9,7 +9,7 @@ export default function TTFN() {
     if (target.current) {
       const text = new SplitType(target.current, {
         charClass: "char translate-y-full",
-        types: "words, chars"
+        types: "words,chars"
       });
       gsap.set(target.current, { visibility: "visible" });
       gsap.to(text.chars, {

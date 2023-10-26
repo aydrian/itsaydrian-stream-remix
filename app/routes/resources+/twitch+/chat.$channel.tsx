@@ -9,7 +9,7 @@ import {
   parseAuthor,
   parseCommand,
   parseEmotes
-} from "../../../utils/parse-chat.server";
+} from "~/utils/parse-chat.server";
 
 type CommonMessage = {
   author: Awaited<ReturnType<typeof parseAuthor>>;
@@ -33,6 +33,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     const client = new Client({
       channels: [channel],
       connection: { reconnect: true, secure: true }
+    });
+
+    client.connect().catch((err) => {
+      console.log(`Error Connecting to ${channel} chat.`, { err });
     });
 
     const listener: Events["action"] = async (channel, tags, msg, self) => {

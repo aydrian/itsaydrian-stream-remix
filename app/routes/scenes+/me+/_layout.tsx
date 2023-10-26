@@ -1,8 +1,6 @@
 import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { Outlet, useRouteLoaderData } from "@remix-run/react";
 import { toast } from "react-toastify";
-import { rehype } from "rehype";
-import sanitize from "rehype-sanitize";
 
 import { Icon } from "~/components/icon";
 import {
@@ -12,6 +10,7 @@ import {
 import { nowPlayingCookie } from "~/utils/cookies.server";
 import { getNextEpisode, prisma } from "~/utils/db.server";
 import { type EpisodeGuests } from "~/utils/db.server";
+import { cn } from "~/utils/misc";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const [episode, spotifyConnection] = await Promise.all([
@@ -49,8 +48,11 @@ export function useEpisode() {
 
 export default function Layout() {
   const chat = useChat("itsaydrian");
+
   if (chat) {
     toast(<Chat message={chat} />, {
+      // autoClose: false,
+      closeButton: false,
       position: "bottom-right",
       theme: "light"
     });
@@ -63,36 +65,27 @@ function Chat({ message }: { message: ChatMessage }) {
     return;
   }
 
-  const text = rehype()
-    .data("settings", { fragment: true })
-    .use(sanitize, {
-      attributes: {
-        "*": ["alt"],
-        img: ["src"]
-      },
-      protocols: {
-        src: ["https"]
-      },
-      strip: ["script"],
-      tagNames: ["img", "marquee"]
-    })
-    .processSync(message.html)
-    .toString();
-
-  if (!text.length) {
-    return;
-  }
+  console.log({ roles: message.author.roles });
 
   return (
-    <div className="flex">
+    <div className="flex w-full gap-2">
       <img
         alt={message.author.username}
-        className="h-16 w-16 rounded-md"
+        className="h-16 w-16 rounded-md shadow-sm"
         src={message.author.profileImageUrl}
       />
-      <div>
-        <h2 className="font-semibold">{message.author.username}</h2>
-        <p dangerouslySetInnerHTML={{ __html: text }} />
+      <div className="grow">
+        <h2
+          className={cn(
+            "text-lg font-semibold text-gray-800 ",
+            message.author.roles.includes("SUBSCRIBER") && "text-cyan-600",
+            message.author.roles.includes("MODERATOR") && "text-pink-600",
+            message.author.roles.includes("BROADCASTER") && "text-green-600"
+          )}
+        >
+          {message.author.username}
+        </h2>
+        <p dangerouslySetInnerHTML={{ __html: message.html }} />
       </div>
     </div>
   );

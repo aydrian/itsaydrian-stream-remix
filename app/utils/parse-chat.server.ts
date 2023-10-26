@@ -1,8 +1,11 @@
+import { rehype } from "rehype";
+import sanitize from "rehype-sanitize";
 import { type ChatUserstate, type CommonUserstate } from "tmi.js";
 
-import { cachified } from "~/utils/cache.server.js";
+import { getTwitchUser } from "~/utils/twitch.server";
 
-const TWITCH_CDN_URL = "https://static-cdn.jtvnw.net/emoticons/v1";
+// https://dev.twitch.tv/docs/irc/emotes/#cdn-template
+const TWITCH_CDN_URL = "https://static-cdn.jtvnw.net/emoticons/v2";
 
 export const parseCommand = (message: string) => {
   const [cmd, ...args] = message.split(" ");
@@ -19,17 +22,9 @@ export const parseAuthor = async (channel: string, meta: ChatUserstate) => {
     "https://static-cdn.jtvnw.net/user-default-pictures-uv/cdd517fe-def4-11e9-948e-784f43822e80-profile_image-300x300.png";
   const id = meta["user-id"];
   if (id) {
-    const user = await cachified({
-      async getFreshValue() {
-        return fetch(`/api/twitchUser?userId=${id}`).then((response) =>
-          response.json()
-        );
-      },
-      key: `twitch-user-${id}`,
-      ttl: 1000 * 60 * 60 * 24
-    });
+    const user = await getTwitchUser(id);
     if (user) {
-      profileImageUrl = user.profileImageUrl;
+      profileImageUrl = user.profilePictureUrl;
     }
   }
 
@@ -69,9 +64,9 @@ export const parseEmotes = (
     const name = message.substring(start, end);
 
     const images: { [key: string]: string } = {
-      large: `${TWITCH_CDN_URL}/${id}/3.0`,
-      medium: `${TWITCH_CDN_URL}/${id}/2.0`,
-      small: `${TWITCH_CDN_URL}/${id}/1.0`
+      large: `${TWITCH_CDN_URL}/${id}/default/light/3.0`,
+      medium: `${TWITCH_CDN_URL}/${id}/default/light/2.0`,
+      small: `${TWITCH_CDN_URL}/${id}/default/light/1.0`
     };
 
     return {
@@ -96,12 +91,42 @@ export const getMessageHTML = (
   size = "small"
 ) => {
   let html = message;
+  console.log({ before: html });
+
+  html = formatUserMentions(html);
+
+  console.log({ after: html });
 
   emotes.forEach((emote) => {
-    const img = `<img src="${emote.images[size]}" alt="${emote.name}" />`;
+    const img = `<img alt="${emote.name}" class="inline-block" src="${emote.images[size]}" />`;
     const safeName = new RegExp(escapeRegExSpecialChars(emote.name), "g");
     html = html.replace(safeName, img);
   });
 
-  return html;
+  const sanitizedHtml = rehype()
+    .data("settings", { fragment: true })
+    .use(sanitize, {
+      attributes: {
+        "*": ["alt", "className"],
+        img: ["src"]
+      },
+      protocols: {
+        src: ["https"]
+      },
+      strip: ["script"],
+      tagNames: ["img", "mark", "marquee"]
+    })
+    .processSync(html)
+    .toString();
+
+  return sanitizedHtml;
 };
+
+function formatUserMentions(messageContents: string) {
+  return messageContents.replace(
+    /@([\w]+)/g,
+    function (substring, mentionedUser) {
+      return `<mark class="font-semibold">@${mentionedUser}</mark>`;
+    }
+  );
+}

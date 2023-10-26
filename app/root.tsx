@@ -9,6 +9,7 @@ import {
   ScrollRestoration
 } from "@remix-run/react";
 import { ToastContainer } from "react-toastify";
+import toastStyles from "react-toastify/dist/ReactToastify.css";
 import rdtStylesheet from "remix-development-tools/index.css";
 
 import iconHref from "~/components/icons/sprite.svg";
@@ -27,6 +28,7 @@ export const links: LinksFunction = () => [
   { href: "/fonts/atkinson-hyperlegible/font.css", rel: "stylesheet" },
   { href: "/fonts/poppins/font.css", rel: "stylesheet" },
   { href: stylesheet, rel: "stylesheet" },
+  { href: toastStyles, rel: "stylesheet" },
   ...(process.env.NODE_ENV === "development"
     ? [{ href: rdtStylesheet, rel: "stylesheet" }]
     : [])

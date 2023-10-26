@@ -6,7 +6,7 @@ import { AppTokenAuthProvider } from "@twurple/auth";
 import crypto from "crypto";
 import invariant from "tiny-invariant";
 
-// import { emitter } from "~/utils/emitter.server";
+import { cachified } from "~/utils/cache.server";
 import env from "~/utils/env.server";
 
 const {
@@ -118,6 +118,17 @@ const authProvider = new AppTokenAuthProvider(
 );
 
 export const twitch = new ApiClient({ authProvider });
+
+export async function getTwitchUser(id: string) {
+  const user = await cachified({
+    async getFreshValue() {
+      return twitch.users.getUserById(id);
+    },
+    key: `twitch-user-${id}`,
+    ttl: 1000 * 60 * 60 * 24
+  });
+  return user;
+}
 
 export interface EventSubEvent {
   user_id: string;

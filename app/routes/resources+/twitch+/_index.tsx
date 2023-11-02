@@ -14,10 +14,7 @@ import { Button, type ButtonProps } from "~/components/ui/button";
 import { requireUserId } from "~/utils/auth.server";
 import { twitchStateCookie } from "~/utils/cookies.server";
 import { prisma } from "~/utils/db.server";
-import env from "~/utils/env.server";
 import { cn, generateRandomString } from "~/utils/misc";
-
-const { TWITCH_CLIENT_ID, TWITCH_REDIRECT_URI } = env;
 
 const DisconnectSchema = z.object({
   connectionId: z.string()
@@ -30,12 +27,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const searchParams = new URLSearchParams([
     ["response_type", "code"],
-    ["client_id", TWITCH_CLIENT_ID],
+    ["client_id", process.env.TWITCH_CLIENT_ID],
     [
       "scope",
       "channel:manage:redemptions moderator:read:followers channel:read:subscriptions channel:manage:broadcast"
     ],
-    ["redirect_uri", TWITCH_REDIRECT_URI],
+    ["redirect_uri", process.env.TWITCH_REDIRECT_URI],
     ["state", state]
   ]);
 

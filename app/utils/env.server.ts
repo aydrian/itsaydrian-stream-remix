@@ -1,19 +1,36 @@
-import { z } from "zod";
+import { type TypeOf, z } from "zod";
 
-const envSchema = z.object({
-  DATABASE_URL: z.string().nonempty(),
+const zodEnv = z.object({
+  DATABASE_URL: z.string(),
   FLY_APP_NAME: z.string().optional(),
-  NODE_ENV: z.enum(["development", "production"]).default("development"),
-  SESSION_SECRET: z.string().nonempty(),
-  SPOTIFY_CLIENT_ID: z.string().nonempty(),
-  SPOTIFY_CLIENT_SECRET: z.string().nonempty(),
-  SPOTIFY_REDIRECT_URI: z.string().nonempty(),
-  TWITCH_CLIENT_ID: z.string().nonempty(),
-  TWITCH_CLIENT_SECRET: z.string().nonempty(),
-  TWITCH_REDIRECT_URI: z.string().nonempty(),
-  TWITCH_SIGNING_SECRET: z.string().nonempty(),
-  TWITCH_USER_ID: z.string().nonempty()
+  SESSION_SECRET: z.string(),
+  SPOTIFY_CLIENT_ID: z.string(),
+  SPOTIFY_CLIENT_SECRET: z.string(),
+  SPOTIFY_REDIRECT_URI: z.string(),
+  TWITCH_CLIENT_ID: z.string(),
+  TWITCH_CLIENT_SECRET: z.string(),
+  TWITCH_REDIRECT_URI: z.string(),
+  TWITCH_SIGNING_SECRET: z.string(),
+  TWITCH_USER_ID: z.string()
 });
 
-const env = envSchema.parse(process.env);
-export default env;
+declare global {
+  namespace NodeJS {
+    interface ProcessEnv extends TypeOf<typeof zodEnv> {}
+  }
+}
+
+try {
+  zodEnv.parse(process.env);
+} catch (err) {
+  if (err instanceof z.ZodError) {
+    const { fieldErrors } = err.flatten();
+    const errorMessage = Object.entries(fieldErrors)
+      .map(([field, errors]) =>
+        errors ? `${field}: ${errors.join(", ")}` : field
+      )
+      .join("\n  ");
+    throw new Error(`Missing environment variables:\n  ${errorMessage}`);
+    process.exit(1);
+  }
+}

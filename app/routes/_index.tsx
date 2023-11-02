@@ -4,7 +4,6 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import ControlRoomLogo from "~/images/control-room-logo.svg";
-import env from "~/utils/env.server";
 import {
   scheduleToJSON,
   streamToJSON,
@@ -12,17 +11,15 @@ import {
   videoToJSON
 } from "~/utils/twitch.server";
 
-const { TWITCH_USER_ID } = env;
-
 export const loader = async (_args: LoaderFunctionArgs) => {
   const [hStream, { data: hSchedule }, { data: videoData }] = await Promise.all(
     [
-      twitch.streams.getStreamByUserId(TWITCH_USER_ID),
-      twitch.schedule.getSchedule(TWITCH_USER_ID, {
+      twitch.streams.getStreamByUserId(process.env.TWITCH_USER_ID),
+      twitch.schedule.getSchedule(process.env.TWITCH_USER_ID, {
         limit: 1, // Get next show
         startDate: new Date().toJSON()
       }),
-      twitch.videos.getVideosByUser(TWITCH_USER_ID, {
+      twitch.videos.getVideosByUser(process.env.TWITCH_USER_ID, {
         limit: 1,
         orderBy: "time"
       })

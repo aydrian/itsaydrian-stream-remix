@@ -3,18 +3,10 @@ import type { HelixSchedule, HelixStream, HelixVideo } from "@twurple/api";
 
 import { ApiClient } from "@twurple/api";
 import { AppTokenAuthProvider } from "@twurple/auth";
-import crypto from "crypto";
+import crypto from "node:crypto";
 import invariant from "tiny-invariant";
 
-// import { emitter } from "~/utils/emitter.server";
-import env from "~/utils/env.server";
-
-const {
-  TWITCH_CLIENT_ID,
-  TWITCH_CLIENT_SECRET,
-  TWITCH_REDIRECT_URI,
-  TWITCH_SIGNING_SECRET
-} = env;
+import { cachified } from "~/utils/cache.server";
 
 export const scheduleToJSON = (schedule: HelixSchedule | null) => {
   if (!schedule) return null;
@@ -74,7 +66,7 @@ export const withVerifyTwitch = (actionFunction: ActionFunction) => {
       "twitch-eventsub-message-signature"
     );
 
-    if (!TWITCH_CLIENT_SECRET) {
+    if (!process.env.TWITCH_CLIENT_SECRET) {
       console.log(`Twitch signing secret is empty.`);
       return new Response("Signature verification failed.", { status: 422 });
     }
@@ -93,7 +85,7 @@ export const withVerifyTwitch = (actionFunction: ActionFunction) => {
     const computedSignature =
       "sha256=" +
       crypto
-        .createHmac("sha256", TWITCH_SIGNING_SECRET)
+        .createHmac("sha256", process.env.TWITCH_SIGNING_SECRET)
         .update(messageId + timestamp + body)
         .digest("hex");
 
@@ -113,11 +105,22 @@ export const withVerifyTwitch = (actionFunction: ActionFunction) => {
 };
 
 const authProvider = new AppTokenAuthProvider(
-  TWITCH_CLIENT_ID,
-  TWITCH_CLIENT_SECRET
+  process.env.TWITCH_CLIENT_ID,
+  process.env.TWITCH_CLIENT_SECRET
 );
 
 export const twitch = new ApiClient({ authProvider });
+
+export async function getTwitchUser(id: string) {
+  const user = await cachified({
+    async getFreshValue() {
+      return twitch.users.getUserById(id);
+    },
+    key: `twitch-user-${id}`,
+    ttl: 1000 * 60 * 60 * 24
+  });
+  return user;
+}
 
 export interface EventSubEvent {
   user_id: string;
@@ -134,11 +137,11 @@ export const requestAccessToken = async (
 }> => {
   return fetch("https://id.twitch.tv/oauth2/token", {
     body: new URLSearchParams({
-      client_id: TWITCH_CLIENT_ID,
-      client_secret: TWITCH_CLIENT_SECRET,
+      client_id: process.env.TWITCH_CLIENT_ID,
+      client_secret: process.env.TWITCH_CLIENT_SECRET,
       code: code,
       grant_type: "authorization_code",
-      redirect_uri: TWITCH_REDIRECT_URI
+      redirect_uri: process.env.TWITCH_REDIRECT_URI
     }),
     headers: {
       "Content-Type": "application/x-www-form-urlencoded"
@@ -150,8 +153,8 @@ export const requestAccessToken = async (
 export const refreshAccessToken = async (refresh_token: string) => {
   return fetch(`https://id.twitch.tv/oauth2/token`, {
     body: new URLSearchParams({
-      client_id: TWITCH_CLIENT_ID,
-      client_secret: TWITCH_CLIENT_SECRET,
+      client_id: process.env.TWITCH_CLIENT_ID,
+      client_secret: process.env.TWITCH_CLIENT_SECRET,
       grant_type: "refresh_token",
       refresh_token
     }),
@@ -166,7 +169,7 @@ export const getUserProfile = async (access_token: string) => {
   const { data } = await fetch(`https://api.twitch.tv/helix/users`, {
     headers: {
       Authorization: `Bearer ${access_token}`,
-      "Client-Id": TWITCH_CLIENT_ID
+      "Client-Id": process.env.TWITCH_CLIENT_ID
     }
   }).then((res) => res.json());
   return data[0];
@@ -194,7 +197,7 @@ export const getUserEventSubSubscriptions = async (
     {
       headers: {
         Authorization: `Bearer ${auth.accessToken}`,
-        "Client-Id": TWITCH_CLIENT_ID
+        "Client-Id": process.env.TWITCH_CLIENT_ID
       }
     }
   ).then((res) => res.json());

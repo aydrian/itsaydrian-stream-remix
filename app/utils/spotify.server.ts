@@ -1,9 +1,5 @@
-import env from "~/utils/env.server";
-
-const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI } = env;
-
 const basic = Buffer.from(
-  `${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`
+  `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
 ).toString("base64");
 
 export const requestAccessToken = async (
@@ -19,7 +15,7 @@ export const requestAccessToken = async (
     body: new URLSearchParams({
       code: code,
       grant_type: "authorization_code",
-      redirect_uri: SPOTIFY_REDIRECT_URI
+      redirect_uri: process.env.SPOTIFY_REDIRECT_URI
     }),
     headers: {
       Authorization: `Basic ${basic}`,

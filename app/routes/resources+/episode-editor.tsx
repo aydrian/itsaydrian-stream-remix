@@ -57,7 +57,7 @@ export const EpisodeEditorSchema = z.object({
   subtitle: z.string().optional(),
   timeZone: z.string(),
   title: z.string({ required_error: "Title is required" }),
-  vdoPassword: z.string().default("cockroachIsC00l!")
+  vdoPassword: z.string().default("its@drianB1rch")
 });
 
 export const action = async ({ request }: DataFunctionArgs) => {

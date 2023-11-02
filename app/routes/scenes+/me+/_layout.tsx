@@ -7,6 +7,12 @@ import {
   type ChatMessage,
   useChat
 } from "~/routes/resources+/twitch+/chat.$channel";
+import {
+  type FollowMessage,
+  type RaidMessage,
+  type SubscribeMessage,
+  useEventSub
+} from "~/routes/resources+/twitch+/eventsub.$channel";
 import { nowPlayingCookie } from "~/utils/cookies.server";
 import { getNextEpisode, prisma } from "~/utils/db.server";
 import { type EpisodeGuests } from "~/utils/db.server";
@@ -48,6 +54,7 @@ export function useEpisode() {
 
 export default function Layout() {
   const chat = useChat("itsaydrian");
+  const { follow, raid, subscribe } = useEventSub("itsaydrian");
 
   if (chat) {
     toast(<Chat message={chat} />, {
@@ -57,6 +64,34 @@ export default function Layout() {
       theme: "light"
     });
   }
+
+  if (follow) {
+    toast(<FollowAlert message={follow} />, {
+      // autoClose: false,
+      closeButton: false,
+      position: "top-center",
+      theme: "light"
+    });
+  }
+
+  if (subscribe) {
+    toast(<SubscribeAlert message={subscribe} />, {
+      // autoClose: false,
+      closeButton: false,
+      position: "top-center",
+      theme: "light"
+    });
+  }
+
+  if (raid) {
+    toast(<RaidAlert message={raid} />, {
+      // autoClose: false,
+      closeButton: false,
+      position: "top-center",
+      theme: "light"
+    });
+  }
+
   return <Outlet />;
 }
 
@@ -64,8 +99,6 @@ function Chat({ message }: { message: ChatMessage }) {
   if (!message.html) {
     return;
   }
-
-  console.log({ roles: message.author.roles });
 
   return (
     <div className="flex w-full gap-2">
@@ -86,6 +119,59 @@ function Chat({ message }: { message: ChatMessage }) {
           {message.author.username}
         </h2>
         <p dangerouslySetInnerHTML={{ __html: message.html }} />
+      </div>
+    </div>
+  );
+}
+
+function FollowAlert({ message }: { message: FollowMessage }) {
+  return (
+    <>
+      <audio autoPlay>
+        <source src="/sfx/follow_alert.mp3" type="audio/mp3" />
+      </audio>
+      <div className="flex w-full gap-2">
+        <img
+          alt={message.viewer.displayName}
+          className="h-16 w-16 rounded-md shadow-sm"
+          src={message.viewer.profilePictureUrl}
+        />
+        <div className="grow">{`${message.viewer.displayName} just followed!`}</div>
+      </div>
+    </>
+  );
+}
+
+function SubscribeAlert({ message }: { message: SubscribeMessage }) {
+  return (
+    <>
+      <audio autoPlay>
+        <source src="/sfx/subscribe_alert.mp3" type="audio/mp3" />
+      </audio>
+      <div className="flex w-full gap-2">
+        <img
+          alt={message.viewer.displayName}
+          className="h-16 w-16 rounded-md shadow-sm"
+          src={message.viewer.profilePictureUrl}
+        />
+        <div className="grow">{`${message.viewer.displayName} just subscribed!`}</div>
+      </div>
+    </>
+  );
+}
+
+function RaidAlert({ message }: { message: RaidMessage }) {
+  return (
+    <div className="flex w-full gap-2">
+      <img
+        alt={message.raider.displayName}
+        className="h-16 w-16 rounded-md shadow-sm"
+        src={message.raider.profilePictureUrl}
+      />
+      <div className="grow text-center">
+        <span className="font-semibold">{`@${message.raider.displayName} `}</span>
+        {`is raiding with ${message.viewers} `}
+        viewers! 🎉`
       </div>
     </div>
   );

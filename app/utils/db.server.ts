@@ -50,7 +50,7 @@ export async function getNextEpisode(sceneCollection: SceneCollection) {
         {
           avatarUrl:
             "https://pbs.twimg.com/profile_images/1637838912243617793/XmhcZyZy_400x400.jpg",
-          company: "Cockroach Labs",
+          company: "ItsAydrian Consulting",
           firstName: "Aydrian",
           id: "2a300449-cefd-435c-99ad-5165e7df56fb",
           lastName: "Howard",

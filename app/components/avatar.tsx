@@ -20,10 +20,7 @@ export function Avatar({
           src={src}
         />
       ) : (
-        <Icon
-          className="aspect-square h-full text-white"
-          name="crl-shorthand"
-        />
+        <Icon className="aspect-square h-full text-white" name="user" />
       )}
     </div>
   );

@@ -3,10 +3,10 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "build": "remix build",
+    "build": "vite build && vite build --ssr",
     "build:icons": "tsx build-icons.ts",
     "deploy": "fly deploy --remote-only",
-    "dev": "remix dev -c \"rdt-serve ./build/index.js\" --manual",
+    "dev": "vite dev",
     "dev:dbServer": "cockroach demo --insecure --no-example-database",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
     "lint:fix": "eslint --fix --cache --cache-location ./node_modules/.cache/eslint .",
@@ -89,7 +89,9 @@
     "tailwindcss": "^3.3.5",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^3.14.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "vite": "^4.5.0",
+    "vite-tsconfig-paths": "^4.2.1"
   },
   "engines": {
     "node": ">=18"

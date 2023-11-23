@@ -94,10 +94,6 @@ export function useChat(channel: string) {
   });
   const chat = chatEvent ? (JSON.parse(chatEvent) as ChatMessage) : undefined;
 
-  if (chat) {
-    console.log(chat.message);
-  }
-
   return chat;
 }
 

@@ -9,11 +9,10 @@ import {
   ScrollRestoration
 } from "@remix-run/react";
 import { ToastContainer } from "react-toastify";
-import toastStyles from "react-toastify/dist/ReactToastify.css";
-import rdtStylesheet from "remix-development-tools/index.css";
+import "react-toastify/dist/ReactToastify.css";
 
 import iconHref from "~/components/icons/sprite.svg";
-import stylesheet from "~/tailwind.css";
+import "~/tailwind.css";
 
 export const links: LinksFunction = () => [
   // Preload CSS as a resource to avoid render blocking
@@ -24,14 +23,8 @@ export const links: LinksFunction = () => [
     rel: "preload"
   },
   { as: "style", href: "/fonts/poppins/font.css", rel: "preload" },
-  { as: "style", href: stylesheet, rel: "preload" },
   { href: "/fonts/atkinson-hyperlegible/font.css", rel: "stylesheet" },
-  { href: "/fonts/poppins/font.css", rel: "stylesheet" },
-  { href: stylesheet, rel: "stylesheet" },
-  { href: toastStyles, rel: "stylesheet" },
-  ...(process.env.NODE_ENV === "development"
-    ? [{ href: rdtStylesheet, rel: "stylesheet" }]
-    : [])
+  { href: "/fonts/poppins/font.css", rel: "stylesheet" }
 ];
 
 export const meta: MetaFunction = () => {
@@ -42,7 +35,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-function App() {
+export default function App() {
   return (
     <html lang="en">
       <head>
@@ -53,17 +46,9 @@ function App() {
         <Outlet />
         <ToastContainer />
         <ScrollRestoration />
-        <Scripts />
         <LiveReload />
+        <Scripts />
       </body>
     </html>
   );
 }
-
-let AppExport = App;
-if (process.env.NODE_ENV === "development") {
-  const { withDevTools } = await import("remix-development-tools");
-  AppExport = withDevTools(AppExport);
-}
-
-export default AppExport;

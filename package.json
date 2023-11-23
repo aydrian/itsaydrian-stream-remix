@@ -53,7 +53,7 @@
     "rehype-stringify": "^10.0.0",
     "remix-auth": "^3.6.0",
     "remix-auth-form": "^1.4.0",
-    "remix-params-helper": "^0.5.0",
+    "remix-params-helper": "^0.4.10",
     "remix-typedjson": "^0.4.0",
     "remix-utils": "^7.1.0",
     "split-type": "^0.3.4",

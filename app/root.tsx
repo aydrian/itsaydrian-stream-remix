@@ -10,7 +10,6 @@ import {
 } from "@remix-run/react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import "remix-development-tools/index.css";
 
 import iconHref from "~/components/icons/sprite.svg";
 import "~/tailwind.css";
@@ -36,7 +35,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-function App() {
+export default function App() {
   return (
     <html lang="en">
       <head>
@@ -53,11 +52,3 @@ function App() {
     </html>
   );
 }
-
-let AppExport = App;
-if (process.env.NODE_ENV === "development") {
-  const { withDevTools } = await import("remix-development-tools");
-  AppExport = withDevTools(AppExport);
-}
-
-export default AppExport;

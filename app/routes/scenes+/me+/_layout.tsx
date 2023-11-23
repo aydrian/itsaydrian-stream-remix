@@ -55,6 +55,7 @@ export function useEpisode() {
 export default function Layout() {
   const chat = useChat("itsaydrian");
   const { follow, raid, subscribe } = useEventSub("itsaydrian");
+  console.log({ follow, raid, subscribe });
 
   if (chat) {
     toast(<Chat message={chat} />, {

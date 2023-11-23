@@ -91,11 +91,8 @@ export const getMessageHTML = (
   size = "small"
 ) => {
   let html = message;
-  console.log({ before: html });
 
   html = formatUserMentions(html);
-
-  console.log({ after: html });
 
   emotes.forEach((emote) => {
     const img = `<img alt="${emote.name}" class="inline-block" src="${emote.images[size]}" />`;

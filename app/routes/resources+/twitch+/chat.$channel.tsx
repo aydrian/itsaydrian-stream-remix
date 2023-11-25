@@ -1,5 +1,6 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
+import { toast } from "react-toastify";
 import { useEventSource } from "remix-utils/sse/react";
 import { eventStream } from "remix-utils/sse/server";
 import { Client, type Events } from "tmi.js";
@@ -17,6 +18,7 @@ type CommonMessage = {
   id?: string;
   message: string;
   time: Date;
+  type: "chat" | "command";
 };
 export type ChatMessage = CommonMessage & { html: string };
 export type CommandMessage = CommonMessage & {
@@ -59,16 +61,18 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         emotes: parseEmotes(msg, tags.emotes),
         id: tags.id,
         message: msg,
-        time
+        time,
+        type: "chat"
       };
 
       if (msg.match(/^(!|--)/)) {
         const command: CommandMessage = {
           ...commonMessage,
-          ...parseCommand(channel)
+          ...parseCommand(channel),
+          type: "command"
         };
 
-        return send({ data: JSON.stringify(command), event: "new-command" });
+        return send({ data: JSON.stringify(command), event: "new-chat" });
       }
 
       const chat: ChatMessage = {
@@ -88,26 +92,38 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   });
 }
 
-export function useChat(channel: string) {
-  const chatEvent = useEventSource(`/resources/twitch/chat/${channel}`, {
+export function ChatNotification({
+  ChatComponent,
+  CommandComponent,
+  channel
+}: {
+  ChatComponent?: React.ComponentType<{ message: ChatMessage }>;
+  CommandComponent?: React.ComponentType<{ message: CommandMessage }>;
+  channel: string;
+}) {
+  const eventMessage = useEventSource(`/resources/twitch/chat/${channel}`, {
     event: "new-chat"
   });
-  const chat = chatEvent ? (JSON.parse(chatEvent) as ChatMessage) : undefined;
-
-  return chat;
-}
-
-export function useCommand(channel: string) {
-  const commandEvent = useEventSource(`/resources/twitch/chat/${channel}`, {
-    event: "new-command"
-  });
-  const command = commandEvent
-    ? (JSON.parse(commandEvent) as CommandMessage)
+  const commonMessage = eventMessage
+    ? (JSON.parse(eventMessage) as CommonMessage)
     : undefined;
 
-  if (command) {
-    console.log(command.message);
+  if (ChatComponent && commonMessage?.type === "chat") {
+    const chatMessage = commonMessage as ChatMessage;
+    toast(<ChatComponent message={chatMessage} />, {
+      // autoClose: false,
+      closeButton: false,
+      position: "bottom-right",
+      theme: "light"
+    });
+  } else if (CommandComponent && commonMessage?.type === "command") {
+    const commandMessage = commonMessage as CommandMessage;
+    toast(<CommandComponent message={commandMessage} />, {
+      // autoClose: false,
+      closeButton: false,
+      position: "bottom-right",
+      theme: "light"
+    });
   }
-
-  return command;
+  return null;
 }

@@ -3,6 +3,7 @@ import {
   type LoaderFunctionArgs,
   json
 } from "@remix-run/node";
+import { toast } from "react-toastify";
 import { useEventSource } from "remix-utils/sse/react";
 import { eventStream } from "remix-utils/sse/server";
 
@@ -46,7 +47,9 @@ export type RaidMessage = {
   viewers: string;
 };
 
-type StreamMessage<T = FollowMessage | RaidMessage | SubscribeMessage> = {
+type StreamMessage<
+  T = CPRMessage | FollowMessage | RaidMessage | SubscribeMessage
+> = {
   event: T;
   type: "custom-prize-redemption" | "follow" | "raid" | "subscribe";
 };
@@ -183,12 +186,21 @@ export async function action({ request }: ActionFunctionArgs) {
   return new Response(null, { status: 200 });
 }
 
-export function useEventSub(channel: string): {
-  customPrizeRedemption?: CPRMessage;
-  follow?: FollowMessage;
-  raid?: RaidMessage;
-  subscribe?: SubscribeMessage;
-} {
+export function EventSubNotification({
+  CustomPrizeRedemptionComponent,
+  FollowComponent,
+  RaidComponent,
+  SubscribeComponent,
+  channel
+}: {
+  CustomPrizeRedemptionComponent?: React.ComponentType<{
+    message: CPRMessage;
+  }>;
+  FollowComponent?: React.ComponentType<{ message: FollowMessage }>;
+  RaidComponent?: React.ComponentType<{ message: RaidMessage }>;
+  SubscribeComponent?: React.ComponentType<{ message: SubscribeMessage }>;
+  channel: string;
+}) {
   const eventMessage = useEventSource(`/resources/twitch/eventsub/${channel}`, {
     event: "message"
   });
@@ -196,17 +208,42 @@ export function useEventSub(channel: string): {
     ? (JSON.parse(eventMessage) as StreamMessage)
     : undefined;
 
-  return {
-    customPrizeRedemption:
-      event?.type === "custom-prize-redemption"
-        ? (event.event as CPRMessage)
-        : undefined,
-    follow:
-      event?.type === "follow" ? (event.event as FollowMessage) : undefined,
-    raid: event?.type === "raid" ? (event.event as RaidMessage) : undefined,
-    subscribe:
-      event?.type === "subscribe"
-        ? (event.event as SubscribeMessage)
-        : undefined
-  };
+  if (
+    CustomPrizeRedemptionComponent &&
+    event?.type === "custom-prize-redemption"
+  ) {
+    const cprMessage = event.event as CPRMessage;
+    toast(<CustomPrizeRedemptionComponent message={cprMessage} />, {
+      // autoClose: false,
+      closeButton: false,
+      position: "top-center",
+      theme: "light"
+    });
+  } else if (FollowComponent && event?.type === "follow") {
+    const followMessage = event.event as FollowMessage;
+    toast(<FollowComponent message={followMessage} />, {
+      // autoClose: false,
+      closeButton: false,
+      position: "top-center",
+      theme: "light"
+    });
+  } else if (RaidComponent && event?.type === "raid") {
+    const raidMessage = event.event as RaidMessage;
+    toast(<RaidComponent message={raidMessage} />, {
+      // autoClose: false,
+      closeButton: false,
+      position: "top-center",
+      theme: "light"
+    });
+  } else if (SubscribeComponent && event?.type === "subscribe") {
+    const subscribeMessage = event.event as SubscribeMessage;
+    toast(<SubscribeComponent message={subscribeMessage} />, {
+      // autoClose: false,
+      closeButton: false,
+      position: "top-center",
+      theme: "light"
+    });
+  }
+
+  return null;
 }

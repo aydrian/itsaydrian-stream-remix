@@ -1,17 +1,16 @@
 import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { Outlet, useRouteLoaderData } from "@remix-run/react";
-import { toast } from "react-toastify";
 
 import { Icon } from "~/components/icon";
 import {
   type ChatMessage,
-  useChat
+  ChatNotification
 } from "~/routes/resources+/twitch+/chat.$channel";
 import {
+  EventSubNotification,
   type FollowMessage,
   type RaidMessage,
-  type SubscribeMessage,
-  useEventSub
+  type SubscribeMessage
 } from "~/routes/resources+/twitch+/eventsub.$channel";
 import { nowPlayingCookie } from "~/utils/cookies.server";
 import { getNextEpisode, prisma } from "~/utils/db.server";
@@ -53,47 +52,18 @@ export function useEpisode() {
 }
 
 export default function Layout() {
-  const chat = useChat("itsaydrian");
-  const { follow, raid, subscribe } = useEventSub("itsaydrian");
-  console.log({ follow, raid, subscribe });
-
-  if (chat) {
-    toast(<Chat message={chat} />, {
-      // autoClose: false,
-      closeButton: false,
-      position: "bottom-right",
-      theme: "light"
-    });
-  }
-
-  if (follow) {
-    toast(<FollowAlert message={follow} />, {
-      // autoClose: false,
-      closeButton: false,
-      position: "top-center",
-      theme: "light"
-    });
-  }
-
-  if (subscribe) {
-    toast(<SubscribeAlert message={subscribe} />, {
-      // autoClose: false,
-      closeButton: false,
-      position: "top-center",
-      theme: "light"
-    });
-  }
-
-  if (raid) {
-    toast(<RaidAlert message={raid} />, {
-      // autoClose: false,
-      closeButton: false,
-      position: "top-center",
-      theme: "light"
-    });
-  }
-
-  return <Outlet />;
+  return (
+    <>
+      <Outlet />
+      <ChatNotification ChatComponent={Chat} channel="itsaydrian" />
+      <EventSubNotification
+        FollowComponent={FollowAlert}
+        RaidComponent={RaidAlert}
+        SubscribeComponent={SubscribeAlert}
+        channel="itsaydrian"
+      />
+    </>
+  );
 }
 
 function Chat({ message }: { message: ChatMessage }) {

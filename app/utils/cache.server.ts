@@ -1,6 +1,9 @@
-import type { CacheEntry, CachifiedOptions } from "cachified";
+import type { CacheEntry, CachifiedOptions } from "@epic-web/cachified";
 
-import { cachified as baseCachified, lruCacheAdapter } from "cachified";
+import {
+  cachified as baseCachified,
+  lruCacheAdapter
+} from "@epic-web/cachified";
 import { LRUCache } from "lru-cache";
 const lru = new LRUCache<string, CacheEntry>({ max: 1000 });
 export function cachified<Value>(

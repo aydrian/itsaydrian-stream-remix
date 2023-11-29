@@ -44,7 +44,7 @@ export default function App() {
       </head>
       <body className="flex min-h-screen flex-col">
         <Outlet />
-        <ToastContainer />
+        <ToastContainer pauseOnFocusLoss={false} />
         <ScrollRestoration />
         <LiveReload />
         <Scripts />

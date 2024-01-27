@@ -1,5 +1,3 @@
-import type { SceneCollection } from "@prisma/client";
-
 import { PrismaClient } from "@prisma/client";
 import { startOfToday } from "date-fns";
 
@@ -10,7 +8,7 @@ prisma.$connect();
 
 export { prisma };
 
-export async function getNextEpisode(sceneCollection: SceneCollection) {
+export async function getNextEpisode(sceneCollection: string) {
   const result = await prisma.episode.findFirst({
     orderBy: { startDate: "asc" },
     select: {

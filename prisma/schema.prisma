@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 datasource db {
-  provider = "cockroachdb"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -11,7 +11,7 @@ generator client {
 }
 
 model User {
-  id           String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id           String       @id @default(uuid())
   email        String       @unique
   passwordHash String?      @map("password_hash")
   firstName    String       @map("first_name")
@@ -22,34 +22,27 @@ model User {
   @@map("users")
 }
 
-enum SceneCollection {
-  ME  @map("me")
-  CRL @map("crl")
-
-  @@map("scene_collections")
-}
-
 model Show {
-  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id              String    @id @default(uuid())
   title           String
   description     String?
-  sceneCollection SceneCollection @map("scene_collection")
+  sceneCollection String    @default("me") @map("scene_collection")
   episodes        Episode[]
-  archived        Boolean         @default(false)
+  archived        Boolean   @default(false)
 
   @@map("shows")
 }
 
 model Episode {
-  id          String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  showId      String             @db.Uuid
-  startDate   DateTime           @map("start_date") @db.Timestamptz(0)
-  endDate     DateTime           @map("end_date") @db.Timestamptz(0)
+  id          String             @id @default(uuid())
+  showId      String
+  startDate   DateTime           @map("start_date")
+  endDate     DateTime           @map("end_date")
   title       String
   subtitle    String?
   description String
   vdoPassword String             @default("its@ydrianB1ch") @map("vdo_password")
-  createdAt   DateTime           @default(now()) @map("created_at") @db.Timestamptz(0)
+  createdAt   DateTime           @default(now()) @map("created_at")
   show        Show               @relation(fields: [showId], references: [id])
   guests      GuestsForEpisode[]
 
@@ -57,7 +50,7 @@ model Episode {
 }
 
 model Guest {
-  id        String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String             @id @default(uuid())
   firstName String             @map("first_name")
   lastName  String             @map("last_name")
   title     String?
@@ -65,16 +58,16 @@ model Guest {
   twitter   String?
   avatarUrl String?            @map("avatarUrl")
   episodes  GuestsForEpisode[]
-  userId    String?            @unique @map("user_id") @db.Uuid
+  userId    String?            @unique @map("user_id")
   user      User?              @relation(fields: [userId], references: [id])
 
   @@map("guests")
 }
 
 model GuestsForEpisode {
-  episodeId String  @db.Uuid
-  guestId   String  @db.Uuid
-  order     Int     @db.Int4
+  episodeId String
+  guestId   String
+  order     Int
   episode   Episode @relation(fields: [episodeId], references: [id])
   guest     Guest   @relation(fields: [guestId], references: [id])
 
@@ -83,8 +76,8 @@ model GuestsForEpisode {
 }
 
 model Connection {
-  id                  String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId              String  @db.Uuid
+  id                  String  @id @default(uuid())
+  userId              String
   type                String
   provider            String
   providerAccountId   String  @map("provider_account_id")

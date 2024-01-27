@@ -1,6 +1,6 @@
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { type DataFunctionArgs, json } from "@remix-run/node";
+import { type ActionFunctionArgs, json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { AuthorizationError } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
@@ -19,8 +19,8 @@ const LoginFormSchema = z.object({
     .min(6, "Password must be at least 6 characters long")
 });
 
-export const action = async ({ request }: DataFunctionArgs) => {
-  const formData = await request.formData();
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.clone().formData();
   const submission = parse(formData, {
     schema: LoginFormSchema
   });
@@ -36,7 +36,6 @@ export const action = async ({ request }: DataFunctionArgs) => {
   const redirectTo =
     (await redirectToCookie.parse(request.headers.get("Cookie"))) ??
     DEFAULT_SUCCESS_REDIRECT;
-
   try {
     await authenticator.authenticate(FormStrategy.name, request, {
       context: { formData },

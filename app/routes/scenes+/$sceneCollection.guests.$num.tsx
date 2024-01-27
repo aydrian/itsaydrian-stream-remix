@@ -1,15 +1,12 @@
 import type { LoaderFunctionArgs } from "@remix-run/node";
 
-import { type SceneCollection } from "@prisma/client";
 import { useLoaderData } from "@remix-run/react";
 import { startOfToday } from "date-fns";
 
 import { prisma } from "~/utils/db.server";
 
 export async function loader({ params }: LoaderFunctionArgs) {
-  const sceneCollection: SceneCollection | undefined = params.sceneCollection
-    ? (params.sceneCollection.toUpperCase() as SceneCollection)
-    : undefined;
+  const sceneCollection = params.sceneCollection;
   const num = params.num ? parseInt(params.num) : NaN;
   console.log({ num, sceneCollection });
   if (!sceneCollection || isNaN(num)) {

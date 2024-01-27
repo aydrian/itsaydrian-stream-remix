@@ -41,6 +41,15 @@ RUN npm run build
 # Finally, build the production image with minimal footprint
 FROM base
 
+ENV FLY="true"
+ENV LITEFS_DIR="/litefs/data"
+ENV DATABASE_FILENAME="sqlite.db"
+ENV DATABASE_PATH="$LITEFS_DIR/$DATABASE_FILENAME"
+ENV DATABASE_URL="file:$DATABASE_PATH"
+ENV INTERNAL_PORT="8080"
+ENV PORT="8081"
+ENV NODE_ENV="production"
+
 WORKDIR /myapp
 
 COPY --from=production-deps /myapp/node_modules /myapp/node_modules

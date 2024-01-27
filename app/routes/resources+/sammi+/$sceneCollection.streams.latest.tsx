@@ -1,4 +1,3 @@
-import { type SceneCollection } from "@prisma/client";
 import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { startOfToday } from "date-fns";
 
@@ -7,9 +6,7 @@ import { generateVDOPassword } from "~/utils/vdo-ninja.server";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   // TODO: Make sure request is coming from SAMMI
-  const sceneCollection: SceneCollection | undefined = params.sceneCollection
-    ? (params.sceneCollection.toUpperCase() as SceneCollection)
-    : undefined;
+  const sceneCollection = params.sceneCollection;
   if (!sceneCollection) {
     throw new Response(null, { status: 404, statusText: "Not Found" });
   }

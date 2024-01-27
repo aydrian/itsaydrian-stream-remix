@@ -1,6 +1,6 @@
 import { conform, useForm } from "@conform-to/react";
 import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { SceneCollection, type Show } from "@prisma/client";
+import { type Show } from "@prisma/client";
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, useFetcher } from "@remix-run/react";
 import { z } from "zod";
@@ -19,7 +19,7 @@ export const ShowEditorSchema = z.object({
   archived: z.boolean().default(false),
   description: z.string().optional(),
   id: z.string().optional(),
-  sceneCollection: z.nativeEnum(SceneCollection).default("ME"),
+  sceneCollection: z.string().default("me"),
   title: z.string({ required_error: "Title is required" })
 });
 

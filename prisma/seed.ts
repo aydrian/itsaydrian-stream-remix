@@ -21,7 +21,7 @@ async function seed() {
           company: "Tabnine",
           firstName,
           lastName,
-          title: "Growth Engineer",
+          title: "Principal Product Evangelist",
           twitter: "itsaydrian"
         }
       },

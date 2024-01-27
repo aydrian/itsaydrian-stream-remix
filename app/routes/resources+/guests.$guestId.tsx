@@ -1,9 +1,9 @@
-import { type DataFunctionArgs, json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 
-export const loader = async ({ params, request }: DataFunctionArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   await requireUserId(request);
   const { guestId } = params;
 

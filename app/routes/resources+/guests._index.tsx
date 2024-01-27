@@ -1,5 +1,5 @@
 import { AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { type DataFunctionArgs, json } from "@remix-run/node";
+import { type LoaderFunctionArgs, json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { useEffect } from "react";
 
@@ -14,7 +14,7 @@ import {
 import { requireUserId } from "~/utils/auth.server";
 import { prisma } from "~/utils/db.server";
 
-export const loader = async ({ request }: DataFunctionArgs) => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   await requireUserId(request);
 
   const guests = await prisma.guest.findMany({

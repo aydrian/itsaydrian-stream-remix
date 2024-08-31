@@ -1,5 +1,5 @@
-import { useForm } from "@conform-to/react";
-import { parse } from "@conform-to/zod";
+import { getFormProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
@@ -46,21 +46,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: DisconnectSchema
   });
 
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "success", submission } as const);
+  if (submission.status !== "success") {
+    return json(submission.reply(), { status: 400 });
   }
 
   const { connectionId } = submission.value;
@@ -81,7 +72,7 @@ export function SpotifyConnect() {
     <spotifyFetcher.Form
       action="/resources/spotify"
       method="GET"
-      {...form.props}
+      {...getFormProps(form)}
     >
       <SpotifyButton state={spotifyFetcher.state} />
     </spotifyFetcher.Form>
@@ -99,7 +90,7 @@ export function SpotifyDisconnect({ connectionId }: { connectionId: string }) {
     <spotifyFetcher.Form
       action="/resources/spotify"
       method="POST"
-      {...form.props}
+      {...getFormProps(form)}
     >
       <input name="connectionId" type="hidden" value={connectionId} />
       <SpotifyButton state={spotifyFetcher.state} title="Disconnect" />

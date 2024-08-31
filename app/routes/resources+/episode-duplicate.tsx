@@ -1,6 +1,6 @@
-import { useForm } from "@conform-to/react";
-import { parse } from "@conform-to/zod";
-import { type DataFunctionArgs, json, redirect } from "@remix-run/node";
+import { getFormProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { z } from "zod";
 
@@ -12,23 +12,15 @@ const EpisodeDuplicateSchema = z.object({
   episodeId: z.string()
 });
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: EpisodeDuplicateSchema
   });
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "idle", submission } as const);
+
+  if (submission.status !== "success") {
+    return json(submission.reply(), { status: 400 });
   }
 
   const { episodeId } = submission.value;
@@ -77,19 +69,23 @@ export function DuplicateEpisodeForm({ episodeId }: { episodeId: string }) {
   const duplicateEpisodeFetcher = useFetcher<typeof action>();
 
   const [form] = useForm({
-    id: "duplicate-episode-form"
+    id: "duplicate-episode-form",
+    onSubmit(event) {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      duplicateEpisodeFetcher.submit(formData, {
+        action: "/resources/episode-duplicate",
+        method: "post"
+      });
+    }
   });
 
   return (
-    <duplicateEpisodeFetcher.Form
-      action="/resources/episode-duplicate"
-      method="post"
-      {...form.props}
-    >
+    <form {...getFormProps(form)}>
       <input name="episodeId" type="hidden" value={episodeId} />
-      <Button size="sm" variant="secondary">
+      <Button size="sm" type="submit" variant="secondary">
         Duplicate
       </Button>
-    </duplicateEpisodeFetcher.Form>
+    </form>
   );
 }

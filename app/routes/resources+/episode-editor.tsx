@@ -1,16 +1,18 @@
 import {
-  type FieldConfig,
-  conform,
-  list,
-  useFieldList,
-  useFieldset,
+  type FieldName,
+  FormProvider,
+  getFieldsetProps,
+  getFormProps,
+  getInputProps,
+  getTextareaProps,
+  useField,
   useForm
 } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { type DataFunctionArgs, json, redirect } from "@remix-run/node";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, useFetcher } from "@remix-run/react";
 import { toDate } from "date-fns-tz";
-import React, { useRef } from "react";
+import React from "react";
 import { z } from "zod";
 
 import { ErrorList, Field, TextareaField } from "~/components/form";
@@ -47,6 +49,8 @@ export const EpisodeGuestSchema = z.object({
   order: z.number()
 });
 
+export type EpisodeGuest = z.infer<typeof EpisodeGuestSchema>;
+
 export const EpisodeEditorSchema = z.object({
   description: z.string({ required_error: "Description is required" }),
   endDate: z.string({ required_error: "End Date is required" }),
@@ -60,23 +64,17 @@ export const EpisodeEditorSchema = z.object({
   vdoPassword: z.string().default("its@drianB1rch")
 });
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: EpisodeEditorSchema
   });
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "idle", submission } as const);
+
+  if (submission.status !== "success") {
+    return json(submission.reply(), {
+      status: submission.status === "error" ? 400 : 200
+    });
   }
 
   const { endDate, guests, id, startDate, timeZone, ...data } =
@@ -155,21 +153,8 @@ export function EpisodeEditor({
 }) {
   const episodeEditorFetcher = useFetcher<typeof action>();
 
-  const [
-    form,
-    {
-      description,
-      endDate,
-      guests,
-      id,
-      showId: show_id,
-      startDate,
-      subtitle,
-      title,
-      vdoPassword
-    }
-  ] = useForm({
-    constraint: getFieldsetConstraint(EpisodeEditorSchema),
+  const [form, fields] = useForm({
+    constraint: getZodConstraint(EpisodeEditorSchema),
     defaultValue: {
       description: episode?.description,
       endDate: formatDateForInput(episode?.endDate),
@@ -182,9 +167,9 @@ export function EpisodeEditor({
       vdoPassword: episode?.vdoPassword
     },
     id: "episode-editor",
-    lastSubmission: episodeEditorFetcher.data?.submission,
+    lastResult: episodeEditorFetcher.data,
     onValidate({ formData }) {
-      return parse(formData, { schema: EpisodeEditorSchema });
+      return parseWithZod(formData, { schema: EpisodeEditorSchema });
     },
     shouldRevalidate: "onBlur"
   });
@@ -193,25 +178,25 @@ export function EpisodeEditor({
     <episodeEditorFetcher.Form
       action="/resources/episode-editor"
       method="post"
-      {...form.props}
+      {...getFormProps(form)}
       className="flex flex-col"
     >
-      <input name={id.name} type="hidden" value={id.defaultValue} />
-      <input name={show_id.name} type="hidden" value={show_id.defaultValue} />
+      <input {...getInputProps(fields.id, { type: "hidden" })} />
+      <input {...getInputProps(fields.showId, { type: "hidden" })} />
       <Field
-        errors={title.errors}
-        inputProps={conform.input(title)}
-        labelProps={{ children: "Title", htmlFor: title.id }}
+        errors={fields.title.errors}
+        inputProps={getInputProps(fields.title, { type: "text" })}
+        labelProps={{ children: "Title", htmlFor: fields.title.id }}
       />
       <Field
-        errors={subtitle.errors}
-        inputProps={conform.input(subtitle)}
-        labelProps={{ children: "Subtitle", htmlFor: subtitle.id }}
+        errors={fields.subtitle.errors}
+        inputProps={getInputProps(fields.subtitle, { type: "text" })}
+        labelProps={{ children: "Subtitle", htmlFor: fields.subtitle.id }}
       />
       <TextareaField
-        errors={description.errors}
-        labelProps={{ children: "Description", htmlFor: description.id }}
-        textareaProps={conform.textarea(description)}
+        errors={fields.description.errors}
+        labelProps={{ children: "Description", htmlFor: fields.description.id }}
+        textareaProps={getTextareaProps(fields.description)}
       />
       <div className="flex w-full flex-row justify-between gap-1">
         <input
@@ -221,31 +206,33 @@ export function EpisodeEditor({
         />
         <Field
           className="grow"
-          errors={startDate.errors}
-          inputProps={conform.input(startDate, {
+          errors={fields.startDate.errors}
+          inputProps={getInputProps(fields.startDate, {
             type: "datetime-local"
           })}
-          labelProps={{ children: "Start Date", htmlFor: startDate.id }}
+          labelProps={{ children: "Start Date", htmlFor: fields.startDate.id }}
         />
         <Field
           className="grow"
-          errors={endDate.errors}
-          inputProps={conform.input(endDate, { type: "datetime-local" })}
-          labelProps={{ children: "End Date", htmlFor: endDate.id }}
+          errors={fields.endDate.errors}
+          inputProps={getInputProps(fields.endDate, { type: "datetime-local" })}
+          labelProps={{ children: "End Date", htmlFor: fields.endDate.id }}
         />
       </div>
       <Field
-        errors={vdoPassword.errors}
-        inputProps={conform.input(vdoPassword)}
+        errors={fields.vdoPassword.errors}
+        inputProps={getInputProps(fields.vdoPassword, { type: "text" })}
         labelProps={{
           children: "VDO Password",
-          htmlFor: vdoPassword.id
+          htmlFor: fields.vdoPassword.id
         }}
       />
       <h4 className="mb-1.5 text-lg font-semibold leading-tight text-gray-700">
         Select your guests
       </h4>
-      <GuestSelector formRef={form.ref} guests={guests} />
+      <FormProvider context={form.context}>
+        <GuestSelector guests={fields.guests.name} />
+      </FormProvider>
 
       <ErrorList errors={form.errors} id={form.errorId} />
       <div className="mt-2 flex w-full gap-2">
@@ -258,18 +245,13 @@ export function EpisodeEditor({
   );
 }
 
-function GuestSelector({
-  formRef,
-  guests
-}: {
-  formRef: React.RefObject<HTMLFormElement>;
-  guests: FieldConfig<z.input<typeof EpisodeGuestSchema>[]>;
-}) {
-  const guestList = useFieldList(formRef, guests);
+function GuestSelector({ guests }: { guests: FieldName<EpisodeGuest[]> }) {
   const { allGuests } = useEpisodesLayoutLoaderData();
   const [selectedGuest, setSelectedGuest] = React.useState<
     Omit<z.input<typeof EpisodeGuestSchema>, "order"> | undefined
   >(undefined);
+  const [meta, form] = useField(guests);
+  const guestList = meta.getFieldList();
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center gap-1.5">
@@ -304,20 +286,23 @@ function GuestSelector({
           className="bottom-2 right-2 text-xs"
           size="sm"
           variant="secondary"
-          {...list.insert(guests.name, { defaultValue: selectedGuest })}
+          {...form.insert.getButtonProps({
+            defaultValue: selectedGuest,
+            name: meta.name
+          })}
         >
           Add
         </Button>
       </div>
       <div className="flex flex-wrap gap-4">
-        {guestList.map(({ key, ...guest }, index) => {
+        {guestList.map((guest, index) => {
           return (
             <GuestFieldset
-              config={guest}
               index={index}
-              isRemovable={guestList.length > 1}
-              key={key}
-              listName={guests.name}
+              isRemovable={guests.length > 1}
+              key={guest.key}
+              listName={meta.name}
+              name={guest.name}
             />
           );
         })}
@@ -327,25 +312,26 @@ function GuestSelector({
 }
 
 function GuestFieldset({
-  config,
   index,
   isRemovable = false,
-  listName
+  listName,
+  name
 }: {
-  config: FieldConfig<z.input<typeof EpisodeGuestSchema>>;
   index: number;
   isRemovable?: boolean;
   listName: string;
+  name: FieldName<EpisodeGuest>;
 }) {
-  const ref = useRef<HTMLFieldSetElement>(null);
-  const { guest, guestId, order } = useFieldset(ref, config);
+  const [meta, form] = useField(name);
+  const fields = meta.getFieldset();
+  const guest = fields.guest.getFieldset();
 
   return (
-    <fieldset ref={ref}>
-      <input {...conform.input(guestId, { type: "hidden" })} />
+    <fieldset {...getFieldsetProps(meta)}>
+      <input {...getInputProps(fields.guestId, { type: "hidden" })} />
       <input
-        {...conform.input(order, { type: "hidden" })}
-        defaultValue={order.defaultValue ?? index}
+        {...getInputProps(fields.order, { type: "hidden" })}
+        defaultValue={fields.order.value ?? index}
       />
       <Card className="w-48">
         <CardHeader>
@@ -354,14 +340,14 @@ function GuestFieldset({
         <CardContent className="flex flex-col gap-2">
           <Avatar className="mx-auto h-32 w-32 shadow-md">
             <AvatarImage
-              alt={`${guest.defaultValue?.firstName} ${guest.defaultValue?.lastName}`}
-              src={guest.defaultValue?.avatarUrl ?? undefined}
+              alt={`${guest.firstName.value} ${guest.lastName.value}`}
+              src={guest.avatarUrl.value}
             />
-            <AvatarFallback>{`${guest.defaultValue?.firstName.charAt(
+            <AvatarFallback>{`${guest.firstName.value?.charAt(
               0
-            )}${guest.defaultValue?.lastName.charAt(0)}`}</AvatarFallback>
+            )}${guest.lastName.value?.charAt(0)}`}</AvatarFallback>
           </Avatar>
-          <CardTitle>{`${guest.defaultValue?.firstName} ${guest.defaultValue?.lastName}`}</CardTitle>
+          <CardTitle>{`${guest.firstName.value} ${guest.lastName.value}`}</CardTitle>
         </CardContent>
         <CardFooter>
           {isRemovable ? (
@@ -369,7 +355,7 @@ function GuestFieldset({
               className="bottom-2 right-2 text-xs"
               size="sm"
               variant="destructive"
-              {...list.remove(listName, { index })}
+              {...form.remove.getButtonProps({ index, name: listName })}
             >
               Remove
             </Button>

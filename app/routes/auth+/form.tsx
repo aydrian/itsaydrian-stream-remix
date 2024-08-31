@@ -1,6 +1,6 @@
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
-import { type DataFunctionArgs, json } from "@remix-run/node";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
+import { type ActionFunctionArgs, json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { AuthorizationError } from "remix-auth";
 import { FormStrategy } from "remix-auth-form";
@@ -19,20 +19,16 @@ const LoginFormSchema = z.object({
     .min(6, "Password must be at least 6 characters long")
 });
 
-export const action = async ({ request }: DataFunctionArgs) => {
+export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: LoginFormSchema
   });
-  if (!submission.value || submission.intent !== "submit") {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
+
+  if (submission.status !== "success") {
+    return json(submission.reply(), { status: 400 });
   }
+
   const redirectTo =
     (await redirectToCookie.parse(request.headers.get("Cookie"))) ??
     DEFAULT_SUCCESS_REDIRECT;
@@ -46,33 +42,27 @@ export const action = async ({ request }: DataFunctionArgs) => {
   } catch (error) {
     if (error instanceof AuthorizationError) {
       return json(
-        {
-          status: "error",
-          submission: {
-            ...submission,
-            error: {
-              "": [error.message]
-            }
-          }
-        } as const,
+        submission.reply({
+          formErrors: [error.message]
+        }),
         { status: 400 }
       );
     }
     throw error;
   }
 
-  return json({ status: "success", submission } as const);
+  return json(submission.reply());
 };
 
 export function FormLoginForm({ formError }: { formError?: null | string }) {
   const loginFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(LoginFormSchema),
+    constraint: getZodConstraint(LoginFormSchema),
     id: "form-login-form",
-    lastSubmission: loginFetcher.data?.submission,
+    lastResult: loginFetcher.data,
     onValidate({ formData }) {
-      return parse(formData, { schema: LoginFormSchema });
+      return parseWithZod(formData, { schema: LoginFormSchema });
     },
     shouldRevalidate: "onBlur"
   });
@@ -81,17 +71,17 @@ export function FormLoginForm({ formError }: { formError?: null | string }) {
     <loginFetcher.Form
       action="/auth/form"
       method="post"
-      {...form.props}
+      {...getFormProps(form)}
       className="mb-8 flex flex-col sm:mb-4"
     >
       <Field
         errors={fields.email.errors}
-        inputProps={{ ...conform.input(fields.email) }}
+        inputProps={getInputProps(fields.email, { type: "email" })}
         labelProps={{ children: "Email", htmlFor: fields.email.id }}
       />
       <Field
         errors={fields.password.errors}
-        inputProps={{ ...conform.input(fields.password), type: "password" }}
+        inputProps={getInputProps(fields.password, { type: "password" })}
         labelProps={{ children: "Password", htmlFor: fields.password.id }}
       />
       <ErrorList errors={formError ? [formError] : []} />
@@ -127,11 +117,11 @@ export function ChangePwdForm({ userId }: { userId: string }) {
   const changePwdFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(ChangePwdSchema),
+    constraint: getZodConstraint(ChangePwdSchema),
     id: "form-change-pwd-form",
-    lastSubmission: changePwdFetcher.data?.submission,
+    lastResult: changePwdFetcher.data,
     onValidate({ formData }) {
-      return parse(formData, { schema: LoginFormSchema });
+      return parseWithZod(formData, { schema: ChangePwdSchema });
     },
     shouldRevalidate: "onBlur"
   });
@@ -140,20 +130,18 @@ export function ChangePwdForm({ userId }: { userId: string }) {
     <changePwdFetcher.Form
       action="/auth/form"
       method="POST"
-      {...form.props}
+      {...getFormProps(form)}
       className="mb-8 flex flex-col sm:mb-4"
     >
-      <input {...conform.input(fields.userId, { type: "hidden" })} />
+      <input {...getInputProps(fields.userId, { type: "hidden" })} />
       <Field
         errors={fields.password.errors}
-        inputProps={{ ...conform.input(fields.password, { type: "password" }) }}
+        inputProps={getInputProps(fields.password, { type: "password" })}
         labelProps={{ children: "Password", htmlFor: fields.password.id }}
       />
       <Field
         errors={fields.newPassword.errors}
-        inputProps={{
-          ...conform.input(fields.newPassword, { type: "password" })
-        }}
+        inputProps={getInputProps(fields.newPassword, { type: "password" })}
         labelProps={{
           children: "New Password",
           htmlFor: fields.newPassword.id
@@ -161,9 +149,7 @@ export function ChangePwdForm({ userId }: { userId: string }) {
       />
       <Field
         errors={fields.confirmPassword.errors}
-        inputProps={{
-          ...conform.input(fields.confirmPassword, { type: "password" })
-        }}
+        inputProps={getInputProps(fields.confirmPassword, { type: "password" })}
         labelProps={{
           children: "Confirm Password",
           htmlFor: fields.confirmPassword.id

@@ -1,5 +1,5 @@
-import { useForm } from "@conform-to/react";
-import { parse } from "@conform-to/zod";
+import { getFormProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import {
   type ActionFunctionArgs,
   type LoaderFunctionArgs,
@@ -49,21 +49,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export const action = async ({ request }: ActionFunctionArgs) => {
   await requireUserId(request);
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: DisconnectSchema
   });
 
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "success", submission } as const);
+  if (submission.status !== "success") {
+    return json(submission.reply(), { status: 400 });
   }
 
   const { connectionId } = submission.value;
@@ -77,11 +68,15 @@ export function TwitchConnect() {
   const twitchFetcher = useFetcher<typeof loader>();
 
   const [form] = useForm({
-    id: " twitch-connect-form"
+    id: "twitch-connect-form"
   });
 
   return (
-    <twitchFetcher.Form action="/resources/twitch" method="GET" {...form.props}>
+    <twitchFetcher.Form
+      action="/resources/twitch"
+      method="GET"
+      {...getFormProps(form)}
+    >
       <TwitchButton state={twitchFetcher.state} />
     </twitchFetcher.Form>
   );
@@ -98,7 +93,7 @@ export function TwitchDisconnect({ connectionId }: { connectionId: string }) {
     <twitchFetcher.Form
       action="/resources/twitch"
       method="POST"
-      {...form.props}
+      {...getFormProps(form)}
     >
       <input name="connectionId" type="hidden" value={connectionId} />
       <TwitchButton state={twitchFetcher.state} title="Disconnect" />

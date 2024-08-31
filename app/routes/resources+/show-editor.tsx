@@ -1,5 +1,10 @@
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import {
+  getFormProps,
+  getInputProps,
+  getTextareaProps,
+  useForm
+} from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { SceneCollection, type Show } from "@prisma/client";
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, useFetcher } from "@remix-run/react";
@@ -26,20 +31,13 @@ export const ShowEditorSchema = z.object({
 export async function action({ request }: ActionFunctionArgs) {
   await requireUserId(request);
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: ShowEditorSchema
   });
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "idle", submission } as const);
+  if (submission.status !== "success") {
+    return json(submission.reply(), {
+      status: submission.status === "error" ? 400 : 200
+    });
   }
 
   const { id, ...data } = submission.value;
@@ -65,12 +63,12 @@ export function ShowEditor({ show }: { show?: Show }) {
   const showFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(ShowEditorSchema),
+    constraint: getZodConstraint(ShowEditorSchema),
     defaultValue: show,
     id: "show-editor",
-    lastSubmission: showFetcher.data?.submission,
+    lastResult: showFetcher.data,
     onValidate({ formData }) {
-      return parse(formData, { schema: ShowEditorSchema });
+      return parseWithZod(formData, { schema: ShowEditorSchema });
     },
     shouldValidate: "onBlur"
   });
@@ -79,22 +77,22 @@ export function ShowEditor({ show }: { show?: Show }) {
     <showFetcher.Form
       action="/resources/show-editor"
       method="post"
-      {...form.props}
+      {...getFormProps(form)}
       className="flex flex-col"
     >
-      <input {...conform.input(fields.id, { type: "hidden" })} />
+      <input {...getInputProps(fields.id, { type: "hidden" })} />
       <Field
         errors={fields.title.errors}
-        inputProps={conform.input(fields.title)}
+        inputProps={getInputProps(fields.title, { type: "text" })}
         labelProps={{ children: "Title", htmlFor: fields.title.id }}
       />
       <TextareaField
         errors={fields.description.errors}
         labelProps={{ children: "Description", htmlFor: fields.description.id }}
-        textareaProps={conform.textarea(fields.description)}
+        textareaProps={getTextareaProps(fields.description)}
       />
       <CheckboxField
-        buttonProps={conform.input(fields.archived, { type: "checkbox" })}
+        buttonProps={getInputProps(fields.archived, { type: "checkbox" })}
         errors={fields.archived.errors}
         labelProps={{ children: "Archived", htmlFor: fields.archived.id }}
       />

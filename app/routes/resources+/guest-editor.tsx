@@ -1,5 +1,5 @@
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import { type Guest } from "@prisma/client";
 import { type ActionFunctionArgs, json, redirect } from "@remix-run/node";
 import { Link, useFetcher } from "@remix-run/react";
@@ -24,20 +24,12 @@ const GuestEditorSchema = z.object({
 export async function action({ request }: ActionFunctionArgs) {
   await requireUserId(request);
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: GuestEditorSchema
   });
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "idle", submission } as const);
+
+  if (submission.status !== "success") {
+    return json(submission.reply(), { status: 400 });
   }
 
   const { id, ...data } = submission.value;
@@ -62,12 +54,11 @@ export function GuestEditor({ guest }: { guest?: Guest }) {
   const fetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(GuestEditorSchema),
     defaultValue: guest,
     id: "guest-editor",
-    lastSubmission: fetcher.data?.submission,
+    lastResult: fetcher.data,
     onValidate({ formData }) {
-      return parse(formData, { schema: GuestEditorSchema });
+      return parseWithZod(formData, { schema: GuestEditorSchema });
     },
     shouldRevalidate: "onBlur"
   });
@@ -76,38 +67,38 @@ export function GuestEditor({ guest }: { guest?: Guest }) {
     <fetcher.Form
       action="/resources/guest-editor"
       method="post"
-      {...form.props}
+      {...getFormProps(form)}
       className="flex flex-col"
     >
-      <input {...conform.input(fields.id, { type: "hidden" })} />
+      <input {...getInputProps(fields.id, { type: "hidden" })} />
       <Field
         errors={fields.firstName.errors}
-        inputProps={conform.input(fields.firstName)}
+        inputProps={getInputProps(fields.firstName, { type: "text" })}
         labelProps={{ children: "First Name", htmlFor: fields.firstName.id }}
       />
       <Field
         errors={fields.lastName.errors}
-        inputProps={conform.input(fields.lastName)}
+        inputProps={getInputProps(fields.lastName, { type: "text" })}
         labelProps={{ children: "Last Name", htmlFor: fields.lastName.id }}
       />
       <Field
         errors={fields.title.errors}
-        inputProps={conform.input(fields.title)}
+        inputProps={getInputProps(fields.title, { type: "text" })}
         labelProps={{ children: "Title", htmlFor: fields.title.id }}
       />
       <Field
         errors={fields.company.errors}
-        inputProps={conform.input(fields.company)}
+        inputProps={getInputProps(fields.company, { type: "text" })}
         labelProps={{ children: "Company", htmlFor: fields.company.id }}
       />
       <Field
         errors={fields.twitter.errors}
-        inputProps={conform.input(fields.twitter)}
+        inputProps={getInputProps(fields.twitter, { type: "text" })}
         labelProps={{ children: "Twitter", htmlFor: fields.twitter.id }}
       />
       <Field
         errors={fields.avatarUrl.errors}
-        inputProps={conform.input(fields.avatarUrl)}
+        inputProps={getInputProps(fields.avatarUrl, { type: "text" })}
         labelProps={{ children: "Avatar", htmlFor: fields.avatarUrl.id }}
       />
       <div className="mt-2 flex w-full gap-2">

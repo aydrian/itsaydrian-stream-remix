@@ -1,5 +1,5 @@
-import { conform, useForm } from "@conform-to/react";
-import { getFieldsetConstraint, parse } from "@conform-to/zod";
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { type ActionFunctionArgs, json } from "@remix-run/node";
 import { useFetcher } from "@remix-run/react";
 import { z } from "zod";
@@ -25,20 +25,14 @@ const ChangePwdSchema = z
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const submission = parse(formData, {
+  const submission = parseWithZod(formData, {
     schema: ChangePwdSchema
   });
-  if (!submission.value) {
-    return json(
-      {
-        status: "error",
-        submission
-      } as const,
-      { status: 400 }
-    );
-  }
-  if (submission.intent !== "submit") {
-    return json({ status: "idle", submission } as const);
+
+  if (submission.status !== "success") {
+    return json(submission.reply(), {
+      status: submission.status === "error" ? 400 : 200
+    });
   }
 
   const { email, newPassword, password } = submission.value;
@@ -48,37 +42,28 @@ export async function action({ request }: ActionFunctionArgs) {
   } catch (error) {
     if (error instanceof Error) {
       return json(
-        {
-          status: "error",
-          submission: {
-            ...submission,
-            error: {
-              "": [error.message]
-            }
-          }
-        } as const,
+        submission.reply({
+          formErrors: [error.message]
+        }),
         { status: 400 }
       );
     }
     throw error;
   }
 
-  return json({
-    status: "success",
-    submission: { ...submission, payload: null }
-  } as const);
+  return json(submission.reply({ resetForm: true }));
 }
 
 export function ChangePwdForm({ email }: { email: string }) {
   const changePwdFetcher = useFetcher<typeof action>();
 
   const [form, fields] = useForm({
-    constraint: getFieldsetConstraint(ChangePwdSchema),
+    constraint: getZodConstraint(ChangePwdSchema),
     defaultValue: { email },
     id: "form-change-pwd-form",
-    lastSubmission: changePwdFetcher.data?.submission,
+    lastResult: changePwdFetcher.data,
     onValidate({ formData }) {
-      return parse(formData, { schema: ChangePwdSchema });
+      return parseWithZod(formData, { schema: ChangePwdSchema });
     },
     shouldRevalidate: "onBlur"
   });
@@ -87,25 +72,23 @@ export function ChangePwdForm({ email }: { email: string }) {
     <changePwdFetcher.Form
       action="/auth/form/changePwd"
       method="POST"
-      {...form.props}
+      {...getFormProps(form)}
       className="mb-8 flex flex-col sm:mb-4"
     >
-      {changePwdFetcher.data?.status === "success" ? (
+      {form.status === "success" ? (
         <div className="mb-2 text-sm text-green-700">
-          Password sucessfully changed
+          Password successfully changed
         </div>
       ) : null}
-      <input {...conform.input(fields.email, { type: "hidden" })} />
+      <input {...getInputProps(fields.email, { type: "hidden" })} />
       <Field
         errors={fields.password.errors}
-        inputProps={{ ...conform.input(fields.password, { type: "password" }) }}
+        inputProps={getInputProps(fields.password, { type: "password" })}
         labelProps={{ children: "Password", htmlFor: fields.password.id }}
       />
       <Field
         errors={fields.newPassword.errors}
-        inputProps={{
-          ...conform.input(fields.newPassword, { type: "password" })
-        }}
+        inputProps={getInputProps(fields.newPassword, { type: "password" })}
         labelProps={{
           children: "New Password",
           htmlFor: fields.newPassword.id
@@ -113,9 +96,7 @@ export function ChangePwdForm({ email }: { email: string }) {
       />
       <Field
         errors={fields.confirmPassword.errors}
-        inputProps={{
-          ...conform.input(fields.confirmPassword, { type: "password" })
-        }}
+        inputProps={getInputProps(fields.confirmPassword, { type: "password" })}
         labelProps={{
           children: "Confirm Password",
           htmlFor: fields.confirmPassword.id

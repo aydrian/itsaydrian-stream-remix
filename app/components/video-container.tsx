@@ -17,7 +17,7 @@ export function VideoContainer({
   guest,
   showGuides
 }: props) {
-  const { Guide, elementRef } = useShowGuides<HTMLElement>(
+  const { elementRef, Guide } = useShowGuides<HTMLElement>(
     `${guest.order === 0 ? "Host" : "Guest"} ${
       guest.order > 0 ? guest.order : ""
     }`

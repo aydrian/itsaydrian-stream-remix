@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, json, redirect } from "@remix-run/node";
+import { json, type LoaderFunctionArgs, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";

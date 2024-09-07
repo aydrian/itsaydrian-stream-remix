@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, json } from "@remix-run/node";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useRouteLoaderData } from "@remix-run/react";
 
 import { Icon } from "~/components/icon";
@@ -55,12 +55,12 @@ export default function Layout() {
   return (
     <>
       <Outlet />
-      <ChatNotification ChatComponent={Chat} channel="itsaydrian" />
+      <ChatNotification channel="itsaydrian" ChatComponent={Chat} />
       <EventSubNotification
+        channel="itsaydrian"
         FollowComponent={FollowAlert}
         RaidComponent={RaidAlert}
         SubscribeComponent={SubscribeAlert}
-        channel="itsaydrian"
       />
     </>
   );

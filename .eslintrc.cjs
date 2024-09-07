@@ -5,7 +5,7 @@ module.exports = {
     "@remix-run/eslint-config/node",
     "prettier",
     "plugin:no-template-curly-in-string-fix/recommended",
-    "plugin:perfectionist/recommended-natural"
+    "plugin:perfectionist/recommended-natural-legacy"
   ],
   plugins: ["perfectionist"],
   rules: {

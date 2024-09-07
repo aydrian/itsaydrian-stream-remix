@@ -7,7 +7,7 @@ import { FormStrategy } from "remix-auth-form";
 import { z } from "zod";
 
 import { ErrorList, Field, SubmitButton } from "~/components/form";
-import { DEFAULT_SUCCESS_REDIRECT, authenticator } from "~/utils/auth.server";
+import { authenticator, DEFAULT_SUCCESS_REDIRECT } from "~/utils/auth.server";
 import { redirectToCookie } from "~/utils/cookies.server";
 
 const LoginFormSchema = z.object({

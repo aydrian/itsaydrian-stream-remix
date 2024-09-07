@@ -1,4 +1,5 @@
 import {
+  type z,
   ZodArray,
   ZodBoolean,
   ZodDate,
@@ -12,8 +13,7 @@ import {
   ZodOptional,
   ZodString,
   type ZodType,
-  type ZodTypeAny,
-  type z
+  type ZodTypeAny
 } from "zod";
 
 function isIterable(
@@ -238,7 +238,7 @@ function processDef(def: ZodTypeAny, o: any, key: string, value: string) {
 
 function getInputProps(name: string, def: ZodTypeAny): InputPropType {
   let type = "text";
-  let min, max, minlength, maxlength, pattern;
+  let max, maxlength, min, minlength, pattern;
   if (def instanceof ZodString) {
     if (def.isEmail) {
       type = "email";

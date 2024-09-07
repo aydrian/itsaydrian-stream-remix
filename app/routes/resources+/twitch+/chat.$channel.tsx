@@ -20,11 +20,11 @@ type CommonMessage = {
   time: Date;
   type: "chat" | "command";
 };
-export type ChatMessage = CommonMessage & { html: string };
-export type CommandMessage = CommonMessage & {
+export type ChatMessage = { html: string } & CommonMessage;
+export type CommandMessage = {
   args: string[];
   command: string;
-};
+} & CommonMessage;
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const { channel } = params;
@@ -93,13 +93,13 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 }
 
 export function ChatNotification({
+  channel,
   ChatComponent,
-  CommandComponent,
-  channel
+  CommandComponent
 }: {
+  channel: string;
   ChatComponent?: React.ComponentType<{ message: ChatMessage }>;
   CommandComponent?: React.ComponentType<{ message: CommandMessage }>;
-  channel: string;
 }) {
   const eventMessage = useEventSource(`/resources/twitch/chat/${channel}`, {
     event: "new-chat"

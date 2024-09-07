@@ -7,7 +7,7 @@ import { Icon } from "~/components/icon";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import ControlRoomLogo from "~/images/control-room-logo.svg";
 import { FormLoginForm } from "~/routes/auth+/form";
-import { DEFAULT_SUCCESS_REDIRECT, authenticator } from "~/utils/auth.server";
+import { authenticator, DEFAULT_SUCCESS_REDIRECT } from "~/utils/auth.server";
 import { redirectToCookie } from "~/utils/cookies.server";
 import { commitSession, getSession } from "~/utils/session.server";
 

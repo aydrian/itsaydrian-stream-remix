@@ -1,7 +1,7 @@
 import {
   type ActionFunctionArgs,
-  type LoaderFunctionArgs,
-  json
+  json,
+  type LoaderFunctionArgs
 } from "@remix-run/node";
 import { toast } from "react-toastify";
 import { useEventSource } from "remix-utils/sse/react";
@@ -187,19 +187,19 @@ export async function action({ request }: ActionFunctionArgs) {
 }
 
 export function EventSubNotification({
+  channel,
   CustomPrizeRedemptionComponent,
   FollowComponent,
   RaidComponent,
-  SubscribeComponent,
-  channel
+  SubscribeComponent
 }: {
+  channel: string;
   CustomPrizeRedemptionComponent?: React.ComponentType<{
     message: CPRMessage;
   }>;
   FollowComponent?: React.ComponentType<{ message: FollowMessage }>;
   RaidComponent?: React.ComponentType<{ message: RaidMessage }>;
   SubscribeComponent?: React.ComponentType<{ message: SubscribeMessage }>;
-  channel: string;
 }) {
   const eventMessage = useEventSource(`/resources/twitch/eventsub/${channel}`, {
     event: "message"

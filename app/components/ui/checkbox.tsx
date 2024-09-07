@@ -5,12 +5,12 @@ import { cn } from "~/utils/misc";
 
 import { Icon } from "../icon";
 
-export type CheckboxProps = Omit<
+export type CheckboxProps = {
+  type?: string;
+} & Omit<
   React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>,
   "type"
-> & {
-  type?: string;
-};
+>;
 
 const Checkbox = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,

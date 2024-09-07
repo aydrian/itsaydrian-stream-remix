@@ -1,4 +1,4 @@
-import { type LoaderFunctionArgs, json } from "@remix-run/node";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { Outlet, useRouteLoaderData } from "@remix-run/react";
 import { z } from "zod";
 

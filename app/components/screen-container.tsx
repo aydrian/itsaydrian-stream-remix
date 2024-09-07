@@ -13,7 +13,7 @@ export function ScreenContainer({
   screenSize?: ScreenSize;
   showGuides?: boolean;
 }) {
-  const { Guide, elementRef } = useShowGuides<HTMLDivElement>(
+  const { elementRef, Guide } = useShowGuides<HTMLDivElement>(
     `Screen ${screenSize}`
   );
   return (

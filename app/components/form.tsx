@@ -98,11 +98,11 @@ export function CheckboxField({
   errors,
   labelProps
 }: {
-  buttonProps: CheckboxProps & {
+  buttonProps: {
     form: string;
     name: string;
     value?: string;
-  };
+  } & CheckboxProps;
   className?: string;
   errors?: ListOfErrors;
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
@@ -159,10 +159,10 @@ export function SubmitButton({
   state = "idle",
   submittingText = "Submitting...",
   ...props
-}: React.ComponentPropsWithRef<"button"> & {
+}: {
   state?: "idle" | "loading" | "submitting";
   submittingText?: string;
-}) {
+} & React.ComponentPropsWithRef<"button">) {
   return (
     <Button
       {...props}

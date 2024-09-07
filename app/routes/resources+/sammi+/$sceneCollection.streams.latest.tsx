@@ -1,5 +1,5 @@
 import { type SceneCollection } from "@prisma/client";
-import { type LoaderFunctionArgs, json } from "@remix-run/node";
+import { json, type LoaderFunctionArgs } from "@remix-run/node";
 import { startOfToday } from "date-fns";
 
 import { prisma } from "~/utils/db.server";
